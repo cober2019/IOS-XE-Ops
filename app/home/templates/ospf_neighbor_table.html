@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0"><span>OSPF Neighbor Status</span>
+              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)"></span>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results" id="ospfTableOnly">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Neighbor ID</th>
+              <th scope="col" class="text-center">State</th>
+              <th scope="col" class="text-center">Address</th>
+              <th scope="col" class="text-center">Interface</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for k, v in ospf.items() %}
+              {% for i in v %}
+                <tr style="height:1px">
+                  <th scope="row" class="text-center">
+                    {{ i['NeighborID'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['State'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Address'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Interface'] }}
+                  </th>
+                </tr>
+            {%endfor%}
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>l>
+
+<script>
+
+  function refreshOspfOnly(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+          $('#ospfTableOnly').html(response.data);
+      },
+     });
+    }
+
+ </script>

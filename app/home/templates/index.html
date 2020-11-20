@@ -1,0 +1,291 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col ">
+              <h3 class="mb-0">BGP Neighbor Status: AS {{ local_as }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Neighbor</th>
+                <th scope="col">AS</th>
+                <th scope="col">Prefixes</th>
+                <th scope="col">Status/Uptime</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for k, v in bgp_status.items() %}
+                {% for i in v %}
+                  <tr>
+                    <th scope="row">
+                      {{ i["Neighbor"] }}
+                    </th>
+                    <td>
+                      {{ i["AS"] }}
+                    </td>
+                    <td>
+                      {{ i["Prefixes"] }}
+                    </td>
+                    {% if 'Idle' in i['Uptime'] or 'Connect' in i['Uptime'] or 'Active' in i['Uptime']
+                    or 'OpenSent' in i['Uptime'] or 'OpenConfirm' in i['Uptime'] or 'Established' in i['Uptime']
+                    or 'never' in i['Uptime']%}
+                      <td>
+                        <i class="fas fa-arrow-down text-red mr-3"></i> {{ i['Uptime'] }}
+                      </td>
+                    {%else%}
+                      <td>
+                        <i class="fas fa-arrow-up text-success mr-3"></i> {{ i['Uptime'] }}
+                      </td>
+                    {%endif%}
+                {% endfor %}
+              {% endfor %}
+              </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-12">
+      <div class="card">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col">
+              <h3 class="mb-0">Interface Information/Stats</h3>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-flush table-borderless">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Interface</th>
+                <th scope="col">IP Address</th>
+                <th scope="col">Operational</th>
+                <th scope="col">Speed(Mbps)</th>
+                <th scope="col">In Octets</th>
+                <th scope="col">In Discards</th>
+                <th scope="col">In Errors</th>
+                <th scope="col">Out Octets</th>
+                <th scope="col">Out Discards</th>
+                <th scope="col">Out Errors</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in interface_info %}
+                {% for k, v in i.items() %}
+                  <tr style="height:1px">
+                      <th scope="row">
+                        {{ k }}
+                      </th>
+
+                      <th scope="row">
+                        {{ v['IP'] }}
+                      </th>
+
+                      {% if v['Admin'] == 'down' or v['Operational'] == 'down' %}
+                        <th scope="row" class="fas fa-arrow-down text-red mr-3">
+                          {{ v['Admin'] + '/' + v['Operational'] }}
+                        </th>
+                      {%else%}
+                        <th scope="row" class="fas fa-arrow-up text-green mr-3">
+                          {{ v['Admin'] + '/' + v['Operational'] }}
+                        </th>
+                      {%endif%}
+
+                      <th scope="row">
+                        {{ v['Speed'] }}
+                      </th>
+
+                      <th scope="row">
+                        {{ v['In Octets'] }}
+                      </th>
+
+                      {% if v['In Discards'] != '0' %}
+                        <th style="color:red" scope="row">
+                          {{ v['In Discards'] }}
+                        </th>
+                      {%else%}
+                        <th scope="row">
+                          {{ v['In Discards'] }}
+                        </th>
+                      {%endif%}
+
+                      {% if v['In Errors'] != '0' %}
+                        <th style="color:red" scope="row">
+                          {{ v['In Errors'] }}
+                        </th>
+                      {%else%}
+                        <th scope="row">
+                          {{ v['In Errors'] }}
+                        </th>
+                      {%endif%}
+
+                      <th scope="row">
+                        {{ v['Out Octets'] }}
+                      </th>
+
+                      {% if v['Out Discards'] != '0' %}
+                        <th style="color:red" scope="row">
+                          {{ v['Out Discards'] }}
+                        </th>
+                      {%else%}
+                          <th scope="row">
+                            {{ v['Out Discards'] }}
+                          </th>
+                      {%endif%}
+
+                      {% if v['Out Errors'] != '0' %}
+                        <th style="color:red" scope="row">
+                          {{ v['Out Errors'] }}
+                        </th>
+                      {%else%}
+                        <th scope="row">
+                          {{ v['Out Errors'] }}
+                        </th>
+                      {%endif%}
+                    </tr>
+                {% endfor %}
+              {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-12">
+       {% for k, v in interface_qos.items() %}
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">Interface QoS: {{ k }} | Policy: {{ v[0]['Policy_name'] }} | Direction: {{ v[0]['Direction'] }}</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+            <table class="table align-items-center table-flush table-borderless">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Queue</th>
+                  <th scope="col">Queued Rate</th>
+                  <th scope="col">In Bytes</th>
+                  <th scope="col">In Packets</th>
+                  <th scope="col">Out Bytes</th>
+                  <th scope="col">Out Packets</th>
+                  <th scope="col">Drop Packets</th>
+                  <th scope="col">Drop Bytes</th>
+                  <th scope="col">WRED Packets
+                  <th scope="col">WRED Bytes</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for stat in v[1]['queues'] %}
+                <tr style="height:1px">
+                  <th scope="row">
+                    {{ stat['queue_name'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['rate'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['bytes'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['packets'] }}
+                  </th>
+                   <th scope="row">
+                    {{ stat['out_bytes'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['out_packets'] }}
+                  </th>
+
+                  {% if stat['drop_packets'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['drop_packets'] }}
+                    </th>
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['drop_packets'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['drop_bytes'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['drop_bytes'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['drop_bytes'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['wred_drops_pkts'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['wred_drops_pkts'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['wred_drops_pkts'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['wred_drop_bytes'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['wred_drop_bytes'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['wred_drop_bytes'] }}
+                    </th>
+                  {%endif%}
+                </tr>
+              {% endfor %}
+            </table>
+            </div>
+        {% endfor %}
+      </div>
+        <div class="col-xl-6">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0">BGP Information</h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-items-center table-flush table-borderless">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in bgp_info %}
+                      <tr style="height:1px">
+                        <th scope="row">
+                          {{ i }}
+                        </th>
+                  {% endfor %}
+                  </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+
+{% endblock content %}
+
+

@@ -1,0 +1,75 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0">Add OSPF Neighbor</h3>
+            <br/>
+          </div>
+        </div>
+        <form id="ospfForm" method="post">
+           <div class="form-group">
+             <label>Process</label>
+             <input type="text" class="form-control" placeholder="Process" name="process">
+           </div>
+          <div class="form-group">
+            <label>Network</label>
+            <input type="text" class="form-control" placeholder="Network" name="neighbor">
+          </div>
+          <div class="form-group">
+            <label>Wildcard</label>
+            <input type="text" class="form-control" placeholder="Wildcard" name="wildcard">
+          </div>
+          <div class="form-group">
+            <label>Area</label>
+            <input type="text" class="form-control" placeholder="Area" name="area">
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Build Adjacency</button>
+        </form>
+        <div id='response'></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function(){
+    $('#ospfForm').submit(function(){
+
+     $.ajax({
+      url: '/add_ospf_neighbor',
+      type: 'POST',
+      data: $('form').serialize(),
+      success: function(response){
+       $('#response').html(response.data);
+      },
+     });
+     return false;
+    });
+  });
+
+</script>
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

@@ -1,0 +1,35 @@
+<table class="table align-items-center table-flush results" id="arpTable">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" class="text-center">Protocol</th>
+      <th scope="col" class="text-center">Address</th>
+      <th scope="col" class="text-center">Age</th>
+      <th scope="col" class="text-center">MAC</th>
+      <th scope="col" class="text-center">Type</th>
+      <th scope="col" class="text-center">Interfaces</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in arps %}
+    <tr style="height:1px">
+      <th scope="row" class="text-center">
+        {{ i['Protocol'] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i['Address'] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i['Age'] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i['MAC'] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i['Type'] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i['Interfaces'] }}
+      </th>
+    </tr>
+  {%endfor%}
+</table>

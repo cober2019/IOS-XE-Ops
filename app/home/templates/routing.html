@@ -1,0 +1,488 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0">IP Interfaces</h3>
+          </div>
+        </div>
+      </div>
+        <div class="table-responsive">
+          <span class="counter pull-right"></span>
+          <table class="table align-items-center table-flush results" id="intTable">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col" class="text-center">Interface</th>
+                <th scope="col" class="text-center">IP</th>
+                <th scope="col" class="text-center">Admin/Operational</th>
+                <th scope="col" class="text-center">Speed</th>
+                <th scope="col" class="text-center">Last Change</th>
+                <th scope="col" class="text-center">InOctets</th>
+                <th scope="col" class="text-center">OutOctets</th>
+                <th scope="col" class="text-center">InErrors</th>
+                <th scope="col" class="text-center">OutErrors</th>
+                <th scope="col" class="text-center">MAC</th>
+                <th scope="col" class="text-center">Clear</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for i in interfaces %}
+              {% for k, v in i.items() %}
+                <tr style="height:1px">
+                  <th scope="row" class="text-center">
+                    {{ k }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['IP'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['Admin'] }}/{{ v['Operational'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['Speed'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['Last Change'].split('.')[0] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['In Octets'] }}
+                  </th>
+                   <th scope="row" class="text-center">
+                    {{ v['Out Octets'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['In Errors'] }}
+                  </th>
+                   <th scope="row" class="text-center">
+                    {{ v['Out Errors'] }}
+                  </th>
+                   <th scope="row" class="text-center">
+                    {{ v['MAC'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    <input value="Clear Counters" name="{{ k }}" class="btn btn-primary btn-round-xs" role="status" type="button" onclick="clearCounters(this.name)">
+                  </th>
+                </tr>
+              {%endfor%}
+            {%endfor%}
+          </table>
+        </div>
+      </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0"><span>ARP Table</span>
+               <span ><input value="Clear ARP" name="arp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="clearArp(this.name)"></span>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table  class="table align-items-center table-flush results" id="arpTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Protocol</th>
+              <th scope="col" class="text-center">Address</th>
+              <th scope="col" class="text-center">Age</th>
+              <th scope="col" class="text-center">MAC</th>
+              <th scope="col" class="text-center">Type</th>
+              <th scope="col" class="text-center">Interfaces</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for i in arp %}
+            <tr style="height:1px">
+              <th scope="row" class="text-center">
+                {{ i['Protocol'] }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i['Address'] }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i['Age'] }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i['MAC'] }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i['Type'] }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i['Interfaces'] }}
+              </th>
+            </tr>
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% if bgp and ospf %}
+<div class="row">
+  <div class="col-xl-6">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0"><span>BGP Neighbor Status</span>
+              <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+              <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)"></span>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results" id="bgpNeighbors">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Neighbor</th>
+              <th scope="col" class="text-center">AS</th>
+              <th scope="col" class="text-center">Uptime</th>
+              <th scope="col" class="text-center">Prefixes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for k, v in bgp.items() %}
+              {% for i in v %}
+                <tr style="height:1px">
+                  <th scope="row" class="text-center">
+                    {{ i['Neighbor'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['AS'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Uptime'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Prefixes'] }}
+                  </th>
+                </tr>
+            {%endfor%}
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="card">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col ">
+              <h3 class="mb-0"><span>OSPF Neighbor Status</span>
+              <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)"></span>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <span class="counter pull-right"></span>
+          <table class="table align-items-center table-flush results" id="ospfTable">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col" class="text-center">Neighbor ID</th>
+                <th scope="col" class="text-center">State</th>
+                <th scope="col" class="text-center">Address</th>
+                <th scope="col" class="text-center">Interface</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for k, v in ospf.items() %}
+                {% for i in v %}
+                  <tr style="height:1px">
+                    <th scope="row" class="text-center">
+                      {{ i['NeighborID'] }}
+                    </th>
+                    <th scope="row" class="text-center">
+                      {{ i['State'] }}
+                    </th>
+                    <th scope="row" class="text-center">
+                      {{ i['Address'] }}
+                    </th>
+                    <th scope="row" class="text-center">
+                      {{ i['Interface'] }}
+                    </th>
+                  </tr>
+              {%endfor%}
+            {%endfor%}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% elif bgp %}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col">
+             <h4 class="mb-0"><span>BGP Neighbor Status</span>
+               <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+               <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)"></span>
+             </h4>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results" id="bgpNeighborsOnly">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Neighbor</th>
+              <th scope="col" class="text-center">AS</th>
+              <th scope="col" class="text-center">Uptime</th>
+              <th scope="col" class="text-center">Prefixes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for k, v in bgp.items() %}
+              {% for i in v %}
+                <tr style="height:1px">
+                  <th scope="row" class="text-center">
+                    {{ i['Neighbor'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['AS'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Uptime'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Prefixes'] }}
+                  </th>
+                </tr>
+            {%endfor%}
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% elif ospf %}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0"><span>OSPF Neighbor Status</span>
+              <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)"></span>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results" id="ospfTableOnly">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Neighbor ID</th>
+              <th scope="col" class="text-center">State</th>
+              <th scope="col" class="text-center">Address</th>
+              <th scope="col" class="text-center">Interface</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for k, v in ospf.items() %}
+              {% for i in v %}
+                <tr style="height:1px">
+                  <th scope="row" class="text-center">
+                    {{ i['NeighborID'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['State'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Address'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Interface'] }}
+                  </th>
+                </tr>
+            {%endfor%}
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0"><span>Routing Table</span>
+              <span><input value="Get Routes/Refresh" name="routingTable" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="getRouting(this.name)"></span>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <div class="search-box">
+           <input class="form-control" id="myInput" type="text" placeholder="Search..">
+        </div>
+        <span class="counter pull-right"></span>
+         <div id='response'></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+</script>
+
+<script>
+
+  function clearCounters(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': 'clearInt', 'interface': val},
+      success: function(response) {
+          $('#intTable').html(response.data);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function clearArp(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+          $('#arpTable').html(response.data);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function refreshBgp(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+          $('#bgpNeighbors').html(response.data);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function refreshOspf(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+          $('#ospfTable').html(response.data);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function refreshBgpOnly(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+          $('#bgpNeighborsOnly').html(response.data);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function refreshOspfOnly(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+          $('#ospfTableOnly').html(response.data);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function getRouting(){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': 'routes'},
+      success: function(response) {
+          $('#response').html(response.data);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function addNeighbor(){
+     $.ajax({
+      url: '/add_bgp_neighbor',
+     });
+    }
+
+ </script>
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

@@ -1,0 +1,29 @@
+ <table class="table align-items-center table-flush results" id="bgpNeighbors">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" class="text-center">Neighbor</th>
+      <th scope="col" class="text-center">AS</th>
+      <th scope="col" class="text-center">Uptime</th>
+      <th scope="col" class="text-center">Prefixes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for k, v in bgp.items() %}
+      {% for i in v %}
+        <tr style="height:1px">
+          <th scope="row" class="text-center">
+            {{ i['Neighbor'] }}
+          </th>
+          <th scope="row" class="text-center">
+            {{ i['AS'] }}
+          </th>
+          <th scope="row" class="text-center">
+            {{ i['Uptime'] }}
+          </th>
+          <th scope="row" class="text-center">
+            {{ i['Prefixes'] }}
+          </th>
+        </tr>
+    {%endfor%}
+  {%endfor%}
+</table>

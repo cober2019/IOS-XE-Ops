@@ -1,0 +1,49 @@
+<table class="table align-items-center table-flush results" id="intTable">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" class="text-center">Interface</th>
+      <th scope="col" class="text-center">IP</th>
+      <th scope="col" class="text-center">Admin/Operational</th>
+      <th scope="col" class="text-center">Speed</th>
+      <th scope="col" class="text-center">Last Change</th>
+      <th scope="col" class="text-center">InOctets</th>
+      <th scope="col" class="text-center">OutOctets</th>
+      <th scope="col" class="text-center">MAC</th>
+      <th scope="col" class="text-center">Clear</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in interfaces %}
+    {% for k, v in i.items() %}
+      <tr style="height:1px">
+        <th scope="row" class="text-center">
+          {{ k }}
+        </th>
+        <th scope="row" class="text-center">
+          {{ v['IP'] }}
+        </th>
+        <th scope="row" class="text-center">
+          {{ v['Admin'] }}/{{ v['Operational'] }}
+        </th>
+        <th scope="row" class="text-center">
+          {{ v['Speed'] }}
+        </th>
+        <th scope="row" class="text-center">
+          {{ v['Last Change'] }}
+        </th>
+        <th scope="row" class="text-center">
+          {{ v['In Octets'] }}
+        </th>
+         <th scope="row" class="text-center">
+          {{ v['Out Octets'] }}
+        </th>
+        <th scope="row" class="text-center">
+          {{ v['MAC'] }}
+        </th>
+        <th scope="row" class="text-center">
+          <input value="Clear Counters" name="{{ k }}" class="btn btn-primary btn-round-xs" type="button" onclick="clearCounters(this.name)">
+        </th>
+      </tr>
+    {%endfor%}
+  {%endfor%}
+</table>

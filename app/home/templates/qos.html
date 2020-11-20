@@ -1,0 +1,222 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="mb-0">
+              <span>IP Interfaces</span>
+              <span class="float-right text-primary">* Assigned QoS</span>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Interface</th>
+              <th scope="col" class="text-center">IP</th>
+              <th scope="col" class="text-center">Admin/Operational</th>
+              <th scope="col" class="text-center">Speed</th>
+              <th scope="col" class="text-center">Last Change</th>
+              <th scope="col" class="text-center">InOctets</th>
+              <th scope="col" class="text-center">OutOctets</th>
+              <th scope="col" class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for i in interfaces %}
+            {% for k, v in i.items() %}
+                <tr style="height:1px">
+                  {% if k in interface_qos %}
+                    <th scope="row" class="text-center text-primary">
+                      {{ '*' + k + ' (Qos)'}}
+                    </th>
+                  {%else%}
+                     <th scope="row" class="text-center">
+                      {{ k }}
+                    </th>
+                  {%endif%}
+                  <th scope="row" class="text-center">
+                    {{ v['IP'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['Admin'] }}/{{ v['Operational'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['Speed'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['Last Change'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ v['In Octets'] }}
+                  </th>
+                   <th scope="row" class="text-center">
+                    {{ v['Out Octets'] }}
+                  </th>
+                  {% if k in interface_qos %}
+                    <th scope="row" class="text-center">
+                      <span><a href="{{ url_for('base_blueprint.configure_qos', interface=k.replace('/', '%2f')) }}">
+                      <input value="Change Qos" name="{{ k }}" class="btn btn-primary btn-round-xs" role="status" type="button"></a></span>
+                    </th>
+                  {% else %}
+                    <th scope="row" class="text-center">
+                      <span><a href="{{ url_for('base_blueprint.configure_qos', interface=k.replace('/', '%2f')) }}">
+                      <input value="Add Qos" name="{{ k }}" class="btn btn-primary btn-round-xs" role="status" type="button"></a></span>
+                    </th>
+                  {% endif %}
+                </tr>
+            {%endfor%}
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% if interface_qos%}
+<div class="row">
+    <div class="col-xl-12">
+      {% for k, v in interface_qos.items() %}
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0">Interface QoS: {{ k }} | Policy: {{ v[0]['Policy_name'] }} | Direction: {{ v[0]['Direction'] }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush table-borderless">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Queue</th>
+                  <th scope="col">Queued Rate</th>
+                  <th scope="col">In Bytes</th>
+                  <th scope="col">In Packets</th>
+                  <th scope="col">Out Bytes</th>
+                  <th scope="col">Out Packets</th>
+                  <th scope="col">Drop Packets</th>
+                  <th scope="col">Drop Bytes</th>
+                  <th scope="col">WRED Packets
+                  <th scope="col">WRED Bytes</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for stat in v[1]['queues'] %}
+                <tr style="height:1px">
+                  <th scope="row">
+                    {{ stat['queue_name'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['rate'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['bytes'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['packets'] }}
+                  </th>
+                   <th scope="row">
+                    {{ stat['out_bytes'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['out_packets'] }}
+                  </th>
+
+                  {% if stat['drop_packets'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['drop_packets'] }}
+                    </th>
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['drop_packets'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['drop_bytes'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['drop_bytes'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['drop_bytes'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['wred_drops_pkts'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['wred_drops_pkts'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['wred_drops_pkts'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['wred_drop_bytes'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['wred_drop_bytes'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['wred_drop_bytes'] }}
+                    </th>
+                  {%endif%}
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      {%endfor%}
+    </div>
+</div>
+{%else%}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0 text-center">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="mb-0 text-danger">No Qos Detected</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%}
+
+
+<script>
+
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+</script>
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

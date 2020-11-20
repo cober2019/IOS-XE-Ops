@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col">
+             <h4 class="mb-0"><span>BGP Neighbor Status</span>
+               <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)"></span>
+             </h4>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results" id="bgpNeighborsOnly">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Neighbor</th>
+              <th scope="col" class="text-center">AS</th>
+              <th scope="col" class="text-center">Uptime</th>
+              <th scope="col" class="text-center">Prefixes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for k, v in bgp.items() %}
+              {% for i in v %}
+                <tr style="height:1px">
+                  <th scope="row" class="text-center">
+                    {{ i['Neighbor'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['AS'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Uptime'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i['Prefixes'] }}
+                  </th>
+                </tr>
+            {%endfor%}
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  function refreshBgpOnly(val){
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+          $('#bgpNeighborsOnly').html(response.data);
+      },
+     });
+    }
+
+ </script>

@@ -1,0 +1,47 @@
+<table class="table align-items-center table-flush results" >
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" class="text-center">VRF</th>
+      <th scope="col" class="text-center">Prefix</th>
+      <th scope="col" class="text-center">Protocol</th>
+      <th scope="col" class="text-center">AD</th>
+      <th scope="col" class="text-center">Metric</th>
+      <th scope="col" class="text-center">Next-Hop</th>
+      <th scope="col" class="text-center">Interface</th>
+      <th scope="col" class="text-center">Tag</th>
+      <th scope="col" class="text-center">Age</th>
+    </tr>
+  </thead>
+  <tbody id="myTable">
+  {% for i in route_table %}
+    <tr style="height:1px">
+      <th scope="row" class="text-center">
+        {{ i[0] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[1] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[2] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[3] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[4] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[5] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[6] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[7] }}
+      </th>
+      <th scope="row" class="text-center">
+        {{ i[8] }}
+      </th>
+    </tr>
+  {%endfor%}
+</table>
