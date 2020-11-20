@@ -1,0 +1,57 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block title %} IOS-XE Login {% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="container mt--8 pb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-7">
+          <div class="card bg-secondary border-0 mb-0">
+
+            <div class="card-body px-lg-5 py-lg-5 text-center">
+
+              <h3 class="mb-4 text-center">Device Login</h3>
+              <br />
+              <form role="form" method="post" action="">
+
+                {{ form.hidden_tag() }}
+                  <div class="input-group mb-3">
+                        {{ form.device(placeholder="Device", class="form-control mb-4 text-center") }}
+                </div>
+
+                <div class="input-group mb-3">
+                    {{ form.username(placeholder="Username", class="form-control mb-4 text-center") }}
+                </div>
+                
+                <div class="input-group mb-4">
+                    {{ form.password(placeholder="Password", class="form-control mb-4 text-center", type="password") }}
+                </div>
+
+                <button type="submit" name="login" class="btn btn-primary shadow-2 mb-4">Login</button>
+
+                  <div class="container" style="min-height:100% width:80%">
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                        {% for message in messages %}
+                          <div class="alert alert-warning alert-dismissible" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"></span></button>
+                            {{message}}
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

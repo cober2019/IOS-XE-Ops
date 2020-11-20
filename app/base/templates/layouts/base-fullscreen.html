@@ -1,0 +1,62 @@
+<!--
+=========================================================
+* Argon Dashboard - v1.0.0
+=========================================================
+* Product Page: https://www.creative-tim.com/product/argon-dashboard-flask
+
+* Copyright Creative Tim (http://www.creative-tim.com)
+* Coded by www.creative-tim.com
+
+=========================================================
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    {% block title %}IOS-XE Viewer{% endblock %}
+  </title>
+  <!-- Argon CSS -->
+  <link rel="stylesheet" href="/static/assets/css/argon.css?v=1.2.0" type="text/css">
+
+  <!-- Specific CSS goes HERE -->
+  {% block stylesheets %}{% endblock stylesheets %}
+
+</head>
+
+<body class="bg-light">
+
+  <div class="main-content">
+
+    <!-- Header -->
+    <div class="header py-7 py-lg-8">
+      <div class="container">
+        <div class="header-body text-center mb-7">
+          <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-6">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% block content %}{% endblock content %}
+
+
+  </div>
+
+  {% include "includes/scripts.html" %}
+
+  <!-- Specific JS goes HERE --> 
+  {% block javascripts %}{% endblock javascripts %}
+  
+  <script src="/static/assets/js/argon.js?v=1.2.0"></script>
+
+</body>
+
+</html>
