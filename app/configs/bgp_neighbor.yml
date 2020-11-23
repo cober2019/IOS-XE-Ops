@@ -1,7 +1,0 @@
-bgp:
-  asn: 65513
-  neighbors:
-    - ipaddr: 10.10.13.1
-    remote_asn: 65511
-    - ipaddr: 10.10.23.2
-    remote_asn: 65512
