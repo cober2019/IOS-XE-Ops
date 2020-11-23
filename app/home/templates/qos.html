@@ -5,7 +5,8 @@
 {% block stylesheets %}
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 {% endblock stylesheets %}
 
@@ -97,7 +98,7 @@
           <div class="card-header border-0">
             <div class="row align-items-center">
               <div class="col">
-                <h3 class="mb-0">Interface QoS: {{ k }} | Policy: {{ v[0]['Policy_name'] }} | Direction: {{ v[0]['Direction'] }}</h3>
+                <h3 class="mb-0">{{ k }} | Policy: {{ v[0]['Policy_name'] }} | Direction: {{ v[0]['Direction'] }}</h3>
               </div>
             </div>
           </div>

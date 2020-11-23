@@ -1,8 +1,23 @@
 """ Collection of funtions used to send, save, and validate XML responses"""
 
+import os
+import time
 import lxml.etree as ET
 import xml.etree.cElementTree as xml
 from ncclient import manager
+
+
+def save_config_to_file(configuration):
+    """Save config to file"""
+
+    # Convert configu to string
+    format_str = prepare_config(configuration)
+    # Get current path and replace directory to configs folder
+    configs_dir = os.path.dirname(os.path.realpath(__file__)).replace('Modules', 'configs\\')
+    # Open or create file if not in directory, write and close
+    config = open(f'{configs_dir}{str(time.asctime()).replace(":", "-")}.xml', 'w')
+    config.write(format_str)
+    config.close()
 
 
 def prepare_config(config):
@@ -10,19 +25,20 @@ def prepare_config(config):
 
     xmlstr = xml.tostring(config, method='xml')
     converted_config = xmlstr.decode('utf-8')
-    print(converted_config)
 
     return converted_config
 
 
-def check_rpc_reply(response):
+def check_rpc_reply(response, configuration=None):
     """Checks RPC Reply for string. Notifies user config was saved"""
 
     if response.rfind("Save running-config successful") != -1:
         return 'Configuration Saved'
     elif response.rfind("<ok/>") != -1:
+        save_config_to_file(configuration)
         return 'Success'
     elif response.rfind("<data></data>") != -1:
+        # Recieve sucessful but empty RPC reply
         return 'Empty Config'
 
 
@@ -74,14 +90,18 @@ def send_configuration(netconf_session, config):
 
     try:
         response = netconf_session.edit_config(formatted_config, target="running")
-        validate_response = check_rpc_reply(str(response))
+        validate_response = check_rpc_reply(str(response), config)
     except manager.operations.errors.TimeoutExpiredError as error:
+        save_config_to_file(config)
         validate_response = [error, 'Connection Timeout']
     except AttributeError as error:
+        save_config_to_file(config)
         validate_response = [error, 'Session Expired']
     except manager.transport.TransportError as error:
+        save_config_to_file(config)
         validate_response = [error, 'Transport Error']
     except manager.operations.rpc.RPCError as error:
+        save_config_to_file(config)
         validate_response = [error, 'Configuration Failed']
 
     response = prepare_response(validate_response)

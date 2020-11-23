@@ -26,6 +26,8 @@ import app.Modules.netconfsend as SendConfig
 import app.Modules.AsrListlist as GetPolicies
 import app.Modules.build_service_policy as BuildService
 import sqlite3
+import logging
+import os
 
 device = None
 username = None
@@ -37,6 +39,10 @@ local_as = None
 service_policies = None
 qos = None
 model = None
+ospf_processes = None
+
+log_dir = os.path.dirname(os.path.realpath(__file__)).replace('base', 'logs\\')
+logging.basicConfig(filename=f'{log_dir}sessionlog.log', level=logging.INFO)
 
 
 @blueprint.route('/')
@@ -101,14 +107,12 @@ def logout():
 def get_routing():
     """Gets all things routing, arp, interfaces, routing protocols"""
 
-    global get_interfaces, local_as
+    global get_interfaces, local_as, netconf_session
 
-    # Get data, render homepage with variables
+    netconf_session = ConnectWith.create_netconf_connection(username, password, device)
     get_interfaces = GetInterfacesInfo.get_ip_interfaces(netconf_session)
-
     bgp_status = GetInfo.get_bgp_status(netmiko_session)
     local_as = bgp_status[1][0]
-
     ospf_status = GetInfo.get_ospf_status(netmiko_session)
     arp_table = GetInfo.get_arp(netmiko_session)
 
@@ -151,8 +155,9 @@ def table_refresh():
 def get_qos():
     """View Qos statistics"""
 
-    global service_policies, qos
+    global service_policies, qos, netconf_session
 
+    netconf_session = ConnectWith.create_netconf_connection(username, password, device)
     qos = GetQos.get_interfaces(netconf_session)
     service_policies = GetPolicies.fetch_service_policy(netconf_session)
 
@@ -219,7 +224,11 @@ def post_neighbor():
 def add_ospf_neighbors():
     """Render OSPF configuration/Form"""
 
-    return render_template('add_ospf_neighbor.html')
+    global ospf_processes
+
+    ospf_processes = GetInfo.get_ospf_processes(netmiko_session)
+
+    return render_template('add_ospf_neighbor.html', ospf_proc=ospf_processes)
 
 
 @blueprint.route('/add_ospf_neighbor', methods=['POST'])
@@ -238,3 +247,9 @@ def post_ospf_neighbor():
     else:
         return jsonify({'data': render_template('config_failed.html', status=status)})
 
+
+@blueprint.route('/about')
+def about():
+    """User logout"""
+
+    return render_template('about.html')

@@ -1,6 +1,5 @@
 """Helper funtion to retrieve interface statisitics/configurations"""
 
-from typing import Union, List
 from ncclient import manager
 import xmltodict
 import ipaddress
@@ -12,7 +11,7 @@ interface_types = ("GigabitEthernet", "Loopback", "Tunnel", "Vlan", "Port-channe
 # ------------------------ pre-deployements funtions -----------------------
 
 
-def is_instance(list_or_dict) -> List[dict]:
+def is_instance(list_or_dict):
     """Checks to if miltiple prefix-list are in the config. If one list is in the configuration, structure is dictionary
     If multiple list are in the config, structure will be a list of dictionaries. Convert to list if dictionary"""
 
@@ -24,7 +23,7 @@ def is_instance(list_or_dict) -> List[dict]:
     return make_list
 
 
-def is_in_list(list_or_dict) -> List[dict]:
+def is_in_list(list_or_dict):
     """Checks to "seq" key is list or dictionary. If one seq is in the prefix-list, seq is a dictionary, if multiple seq,
     seq will be list of dictionaries. Convert to list if dictionary"""
 
@@ -36,7 +35,7 @@ def is_in_list(list_or_dict) -> List[dict]:
     return make_list
 
 
-def get_config(netconf_session) -> Union[list, dict]:
+def get_config(netconf_session):
     """Gets interfaces configurations"""
 
     try:
@@ -62,15 +61,12 @@ def get_config(netconf_session) -> Union[list, dict]:
     return converted_config
 
 
-def get_stats(netconf_session) -> Union[list, dict]:
+def get_stats(netconf_session):
 
     print(netconf_session)
     try:
         int_stats = f"""<filter>
-                   <interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-                   <interface>
-                   </interface>
-                   </interfaces-state>
+                   <interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"/>
                    </filter>"""
 
         get_state = netconf_session.get(int_stats)

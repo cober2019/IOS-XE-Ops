@@ -18,7 +18,7 @@ def send_command(netmiko_connection, command, expect_string=None):
             try:
                 get_response = netmiko_connection.send_command(command_string=command)
                 break
-            except (OSError, TypeError):
+            except (OSError, TypeError, AttributeError):
                 netmiko_connection = ConnectWith.creat_netmiko_connection(Credentials.username, Credentials.password,
                                                                           Credentials.device)
                 Credentials.netmiko_session = netmiko_connection
@@ -31,7 +31,7 @@ def send_command(netmiko_connection, command, expect_string=None):
             try:
                 get_response = netmiko_connection.send_command(command_string=command, expect_string=expect_string)
                 break
-            except (OSError, TypeError):
+            except (OSError, TypeError, AttributeError):
                 netmiko_connection = ConnectWith.creat_netmiko_connection(Credentials.username, Credentials.password,
                                                                           Credentials.device)
                 retries += 1
@@ -91,14 +91,27 @@ def get_ospf_status(netmiko_connection):
         ip_ospf = send_command(netmiko_connection, 'show ip ospf')
         if ip_ospf:
             neighbor_status['neighbor'].append(
-                {"NeighborID": 'No Neighbors', 'State': '', 'Address': '',
+                {"NeighborID": 'No Established Neighbors', 'State': '', 'Address': '',
                  'Interface': ''})
 
             return neighbor_status
         else:
             return 'OSPF not configured'
 
-    return neighbor_status
+
+def get_ospf_processes(netmiko_connection):
+
+    processes = []
+    ospf_process = send_command(netmiko_connection, 'show ip ospf | i Process')
+
+    if ospf_process:
+        for process in ospf_process.splitlines():
+            try:
+                processes.append(process.split('"')[1].split()[1])
+            except IndexError:
+                continue
+
+    return processes
 
 
 def get_arp(netmiko_connection):

@@ -5,7 +5,8 @@
 {% block stylesheets %}
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 {% endblock stylesheets %}
 
@@ -23,25 +24,40 @@
         </div>
         <form id="ospfForm" method="post">
            <div class="form-group">
-             <label>Process</label>
-             <input type="text" class="form-control" placeholder="Process" name="process">
-           </div>
+            <label class="font-weight-bold">Process</label>
+             {% if not ospf_proc %}
+              <div class="form-group">
+                <label>Process</label>
+                <input type="text" class="form-control" placeholder="Add Process" name="process">
+              </div>
+             {% else %}
+                <div class="input-group mb-3">
+                  <select class="custom-select" id="process" name="process">
+                    <option value="Select Process">Select Process...</option>>
+                    {% for process in ospf_proc %}
+                      <option value="{{process}}">{{process}}</option>>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            {% endif %}
           <div class="form-group">
-            <label>Network</label>
+            <label class="font-weight-bold">Network</label>
             <input type="text" class="form-control" placeholder="Network" name="neighbor">
           </div>
           <div class="form-group">
-            <label>Wildcard</label>
+            <label class="font-weight-bold">Wildcard</label>
             <input type="text" class="form-control" placeholder="Wildcard" name="wildcard">
           </div>
           <div class="form-group">
-            <label>Area</label>
+            <label class="font-weight-bold">Area</label>
             <input type="text" class="form-control" placeholder="Area" name="area">
           </div>
-          <button type="submit" class="btn btn-primary">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Build Adjacency</button>
+            <br/>
+            <br/>
+          <button type="submit" class="btn btn-primary">Build Adjacency</button>
         </form>
+          <br/>
         <div id='response'></div>
       </div>
     </div>

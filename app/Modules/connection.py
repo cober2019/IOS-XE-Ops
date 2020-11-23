@@ -2,7 +2,6 @@
 
 from netmiko import ConnectHandler, ssh_exception
 from ncclient import manager
-import app.Modules.netconfsend as NetconfBase
 
 
 def creat_netmiko_connection(username, password, host) -> object:
@@ -51,14 +50,13 @@ def netmiko_w_enable(host: str = None, username: str = None, password: str = Non
 
 
 def create_netconf_connection(username, password, host) -> manager:
-    """Gets current prefix-lists from device and converts from xml to dictionary"""
+    """Creates NETCONF Session"""
 
     try:
 
         netconf_session = manager.connect(host=host, port=830, username=username,
                                           password=password,
                                           device_params={'name': 'csr'})
-
     except manager.operations.errors.TimeoutExpiredError as error:
         netconf_session = [error, 'Connection Timeout', 'error']
     except AttributeError as error:

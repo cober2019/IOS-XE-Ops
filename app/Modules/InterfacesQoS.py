@@ -33,10 +33,7 @@ def get_interfaces(session):
     policies = collections.defaultdict(list)
 
     int_stats = f"""<filter>
-                  <interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-                  <interface>
-                  </interface>
-                  </interfaces-state>
+                  <interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces"/>
                   </filter>"""
 
     # Create NETCONF Session, get config

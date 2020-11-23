@@ -6,6 +6,8 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
 {% endblock stylesheets %}
 
@@ -73,7 +75,7 @@
                     {{ v['MAC'] }}
                   </th>
                   <th scope="row" class="text-center">
-                    <input value="Clear Counters" name="{{ k }}" class="btn btn-primary btn-round-xs" role="status" type="button" onclick="clearCounters(this.name)">
+                    <input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)">
                   </th>
                 </tr>
               {%endfor%}
@@ -158,6 +160,7 @@
               <th scope="col" class="text-center">AS</th>
               <th scope="col" class="text-center">Uptime</th>
               <th scope="col" class="text-center">Prefixes</th>
+              <th scope="col" class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -175,6 +178,9 @@
                   </th>
                   <th scope="row" class="text-center">
                     {{ i['Prefixes'] }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    <a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Modify Neighbor" name="bgp"  role="status" type="button" class="btn btn-link font-weight-bold"></a>
                   </th>
                 </tr>
             {%endfor%}
@@ -238,7 +244,7 @@
         <div class="row align-items-center">
           <div class="col">
              <h4 class="mb-0"><span>BGP Neighbor Status</span>
-               <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+               <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add/Modify Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
                <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)"></span>
              </h4>
           </div>
@@ -253,6 +259,7 @@
               <th scope="col" class="text-center">AS</th>
               <th scope="col" class="text-center">Uptime</th>
               <th scope="col" class="text-center">Prefixes</th>
+              <th scope="col" class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -271,6 +278,9 @@
                   <th scope="row" class="text-center">
                     {{ i['Prefixes'] }}
                   </th>
+                 <th scope="row" class="text-center">
+                    <a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Modify Neighbor" name="bgp"  role="status" type="button" class="btn btn-link font-weight-bold"></a>
+                  </th
                 </tr>
             {%endfor%}
           {%endfor%}
