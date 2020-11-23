@@ -10,4 +10,4 @@ Jinja2~=2.11.2
 lxml~=4.5.2
 netmiko~=3.3.0
 openpyxl~=3.0.5
-setuptools~=50.3.2
+python-decouple
