@@ -15,7 +15,7 @@ def save_config_to_file(configuration):
     # Get current path and replace directory to configs folder
     configs_dir = os.path.dirname(os.path.realpath(__file__)).replace('Modules', 'configs\\')
     # Open or create file if not in directory, write and close
-    config = open(f'{configs_dir}{str(time.asctime()).replace(":", "-")}.xml', 'w')
+    config = open(f'{configs_dir}{str(time.asctime()).replace(":", "-").replace(" ", "-")}.xml', 'w')
     config.write(format_str)
     config.close()
 
