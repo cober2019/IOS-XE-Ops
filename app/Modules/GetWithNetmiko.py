@@ -98,6 +98,8 @@ def get_ospf_status(netmiko_connection):
         else:
             return 'OSPF not configured'
 
+    return neighbor_status
+
 
 def get_ospf_processes(netmiko_connection):
 
