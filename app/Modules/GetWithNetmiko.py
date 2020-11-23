@@ -1,4 +1,4 @@
-"""Helper functions to search class-map configurations"""
+"""Helper functions that get output via netmiko"""
 
 import collections
 import ipaddress
@@ -8,6 +8,8 @@ import app.base.routes as Credentials
 
 
 def send_command(netmiko_connection, command, expect_string=None):
+    """Send Netmiko commands"""
+
     netmiko_connection = netmiko_connection
     get_response = None
 
@@ -40,6 +42,7 @@ def send_command(netmiko_connection, command, expect_string=None):
 
 
 def get_device_model(netmiko_connection):
+    """Get device model"""
 
     model = None
     show_inventory = send_command(netmiko_connection, 'show inventory')
@@ -52,7 +55,7 @@ def get_device_model(netmiko_connection):
 
 
 def get_bgp_status(netmiko_connection):
-    """Using the connection object created from the netmiko_login(), get routes from device"""
+    """Gets BGF neighbor statuses"""
 
     local_as = ['Null']
     neighbor_status = collections.defaultdict(list)
@@ -73,7 +76,7 @@ def get_bgp_status(netmiko_connection):
 
 
 def get_ospf_status(netmiko_connection):
-    """Using the connection object created from the netmiko_login(), get routes from device"""
+    """Gets OSPF neighbor statuses"""
 
     neighbor_status = collections.defaultdict(list)
     ospf_summary = send_command(netmiko_connection, 'show ip ospf neighbor')
@@ -102,6 +105,7 @@ def get_ospf_status(netmiko_connection):
 
 
 def get_ospf_processes(netmiko_connection):
+    """Get OSPF processes"""
 
     processes = []
     ospf_process = send_command(netmiko_connection, 'show ip ospf | i Process')
@@ -117,7 +121,7 @@ def get_ospf_processes(netmiko_connection):
 
 
 def get_arp(netmiko_connection):
-    """Using the connection object created from the netmiko_login(), get routes from device"""
+    """Get ARP table"""
 
     arps = []
     get_arps = send_command(netmiko_connection, 'show ip arp')
@@ -138,7 +142,7 @@ def get_arp(netmiko_connection):
 
 
 def clear_counters(netmiko_connection, interface, netconf_session):
-    """Using the connection object created from the netmiko_login(), get routes from device"""
+    """Clears interface counters"""
 
     send_command(netmiko_connection, f"clear counters {interface}", expect_string="[confirm]")
     send_command(netmiko_connection, "\n", expect_string="#")
@@ -148,7 +152,7 @@ def clear_counters(netmiko_connection, interface, netconf_session):
 
 
 def clear_arp(netmiko_connection):
-    """Using the connection object created from the netmiko_login(), get routes from device"""
+    """Clears ARP table"""
 
     send_command(netmiko_connection, 'clear arp')
     send_command(netmiko_connection, 'clear arp-cache')

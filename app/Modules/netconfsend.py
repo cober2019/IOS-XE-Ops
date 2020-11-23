@@ -66,6 +66,7 @@ def save_running_config(session):
 
 
 def prepare_response(send_config):
+    """Prepares response for /routes use"""
 
     if send_config[1] == 'Connection Timeout':
         response = send_config[0]

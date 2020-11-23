@@ -1,10 +1,10 @@
-"""Helper class to create configuration using ios-xe-native YANG model"""
+"""Helper class to that builds OSPF configs"""
 
 import xml.etree.cElementTree as xml
 
 
 class Templates:
-    """Helper methods to create class-maps using YANG models"""
+    """Helper method that build OSPF configs"""
 
     def __init__(self, process):
         self.root = xml.Element("config")
