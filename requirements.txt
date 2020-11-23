@@ -2,6 +2,7 @@ flask~=1.1.2
 ipaddress~=1.0.23
 requests
 flask_migrate
+flask_login
 WTForms~=2.3.3
 SQLAlchemy~=1.3.19
 xmltodict~=0.12.0
