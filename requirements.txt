@@ -11,5 +11,4 @@ ncclient~=0.6.9
 Jinja2~=2.11.2
 lxml~=4.5.2
 netmiko~=3.3.0
-openpyxl~=3.0.5
 python-decouple
