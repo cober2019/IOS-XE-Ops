@@ -261,6 +261,6 @@ def post_ospf_neighbor():
 
 @blueprint.route('/about')
 def about():
-    """User logout"""
+    """Contact, Credits"""
 
     return render_template('about.html')
