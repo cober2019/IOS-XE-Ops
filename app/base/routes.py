@@ -199,6 +199,17 @@ def add_bgp_neighbors():
     return render_template('add_bgp_neighbor.html', local_as=local_as, prefixes=prefix_lists, route_map=route_maps)
 
 
+@blueprint.route('/add_bgp_neighbor/<neighbor>')
+def modify_bgp_neighbors(neighbor):
+    """POST BGP configuration from form data"""
+
+    prefix_lists = GetPolicies.fetch_prefix_list(netconf_session)
+    route_maps = GetPolicies.fetch_route_maps(netconf_session)
+
+    return render_template('add_bgp_neighbor.html', local_as=local_as, prefixes=prefix_lists, route_map=route_maps,
+                           neighbor=neighbor)
+
+
 @blueprint.route('/add_bgp_neighbor', methods=['POST'])
 def post_neighbor():
     """Get device Qos, render page"""

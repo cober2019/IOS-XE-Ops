@@ -1,4 +1,4 @@
-<table class="table align-items-center table-flush results" id="intTable">
+ <table class="table align-items-center table-flush results" id="intTable">
   <thead class="thead-light">
     <tr>
       <th scope="col" class="text-center">Interface</th>
@@ -8,6 +8,8 @@
       <th scope="col" class="text-center">Last Change</th>
       <th scope="col" class="text-center">InOctets</th>
       <th scope="col" class="text-center">OutOctets</th>
+      <th scope="col" class="text-center">InErrors</th>
+      <th scope="col" class="text-center">OutErrors</th>
       <th scope="col" class="text-center">MAC</th>
       <th scope="col" class="text-center">Clear</th>
     </tr>
@@ -29,7 +31,7 @@
           {{ v['Speed'] }}
         </th>
         <th scope="row" class="text-center">
-          {{ v['Last Change'] }}
+          {{ v['Last Change'].split('.')[0] }}
         </th>
         <th scope="row" class="text-center">
           {{ v['In Octets'] }}
@@ -38,10 +40,16 @@
           {{ v['Out Octets'] }}
         </th>
         <th scope="row" class="text-center">
+          {{ v['In Errors'] }}
+        </th>
+         <th scope="row" class="text-center">
+          {{ v['Out Errors'] }}
+        </th>
+         <th scope="row" class="text-center">
           {{ v['MAC'] }}
         </th>
         <th scope="row" class="text-center">
-          <input value="Clear Counters" name="{{ k }}" class="btn btn-primary btn-round-xs" type="button" onclick="clearCounters(this.name)">
+          <input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="counterButton">
         </th>
       </tr>
     {%endfor%}

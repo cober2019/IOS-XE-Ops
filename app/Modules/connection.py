@@ -17,11 +17,11 @@ def creat_netmiko_connection(username, password, host) -> object:
     try:
         device_connect = ConnectHandler(**credentials)
     except ssh_exception.AuthenticationException:
-        return "ssh_exception"
+        device_connect = "ssh_exception"
     except EOFError:
-        return "Authenitcation Error"
+        device_connect = "Authenitcation Error"
     except ssh_exception.NetmikoTimeoutException:
-        return 'Connection Timeout'
+        device_connect = 'Connection Timeout'
 
     return device_connect
 

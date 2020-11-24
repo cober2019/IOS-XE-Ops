@@ -5,6 +5,7 @@ import ipaddress
 import app.Modules.GetInterfaces as GetInterfacesInfo
 import app.Modules.connection as ConnectWith
 import app.base.routes as Credentials
+from netmiko import ConnectHandler, ssh_exception
 
 
 def send_command(netmiko_connection, command, expect_string=None):
@@ -20,7 +21,7 @@ def send_command(netmiko_connection, command, expect_string=None):
             try:
                 get_response = netmiko_connection.send_command(command_string=command)
                 break
-            except (OSError, TypeError, AttributeError):
+            except (OSError, TypeError, AttributeError, ssh_exception.NetmikoTimeoutException):
                 netmiko_connection = ConnectWith.creat_netmiko_connection(Credentials.username, Credentials.password,
                                                                           Credentials.device)
                 Credentials.netmiko_session = netmiko_connection
@@ -33,10 +34,13 @@ def send_command(netmiko_connection, command, expect_string=None):
             try:
                 get_response = netmiko_connection.send_command(command_string=command, expect_string=expect_string)
                 break
-            except (OSError, TypeError, AttributeError):
+            except (OSError, TypeError, AttributeError, ssh_exception.NetmikoTimeoutException):
                 netmiko_connection = ConnectWith.creat_netmiko_connection(Credentials.username, Credentials.password,
                                                                           Credentials.device)
                 retries += 1
+
+    if retries == 3:
+        get_response = 'Error Connecting'
 
     return get_response
 
