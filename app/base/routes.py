@@ -196,7 +196,10 @@ def add_bgp_neighbors():
     prefix_lists = GetPolicies.fetch_prefix_list(netconf_session)
     route_maps = GetPolicies.fetch_route_maps(netconf_session)
 
-    return render_template('add_bgp_neighbor.html', local_as=local_as, prefixes=prefix_lists, route_map=route_maps)
+    if local_as is None:
+        return render_template('add_bgp_neighbor.html', local_as="No_AS", prefixes=prefix_lists, route_map=route_maps)
+    else:
+        return render_template('add_bgp_neighbor.html', local_as=local_as, prefixes=prefix_lists, route_map=route_maps)
 
 
 @blueprint.route('/add_bgp_neighbor/<neighbor>')
@@ -212,7 +215,7 @@ def modify_bgp_neighbors(neighbor):
 
 @blueprint.route('/add_bgp_neighbor', methods=['POST'])
 def post_neighbor():
-    """Get device Qos, render page"""
+    """Submit BGP for configuration"""
 
     build_neighbors = Build_bgp_config.Templates(request.form.get("localAs"))
     bgp_config = build_neighbors.build_neighbor(request.form.get("neighborId"),
@@ -259,8 +262,25 @@ def post_ospf_neighbor():
         return jsonify({'data': render_template('config_failed.html', status=status)})
 
 
+@blueprint.route('/new_protocol')
+def new_protocol():
+    """Add new routing protocol to device"""
+
+    return render_template('new_protocol.html')
+
+
+@blueprint.route('/new_protocol', methods=['POST'])
+def add_new_protocol():
+    """Render routing protocol form"""
+
+    if request.form.get('protocol') == 'ospf':
+        return render_template('add_ospf_neighbor.html')
+    elif request.form.get('protocol') == 'bgp':
+        return redirect(url_for('base_blueprint.add_bgp_neighbors'))
+
+
 @blueprint.route('/about')
 def about():
-    """Contact, Credits"""
+    """User logout"""
 
     return render_template('about.html')

@@ -47,19 +47,25 @@ class Templates:
             neighbor_id = xml.SubElement(uni_neighbor, "id")
             neighbor_id.text = remote_neighbor
 
-            if policy[2].split()[1] == 'route-map':
-                route_map_elem = xml.SubElement(uni_neighbor, "route-map")
-                in_out_elem = xml.SubElement(route_map_elem, "inout")
-                in_out_elem.text = policy[1]
-                route_map_name_elem = xml.SubElement(uni_neighbor, "route-map-name")
-                route_map_name_elem.text = policy[2].split()[0]
+            try:
+                if policy[2].split()[1] == 'route-map':
+                    route_map_elem = xml.SubElement(uni_neighbor, "route-map")
+                    in_out_elem = xml.SubElement(route_map_elem, "inout")
+                    in_out_elem.text = policy[1]
+                    route_map_name_elem = xml.SubElement(uni_neighbor, "route-map-name")
+                    route_map_name_elem.text = policy[2].split()[0]
+            except IndexError:
+                pass
 
-            elif policy[2].split()[1] == 'prefix-list':
-                prefix_list_elem = xml.SubElement(uni_neighbor, "prefix-list")
-                in_out_elem = xml.SubElement(prefix_list_elem, "inout")
-                in_out_elem.text = policy[1]
-                prefix_name_elem = xml.SubElement(prefix_list_elem, "prefix-list-name")
-                prefix_name_elem.text = policy[2].split()[0]
+            try:
+                if policy[2].split()[1] == 'prefix-list':
+                    prefix_list_elem = xml.SubElement(uni_neighbor, "prefix-list")
+                    in_out_elem = xml.SubElement(prefix_list_elem, "inout")
+                    in_out_elem.text = policy[1]
+                    prefix_name_elem = xml.SubElement(prefix_list_elem, "prefix-list-name")
+                    prefix_name_elem.text = policy[2].split()[0]
+            except IndexError:
+                pass
 
             if policy[0] == 'yes':
                 soft_recon_elem = xml.SubElement(uni_neighbor, "soft-reconfiguration")

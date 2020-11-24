@@ -18,7 +18,7 @@
       <div class="card-header border-0">
         <div class="row align-items-center">
           <div class="col ">
-            <h3 class="mb-0">Add OSPF Neighbor</h3>
+            <h3 class="mb-0 text-center">OSPF Configuration</h3>
             <br/>
           </div>
         </div>
@@ -27,8 +27,7 @@
             <label class="font-weight-bold">Process</label>
              {% if not ospf_proc %}
               <div class="form-group">
-                <label>Process</label>
-                <input type="text" class="form-control" placeholder="Add Process" name="process">
+                <input type="text" class="form-control" placeholder="Process" name="process">
               </div>
              {% else %}
                 <div class="input-group mb-3">
@@ -57,6 +56,8 @@
             <br/>
           <button type="submit" class="btn btn-primary">Build Adjacency</button>
         </form>
+          <br/>
+          <br/>
           <br/>
         <div id='response'></div>
       </div>
