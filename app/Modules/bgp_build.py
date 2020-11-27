@@ -43,29 +43,33 @@ class Templates:
                 uni_neighbor = xml.SubElement(v4_unicast_elem, "neighbor")
             elif model == 'ISR':
                 uni_neighbor = xml.SubElement(ipv4_elem, "neighbor")
+            else:
+                uni_neighbor = xml.SubElement(ipv4_elem, "neighbor")
 
             neighbor_id = xml.SubElement(uni_neighbor, "id")
             neighbor_id.text = remote_neighbor
 
-            try:
-                if policy[2].split()[1] == 'route-map':
-                    route_map_elem = xml.SubElement(uni_neighbor, "route-map")
-                    in_out_elem = xml.SubElement(route_map_elem, "inout")
-                    in_out_elem.text = policy[1]
-                    route_map_name_elem = xml.SubElement(uni_neighbor, "route-map-name")
-                    route_map_name_elem.text = policy[2].split()[0]
-            except IndexError:
-                pass
+            if policy[2] != 'None':
 
-            try:
-                if policy[2].split()[1] == 'prefix-list':
-                    prefix_list_elem = xml.SubElement(uni_neighbor, "prefix-list")
-                    in_out_elem = xml.SubElement(prefix_list_elem, "inout")
-                    in_out_elem.text = policy[1]
-                    prefix_name_elem = xml.SubElement(prefix_list_elem, "prefix-list-name")
-                    prefix_name_elem.text = policy[2].split()[0]
-            except IndexError:
-                pass
+                try:
+                    if policy[2].split()[1] == 'route-map':
+                        route_map_elem = xml.SubElement(uni_neighbor, "route-map")
+                        in_out_elem = xml.SubElement(route_map_elem, "inout")
+                        in_out_elem.text = policy[1]
+                        route_map_name_elem = xml.SubElement(uni_neighbor, "route-map-name")
+                        route_map_name_elem.text = policy[2].split()[0]
+                except IndexError:
+                    pass
+
+                try:
+                    if policy[2].split()[1] == 'prefix-list':
+                        prefix_list_elem = xml.SubElement(uni_neighbor, "prefix-list")
+                        in_out_elem = xml.SubElement(prefix_list_elem, "inout")
+                        in_out_elem.text = policy[1]
+                        prefix_name_elem = xml.SubElement(prefix_list_elem, "prefix-list-name")
+                        prefix_name_elem.text = policy[2].split()[0]
+                except IndexError:
+                    pass
 
             if policy[0] == 'yes':
                 soft_recon_elem = xml.SubElement(uni_neighbor, "soft-reconfiguration")

@@ -5,7 +5,7 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0"><span>OSPF Neighbor Status</span>
-              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)"></span>
+              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)" id="ospfRefreshOnly"></span>
             </h3>
           </div>
         </div>
@@ -49,11 +49,13 @@
 <script>
 
   function refreshOspfOnly(val){
+    document.getElementById('ospfRefreshOnly').value  = 'Refreshing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': val},
       success: function(response) {
+      document.getElementById('ospfRefreshOnly').value  = 'Refresh';
           $('#ospfTableOnly').html(response.data);
       },
      });

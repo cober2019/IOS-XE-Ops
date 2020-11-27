@@ -1,0 +1,113 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0 mb-0 text-center">Interface Configuration</h3>
+            <br/>
+          </div>
+        </div>
+        <form id="interfaceForm" method="post">
+           <div class="form-group">
+               {% if interface == mgmt_int  %}
+                   <label class="font-weight-bold ">Interface
+                       <span class="badge badge-pill badge-warning">Warning: Connection Currently Using This Interface</span></label>
+                   <input value="{{ interface }}" class="form-control " placeholder="{{ interface }}" name="interface">
+               {% else%}
+                   <label class="font-weight-bold">Interface</label>
+                   <input value="{{ interface }}" class="form-control" placeholder="{{ interface }}" name="interface">
+               {% endif %}
+          </div>
+           <div class="form-group">
+            <label class="font-weight-bold">Description</label>
+            <input class="form-control" placeholder="Description" name="description" >
+          </div>
+          <div class="form-group">
+            <label class="font-weight-bold">IP Address</label>
+             <input type="text" class="form-control" placeholder="IP" name="ip">
+          </div>
+           <div class="form-group">
+            <label class="font-weight-bold">Mask</label>
+             <input type="text" class="form-control" placeholder="Mask" name="mask">
+          </div>
+          <div class="form-group">
+            <label class="font-weight-bold">Negotiation</label>
+            <div class="input-group mb-3">
+              <select class="custom-select" id="negotiate" name="negotiate">
+                <option value="true">Auto</option>
+                <option value="false">No Negotiate</option>>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="font-weight-bold">Admin Status</label>
+            <div class="input-group mb-3">
+              <select class="custom-select" id="status" name="status">
+                <option value="up">Up</option>
+                <option value="down">Down</option>>
+              </select>
+            </div>
+          </div>
+           <div class="form-group">
+            <label class="font-weight-bold">VRF</label>
+            <div class="input-group mb-3">
+              <select class="custom-select" id="vrf" name="vrf">
+                  <option selected>No-vrf</option>
+                {% for i in vrfs %}
+                  <option value="{{ i }}">{{ i }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <br/>
+          <input value="Submit" type="submit" class="btn btn-primary" id="modifyInt">
+          <br/>
+          <br/>
+        </form>
+        <div id='response'></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function(){
+    $('#interfaceForm').submit(function(){
+    document.getElementById('modifyInt').value  = 'Submitting...';
+     $.ajax({
+      url: '/modify_inteface',
+      type: 'POST',
+      data: $('form').serialize(),
+      success: function(response){
+      document.getElementById('modifyInt').value  = 'Submit';
+       $('#response').html(response.data);
+      },
+     });
+     return false;
+    });
+  });
+
+</script>
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

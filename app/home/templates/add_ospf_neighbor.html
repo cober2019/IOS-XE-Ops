@@ -53,10 +53,8 @@
             <input type="text" class="form-control" placeholder="Area" name="area">
           </div>
             <br/>
-            <br/>
-          <button type="submit" class="btn btn-primary">Build Adjacency</button>
+          <input value="Build Adjacency" type="submit" class="btn btn-primary" id="buildAdj">
         </form>
-          <br/>
           <br/>
           <br/>
         <div id='response'></div>
@@ -69,12 +67,13 @@
 
   $(document).ready(function(){
     $('#ospfForm').submit(function(){
-
+    document.getElementById('buildAdj').value  = 'Building Adjacency...';
      $.ajax({
       url: '/add_ospf_neighbor',
       type: 'POST',
       data: $('form').serialize(),
       success: function(response){
+      document.getElementById('buildAdj').value  = 'Build Adjacency';
        $('#response').html(response.data);
       },
      });

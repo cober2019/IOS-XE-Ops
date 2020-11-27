@@ -48,9 +48,12 @@
                 </select>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary">Apply Policy</button>
-            <div id="response"></div>
+            <br/>
+            <input value="Apply Policy" type="submit" class="btn btn-primary" id="applyPolicy">
           </form>
+            <br/>
+            <br/>
+          <div id="response"></div>
       </div>
     </div>
   </div>
@@ -60,11 +63,13 @@
 
   $(document).ready(function(){
     $('#qosForm').submit(function(){
+    document.getElementById('applyPolicy').value  = 'Applying Policy...';
      $.ajax({
       url: '/modify_qos',
       type: 'POST',
       data: $('form').serialize(),
       success: function(response){
+      document.getElementById('applyPolicy').value  = 'Apply Policy';
        $('#response').html(response.data);
       },
      });

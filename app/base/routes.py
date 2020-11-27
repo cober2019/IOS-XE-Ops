@@ -25,6 +25,7 @@ import app.Modules.ospf_build as Build_ospf_config
 import app.Modules.netconfsend as SendConfig
 import app.Modules.AsrListlist as GetPolicies
 import app.Modules.build_service_policy as BuildService
+import app.Modules.interface_build as BuildInterface
 import sqlite3
 import logging
 import os
@@ -40,6 +41,9 @@ service_policies = None
 qos = None
 model = None
 ospf_processes = None
+management_int = None
+unassigned_ints = None
+interface_nums = None
 
 log_dir = os.path.dirname(os.path.realpath(__file__)).replace('base', 'logs\\')
 logging.basicConfig(filename=f'{log_dir}sessionlog.log', level=logging.INFO)
@@ -107,16 +111,19 @@ def logout():
 def get_routing():
     """Gets all things routing, arp, interfaces, routing protocols"""
 
-    global get_interfaces, local_as, netconf_session
+    global get_interfaces, local_as, netconf_session, management_int, unassigned_ints, interface_nums
 
     netconf_session = ConnectWith.create_netconf_connection(username, password, device)
-    get_interfaces = GetInterfacesInfo.get_ip_interfaces(netconf_session)
+    get_interfaces = GetInterfacesInfo.get_ip_interfaces(netconf_session, device)
+    management_int = get_interfaces[1]
+    unassigned_ints = get_interfaces[2]
+    interface_nums = get_interfaces[3]
     bgp_status = GetInfo.get_bgp_status(netmiko_session)
     local_as = bgp_status[1][0]
     ospf_status = GetInfo.get_ospf_status(netmiko_session)
     arp_table = GetInfo.get_arp(netmiko_session)
 
-    return render_template('routing.html', interfaces=get_interfaces,
+    return render_template('routing.html', interfaces=get_interfaces[0],
                            bgp=bgp_status[0], ospf=ospf_status, arp=arp_table, intial='yes')
 
 
@@ -161,7 +168,7 @@ def get_qos():
     qos = GetQos.get_interfaces(netconf_session)
     service_policies = GetPolicies.fetch_service_policy(netconf_session)
 
-    return render_template('qos.html', interfaces=get_interfaces, interface_qos=qos)
+    return render_template('qos.html', interfaces=get_interfaces[0], interface_qos=qos)
 
 
 @blueprint.route('/modify_qos/<interface>')
@@ -179,7 +186,8 @@ def apply_qos():
 
     find_int_num = [i for i in request.form.get("interface") if i not in string.ascii_letters]
     find_int_type = [i for i in request.form.get("interface") if i in string.ascii_letters]
-    build_config = BuildService.build_policy(''.join(find_int_type), ''.join(find_int_num), request.form.get("direction"), request.form.get("servicePolicy"))
+    build_config = BuildService.build_policy(''.join(find_int_type), ''.join(find_int_num),
+                                             request.form.get("direction"), request.form.get("servicePolicy"))
     status = SendConfig.send_configuration(netconf_session, build_config)
 
     if status == 'Success':
@@ -279,8 +287,106 @@ def add_new_protocol():
         return redirect(url_for('base_blueprint.add_bgp_neighbors'))
 
 
+@blueprint.route('/modify_inteface/<interface>')
+def modify_inteface(interface):
+    """POST BGP configuration from form data"""
+
+    reformat_interface = interface.replace('%2f', '/')
+    vrfs = GetInfo.get_vrfs(netmiko_session)
+
+    return render_template('modify_interface.html', interface=reformat_interface, vrfs=vrfs, mgmt_int=management_int)
+
+
+@blueprint.route('/modify_inteface', methods=['POST'])
+def submit_inteface():
+    """POST interface configuration from form data"""
+    global unassigned_ints, interface_nums
+
+    ip = None
+    mask = None
+    status = None
+    descr = None
+    vrf = None
+    negotiation = None
+
+    int_num = [i for i in request.form.get("interface") if i not in string.ascii_letters]
+    int_type = [i for i in request.form.get("interface") if i in string.ascii_letters]
+    interface = BuildInterface.Templates(''.join(int_type), ''.join(int_num))
+
+    if request.form.get('ip') and request.form.get('mask'):
+        ip = request.form.get('ip')
+        mask = request.form.get('mask')
+    if request.form.get('status'):
+        status = request.form.get('status')
+    if request.form.get('description'):
+        descr = request.form.get('description')
+    if request.form.get('vrf'):
+        vrf = request.form.get('vrf')
+    if request.form.get('negotiation'):
+        negotiation = request.form.get('negotiation')
+
+    config = interface.build_interface(ip, mask, status, descr, vrf, negotiation)
+    status = SendConfig.send_configuration(netconf_session, config)
+
+    if status == 'Success':
+        show_interfaces = GetInterfacesInfo.get_ip_interfaces(netconf_session)
+        unassigned_ints = show_interfaces[2]
+        interface_nums = show_interfaces[3]
+        return jsonify({'data': render_template('interface_table.html', interfaces=show_interfaces)})
+    else:
+        return jsonify({'data': render_template('config_failed.html', status=status)})
+
+
+@blueprint.route('/new_int_form')
+def new_interface():
+    """POST BGP configuration from form data"""
+
+    vrfs = GetInfo.get_vrfs(netmiko_session)
+
+    return render_template('new_int_form.html', interfaces=unassigned_ints, vrfs=vrfs, interface_numbers=interface_nums)
+
+
+@blueprint.route('/new_int_form', methods=['POST'])
+def submit_new_inteface():
+    """POST interface configuration from form data"""
+
+    global unassigned_ints, interface_nums
+
+    ip = None
+    mask = None
+    status = None
+    descr = None
+    vrf = None
+    negotiation = None
+
+    int_num = [i for i in request.form.get("interface") if i not in string.ascii_letters]
+    int_type = [i for i in request.form.get("interface") if i in string.ascii_letters]
+    interface = BuildInterface.Templates(''.join(int_type), ''.join(int_num))
+
+    if request.form.get('ip') and request.form.get('mask'):
+        ip = request.form.get('ip')
+        mask = request.form.get('mask')
+    if request.form.get('status'):
+        status = request.form.get('status')
+    if request.form.get('description'):
+        descr = request.form.get('description')
+    if request.form.get('vrf'):
+        vrf = request.form.get('vrf')
+    if request.form.get('negotiation'):
+        negotiation = request.form.get('negotiation')
+
+    config = interface.build_interface(ip, mask, status, descr, vrf, negotiation)
+    status = SendConfig.send_configuration(netconf_session, config)
+
+    if status == 'Success':
+        show_interfaces = GetInterfacesInfo.get_single_interfaces(netconf_session, request.form.get("interface"))
+        return jsonify({'data': render_template('new_interface_table.html', interfaces=show_interfaces)})
+    else:
+        return jsonify({'data': render_template('config_failed.html', status=status)})
+
+
 @blueprint.route('/about')
 def about():
-    """User logout"""
+    """Program info"""
 
     return render_template('about.html')

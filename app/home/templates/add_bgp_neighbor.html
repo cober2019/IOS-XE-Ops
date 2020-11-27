@@ -24,7 +24,7 @@
         </div>
         <form id="bgpForm" method="post">
           <div class="form-group">
-            {% if local_as == 'No_AS'%}
+            {% if local_as != 'No_AS'%}
               <label class="font-weight-bold">Local AS</label>
               <input value="{{ local_as }}" class="form-control" placeholder="Neighbor" name="localAs" readonly="readonly">
             {% else %}
@@ -86,11 +86,11 @@
               </select>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary">Build Adjacency</button>
           <br/>
-          <br/>
-          <br/>
+          <input value="Build Adjacency" type="submit" class="btn btn-primary" id="buildAdj">
         </form>
+        <br/>
+        <br/>
         <div id='response'></div>
       </div>
     </div>
@@ -101,11 +101,13 @@
 
   $(document).ready(function(){
     $('#bgpForm').submit(function(){
+    document.getElementById('buildAdj').value  = 'Building Adjacency...';
      $.ajax({
       url: '/add_bgp_neighbor',
       type: 'POST',
       data: $('form').serialize(),
       success: function(response){
+      document.getElementById('buildAdj').value  = 'Build Adjacency';
        $('#response').html(response.data);
       },
      });

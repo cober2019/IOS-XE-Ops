@@ -58,7 +58,7 @@
                     {{ v['Out Errors'] }}
                   </th>
                   <th scope="row" class="text-center">
-                    <span><a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" style="margin-left: 15px"></a></span>
+                    <span><a href="{{ url_for('base_blueprint.modify_inteface', interface=k) }}"><input value="Modify" name=" {{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" style="margin-left: 15px"></a></span>
                   </th>
                   <th scope="row" class="text-center">
                     <input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
@@ -74,6 +74,7 @@
 
 <script>
 
+
   function clearCounters(val){
     document.getElementById(val).value  = 'Clearing...';
      $.ajax({
@@ -81,7 +82,6 @@
       type: 'POST',
       data: {'action': 'clearInt', 'interface': val},
       success: function(response) {
-      document.getElementById(val).value  = 'Clear Counters';
           $('#intTable').html(response.data);
       },
      });

@@ -58,6 +58,22 @@ def get_device_model(netmiko_connection):
     return model
 
 
+def get_vrfs(netmiko_connection):
+    """Get device model"""
+
+    vrfs = []
+    get_vrf = send_command(netmiko_connection, 'show vrf')
+
+    for i in get_vrf.splitlines():
+        try:
+            if i.rfind('Name') == -1:
+                vrfs.append(i.split()[0])
+        except IndexError:
+            pass
+
+    return vrfs
+
+
 def get_bgp_status(netmiko_connection):
     """Gets BGF neighbor statuses"""
 
@@ -152,7 +168,7 @@ def clear_counters(netmiko_connection, interface, netconf_session):
     send_command(netmiko_connection, "\n", expect_string="#")
     refresh_interfaces = GetInterfacesInfo.get_ip_interfaces(netconf_session)
 
-    return refresh_interfaces
+    return refresh_interfaces[0]
 
 
 def clear_arp(netmiko_connection):

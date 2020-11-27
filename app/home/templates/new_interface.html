@@ -1,0 +1,72 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0">Configure New Interface</h3>
+            <br/>
+          </div>
+        </div>
+        <form id="interfaceForm" method="post">
+          <div class="form-group">
+            <label class="font-weight-bold">Interface</label>
+            <div class="input-group mb-3">
+              <select class="custom-select" id="interface" name="interface">
+                  {% for i in interfaces %}
+                    <option value="{{i}}">{{ i }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Configure</button>
+          <br/>
+          <br/>
+          <br/>
+        </form>
+        <div id='response'></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(document).ready(function(){
+    $('#interfaceForm').submit(function(){
+     $.ajax({
+      url: '/new_int_form',
+      type: 'POST',
+      data: $('form').serialize(),
+      success: function(response){
+       $('#response').html(response.data);
+      },
+     });
+     return false;
+    });
+  });
+
+</script>
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

@@ -18,7 +18,9 @@
       <div class="card-header border-0">
         <div class="row align-items-center">
           <div class="col ">
-            <h3 class="mb-0">IP Interfaces</h3>
+            <h3 class="mb-0">Interfaces
+              <span><a href="{{ url_for('base_blueprint.new_interface') }}"><input value="Add Interface" name="addInterface" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+              </h3>
           </div>
         </div>
       </div>
@@ -71,11 +73,11 @@
                    <th scope="row" class="text-center">
                     {{ v['Out Errors'] }}
                   </th>
-                   <th scope="row" class="text-center">
-                    {{ v['MAC'] }}
+                  <th scope="row" class="text-center">
+                    <span><a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" style="margin-left: 15px"></a></span>
                   </th>
                   <th scope="row" class="text-center">
-                    <input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="counterButton">
+                    <input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
                   </th>
                 </tr>
               {%endfor%}
@@ -92,7 +94,7 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0"><span>ARP Table</span>
-               <span ><input value="Clear ARP" name="arp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="clearArp(this.name)"></span>
+               <span ><input value="Clear ARP" name="arp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="clearArp(this.name)" id="clearArp"></span>
             </h3>
           </div>
         </div>
@@ -146,7 +148,7 @@
           <div class="col ">
             <h3 class="mb-0"><span>BGP Neighbor Status</span>
               <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
-              <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)"></span>
+              <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgp(this.name)" id="bgpRefresh"></span>
             </h3>
           </div>
         </div>
@@ -196,7 +198,7 @@
             <div class="col ">
               <h3 class="mb-0"><span>OSPF Neighbor Status</span>
               <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
-              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)"></span>
+              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspf(this.name)" id="ospfRefresh"></span>
               </h3>
             </div>
           </div>
@@ -245,7 +247,7 @@
           <div class="col">
              <h4 class="mb-0"><span>BGP Neighbor Status</span>
                <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add/Modify Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
-               <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)"></span>
+               <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)" id="bgpRefreshOnly"></span>
              </h4>
           </div>
         </div>
@@ -298,7 +300,7 @@
           <div class="col ">
             <h3 class="mb-0"><span>OSPF Neighbor Status</span>
               <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
-              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)"></span>
+              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)" id="ospfRefreshOnly"></span>
             </h3>
           </div>
         </div>
@@ -346,7 +348,7 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0"><span>Routing Table</span>
-              <span><input value="Get Routes/Refresh" name="routingTable" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="getRouting(this.name)"></span>
+              <span><input value="Get Routes" name="routingTable" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="getRouting(this.name)" id="getRoutes"></span>
             </h3>
           </div>
         </div>
@@ -377,12 +379,15 @@
 
 <script>
 
+
   function clearCounters(val){
+    document.getElementById(val).value  = 'Clearing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': 'clearInt', 'interface': val},
       success: function(response) {
+      document.getElementById(val).value  = 'Clear Counters';
           $('#intTable').html(response.data);
       },
      });
@@ -393,11 +398,13 @@
 <script>
 
   function clearArp(val){
+    document.getElementById('clearArp').value  = 'Clearing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': val},
       success: function(response) {
+      document.getElementById('clearArp').value  = 'Clear Arp';
           $('#arpTable').html(response.data);
       },
      });
@@ -408,11 +415,13 @@
 <script>
 
   function refreshBgp(val){
+    document.getElementById('bgpRefresh').value  = 'Refreshing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': val},
       success: function(response) {
+      document.getElementById('bgpRefresh').value  = 'Refresh';
           $('#bgpNeighbors').html(response.data);
       },
      });
@@ -423,11 +432,13 @@
 <script>
 
   function refreshOspf(val){
+    document.getElementById('ospfRefresh').value  = 'Refreshing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': val},
       success: function(response) {
+      document.getElementById('ospfRefresh').value  = 'Refresh';
           $('#ospfTable').html(response.data);
       },
      });
@@ -438,11 +449,13 @@
 <script>
 
   function refreshBgpOnly(val){
+    document.getElementById('bgpRefreshOnly').value  = 'Refreshing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': val},
       success: function(response) {
+      document.getElementById('bgpRefresh').value  = 'Refresh';
           $('#bgpNeighborsOnly').html(response.data);
       },
      });
@@ -453,11 +466,13 @@
 <script>
 
   function refreshOspfOnly(val){
+    document.getElementById('ospfRefreshOnly').value  = 'Refreshing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': val},
       success: function(response) {
+      document.getElementById('ospfRefreshOnly').value  = 'Refresh';
           $('#ospfTableOnly').html(response.data);
       },
      });
@@ -468,11 +483,13 @@
 <script>
 
   function getRouting(){
+  document.getElementById('getRoutes').value  = 'Getting Routes...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': 'routes'},
       success: function(response) {
+      document.getElementById('getRoutes').value  = 'Refresh Routes...';
           $('#response').html(response.data);
       },
      });

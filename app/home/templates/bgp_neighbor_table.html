@@ -5,7 +5,7 @@
         <div class="row align-items-center">
           <div class="col">
              <h4 class="mb-0"><span>BGP Neighbor Status</span>
-               <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)"></span>
+               <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)" id="bgpRefreshOnly"></span>
              </h4>
           </div>
         </div>
@@ -49,11 +49,13 @@
 <script>
 
   function refreshBgpOnly(val){
+    document.getElementById('bgpRefreshOnly').value  = 'Refreshing...';
      $.ajax({
       url: '/routing',
       type: 'POST',
       data: {'action': val},
       success: function(response) {
+      document.getElementById('bgpRefreshOnly').value  = 'Refresh';
           $('#bgpNeighborsOnly').html(response.data);
       },
      });
