@@ -7,7 +7,7 @@
     :target: -
 .. image:: https://img.shields.io/badge/Hardware-ISR--4331-green
     :target: - 
-.. image:: https://img.shields.io/badge/Hardware-ASR--1001X%7CViewConfig%20Tested-orange
+.. image:: https://img.shields.io/badge/Hardware-ASR--1001X%7CViewConfig-green
     :target: - 
 
     
