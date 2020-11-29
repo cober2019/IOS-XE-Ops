@@ -9,6 +9,8 @@
     :target: - 
 .. image:: https://img.shields.io/badge/Hardware-ASR--1001X%7CViewConfig-green
     :target: - 
+.. image:: https://img.shields.io/badge/Hardware-CAT--3850%7CViewConfig-green
+    :target: -
 
     
 IOS-XE-Ops (Beta) 
