@@ -46,8 +46,17 @@ Features:
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearingInterface.PNG
 
-**Add Interface**
+**Add Interface:**
 
    You can add a new "logical" interface. .i.e tunnel, loopback, vlan etc.
    
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/NewInterface.PNG
+
+**ARP Table:**
+    
+    View table. Clear the table with the "Clear Arp" button. Once clicked, you will see clearing status:
+    
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ARP.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearArp.PNG
+
+
