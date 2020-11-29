@@ -99,9 +99,21 @@ Usage:
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/OSPFTables.PNG
 
 **Routing Tables:**
+---------------
 
     View the devices current routing table by clicking the "Get Routes" button. Once the routes are fetched, you can search with the search box.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/GetRoutes.PNG
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ViewRouting.PNG
 
+
+**QOS**
+---------
+
+    View and modify current QOS interface policies. If an interface has a polciy you will see '(Qos)' in blue next to the interface. You can also see the current
+    queue statistics at the below the interfaces table. If you want to modify an interface QoS, service policies will be preload into your form. Policies are available
+    via dropdown menu.
+    
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/QOS.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/QOSOutput.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/QoSfORM.PNG
