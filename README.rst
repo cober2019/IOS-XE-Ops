@@ -25,6 +25,7 @@ Features:
 -----------
 
 **View, Add, Modify interfaces:**
+---------------
 
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/interfaces.PNG
 
@@ -35,28 +36,48 @@ Features:
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/modifyInterface.PNG
 
 **Modifying Management Interface:**
+---------------
 
     If you select the interface in which you are currently using for your connection you will be warned.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/InterfaceWarning.PNG
 
 **Clearing Interfaces:**
+---------------
 
     You can also clear interface statistics with with "Clear Counters" button. Once clicked you will see "Clearing." Once cleared the button will reset.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearingInterface.PNG
 
 **Add Interface:**
+---------------
 
    You can add a new "logical" interface. .i.e tunnel, loopback, vlan etc.
    
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/NewInterface.PNG
 
 **ARP Table:**
+---------------
     
     View current ARP entries. You can also clear the table with the "Clear Arp" button. Once clicked, you will see clearing status:
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ARP.PNG
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearArp.PNG
 
+**Routing Tables:**
+---------------
+
+    Currently OSPF and BGP are the only supported routing protocols. You can view and modify neighbors. If no protocols are enabled then you won;t see
+    any tables. If you want to add a new protocol then use the "Routing" tab in the navbar
+
+**Add Protocol:**
+---------------
+
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/SelectRouintg.PNG
+    
+**BGP**
+    
+    Here you can refresh the BGP neighbor table or add/modify neighbors.
+    
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPTable.PNG
 
