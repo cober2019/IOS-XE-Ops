@@ -76,13 +76,23 @@ Features:
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/SelectRouintg.PNG
     
 **BGP**
+---------------
     
     Here you can refresh the BGP neighbor table or add/modify neighbors.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPTable.PNG
 
 **OSPF**
+---------------
     
     Here you can refresh the OSPF neighbor table or add/modify neighbors. If you see a table with no neighbors, this indicates OSPF is enabled with no estblished neighbors.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/OSPFTables.PNG
+
+**Routing Tables:**
+
+    View the devices current routing table by clicking the "Get Routes" button. Once the routes are fetched, you can search with the search box.
+    
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/GetRoutes.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ViewRouting.PNG
+
