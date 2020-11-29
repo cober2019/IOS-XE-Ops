@@ -81,3 +81,8 @@ Features:
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPTable.PNG
 
+**OSPF**
+    
+    Here you can refresh the OSPF neighbor table or add/modify neighbors. If you see a table with no neighbors, this indicates OSPF is enabled with no estblished neighbors.
+    
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/OSPFTables.PNG
