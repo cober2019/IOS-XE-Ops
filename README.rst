@@ -12,7 +12,6 @@
 .. image:: https://img.shields.io/badge/Hardware-CAT--3850%7CViewConfig-green
     :target: -
 
-    
 IOS-XE-Ops
 ======
 
@@ -21,7 +20,14 @@ IOS-XE-Ops
     Docker Commands:
         - docker pull cober2019/ios_xe_ops:ops_01
         - docker run -p 5000:5000  -d cober2019/ios_xe_ops:ops_01
-    
+
+**Contributions**
+----------------
+
+    - If you do use this program PLEASE report any issues to the issues section of my repo.
+    - If you want to see any features PLEASE request
+    - If you want to contribute and have access to IOS-XE device PLEASE reach out to me via LinkedIn or Email, https://www.linkedin.com/in/chris-oberdalhoff-43292b56/,         cober91130@gmail.com
+        
 Known Issues:
 ----------
  
