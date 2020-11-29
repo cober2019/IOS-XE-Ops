@@ -54,7 +54,7 @@ Features:
 
 **ARP Table:**
     
-    View table. Clear the table with the "Clear Arp" button. Once clicked, you will see clearing status:
+    View current ARP entries. You can also clear the table with the "Clear Arp" button. Once clicked, you will see clearing status:
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ARP.PNG
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearArp.PNG
