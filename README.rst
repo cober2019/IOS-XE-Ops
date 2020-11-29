@@ -87,16 +87,21 @@ Usage:
 **BGP**
 ---------------
     
-    Here you can refresh the BGP neighbor table or add/modify neighbors.
+    Here you can refresh the BGP neighbor table or add/modify neighbors. If you select modify neighbor a for will load with the current AS and neighbor IP
+    that you want to modify.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPTable.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPNeighborModify.PNG
+
 
 **OSPF**
 ---------------
     
     Here you can refresh the OSPF neighbor table or add/modify neighbors. If you see a table with no neighbors, this indicates OSPF is enabled with no estblished neighbors.
+    When Adding neighbors/networks, OSPF Proccesses are preloaded in the form.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/OSPFTables.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/OSPFProcess.PNG
 
 **Routing Tables:**
 ---------------
