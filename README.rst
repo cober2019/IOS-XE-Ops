@@ -13,7 +13,7 @@
     :target: -
 
     
-IOS-XE-Ops (Beta) 
+IOS-XE-Ops
 ======
 
     Docker Link:
