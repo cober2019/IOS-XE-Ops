@@ -24,6 +24,13 @@ Known Issues:
 Usage:
 =========
 
+**Logging In**
+---------------
+
+    - When logging in the main page may take some time to load. This usually depends on how many interfaces are on the device. Reason, there is no database
+      so all information is collected in real time.
+    
+    
 **Session Logging:**
 ---------------
 
