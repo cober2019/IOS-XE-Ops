@@ -28,3 +28,26 @@ Features:
 
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/interfaces.PNG
 
+**Modify Interface:**
+
+    When modifying the interface field will be preloaded. Modification options show below. If you don't want to change a setting, dont modify the input box
+
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/modifyInterface.PNG
+
+**Modifying Management Interface:**
+
+    If you select the interface in which you are currently using for your connection you will be warned.
+    
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/InterfaceWarning.PNG
+
+**Clearing Interface:**
+
+    You can also clear interface statistics with with "Clear Counters" button. Once clicked you will see "Clearing." Once cleared the button will reset.
+    
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearingInterface.PNG
+
+**Add Interface**
+
+   You can add a new "logical" interface. .i.e tunnel, loopback, vlan etc.
+   
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/NewInterface.PNG
