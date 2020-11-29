@@ -5,8 +5,6 @@
     :target: -
 .. image:: https://img.shields.io/badge/IOS--XE-required-blue
     :target: -
-.. image:: .. image:: https://img.shields.io/docker/build/cober2019/ios_xe_ops   :alt: Docker Build Status
-    :target: -
 
     
 IOS-XE-Ops (Beta) 
