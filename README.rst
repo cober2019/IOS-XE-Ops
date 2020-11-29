@@ -28,6 +28,7 @@ Usage:
 ---------------
 
     - All session output is stored in the local program directory, app/logs
+    
 **Configs:**
 ---------------
 
@@ -84,17 +85,18 @@ Usage:
 
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/SelectRouintg.PNG
     
-**BGP**
+**BGP:**
 ---------------
     
-    Here you can refresh the BGP neighbor table or add/modify neighbors. If you select modify neighbor a for will load with the current AS and neighbor IP
-    that you want to modify.
+    Here you can refresh the BGP neighbor table or add/modify neighbors. If you select modify neighbor a form will load with the current AS and neighbor IP
+    that you want to modify. Adding a neighbor is the same except the neighbor field will be blank.
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPTable.PNG
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPNeighborModify.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/AddBGPNeighbor.PNG
 
 
-**OSPF**
+**OSPF:**
 ---------------
     
     Here you can refresh the OSPF neighbor table or add/modify neighbors. If you see a table with no neighbors, this indicates OSPF is enabled with no estblished neighbors.
