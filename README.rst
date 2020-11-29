@@ -20,4 +20,11 @@ Known Issues:
 ----------
  
   + Code Version Fuji Version 16.7.2 (ISR 4331): Device rebooting when applying QoS policy to Gig Interface
+  
+Features:
+-----------
+
+**View, Add, Modify interfaces:**
+
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/interfaces.PNG
 
