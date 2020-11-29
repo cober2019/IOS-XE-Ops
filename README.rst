@@ -21,8 +21,17 @@ Known Issues:
  
   + Code Version Fuji Version 16.7.2 (ISR 4331): Device rebooting when applying QoS policy to Gig Interface
   
-Features:
------------
+Usage:
+=========
+
+**Session Logging:**
+---------------
+
+    - All session output is stored in the local program directory, app/logs
+**Configs:**
+---------------
+
+    - All configs whether pass or fail are stored in the local program directory, app/configs
 
 **View, Add, Modify interfaces:**
 ---------------
