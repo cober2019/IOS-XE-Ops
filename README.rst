@@ -40,7 +40,7 @@ Features:
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/InterfaceWarning.PNG
 
-**Clearing Interface:**
+**Clearing Interfaces:**
 
     You can also clear interface statistics with with "Clear Counters" button. Once clicked you will see "Clearing." Once cleared the button will reset.
     
