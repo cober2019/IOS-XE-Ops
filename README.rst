@@ -29,8 +29,8 @@ IOS-XE-Ops
     - If you want to see any features PLEASE request
     - If you want to contribute and have access to IOS-XE device PLEASE reach out to me via LinkedIn or Email, https://www.linkedin.com/in/chris-oberdalhoff-43292b56/,         cober91130@gmail.com
         
-Known Issues:
--------------
+**Known Issues:**
+-----------------
  
   + Code Version Fuji Version 16.7.2 (ISR 4331): Device rebooting when applying QoS policy to Gig Interface
   
