@@ -12,7 +12,7 @@
 .. image:: https://img.shields.io/badge/Hardware-CAT--3850%7CViewConfig-green
     :target: -
 .. image:: https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg
-    :target: - 
+    :target: https://developer.cisco.com/codeexchange/github/repo/cober2019/IOS-XE-Ops
 
 IOS-XE-Ops
 ===========
