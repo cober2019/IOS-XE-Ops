@@ -1,76 +1,65 @@
-<div class="row">
-  <div class="col-xl-12">
-    <div class="card">
-      <div class="card-header border-0">
-        <div class="row align-items-center">
-          <div class="col ">
-            <h3 class="mb-0">IP Interfaces</h3>
-          </div>
-        </div>
-      </div>
-        <div class="table-responsive">
-          <span class="counter pull-right"></span>
-          <table class="table align-items-center table-flush results" id="intTable">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col" class="text-center">Interface</th>
-                <th scope="col" class="text-center">IP</th>
-                <th scope="col" class="text-center">Admin/Operational</th>
-                <th scope="col" class="text-center">Speed</th>
-                <th scope="col" class="text-center">Last Change</th>
-                <th scope="col" class="text-center">InOctets</th>
-                <th scope="col" class="text-center">OutOctets</th>
-                <th scope="col" class="text-center">InErrors</th>
-                <th scope="col" class="text-center">OutErrors</th>
-                <th scope="col" class="text-center">MAC</th>
-                <th scope="col" class="text-center">Clear</th>
-              </tr>
-            </thead>
-            <tbody>
-            {% for i in interfaces %}
-              {% for k, v in i.items() %}
-                <tr style="height:1px">
-                  <th scope="row" class="text-center">
-                    {{ k }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    {{ v['IP'] }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    {{ v['Admin'] }}/{{ v['Operational'] }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    {{ v['Speed'] }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    {{ v['Last Change'].split('.')[0] }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    {{ v['In Octets'] }}
-                  </th>
-                   <th scope="row" class="text-center">
-                    {{ v['Out Octets'] }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    {{ v['In Errors'] }}
-                  </th>
-                   <th scope="row" class="text-center">
-                    {{ v['Out Errors'] }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    <span><a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" style="margin-left: 15px"></a></span>
-                  </th>
-                  <th scope="row" class="text-center">
-                    <input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
-                  </th>
-                </tr>
-              {%endfor%}
-            {%endfor%}
-          </table>
-        </div>
-      </div>
-  </div>
+
+<div class="table-responsive">
+  <span class="counter pull-right"></span>
+  <table class="table align-items-center table-flush results" id="intTable">
+	<thead class="thead-light">
+	  <tr>
+		<th scope="col" class="text-center">Interface</th>
+		<th scope="col" class="text-center">IP</th>
+		<th scope="col" class="text-center">Admin/Operational</th>
+		<th scope="col" class="text-center">Speed</th>
+		<th scope="col" class="text-center">Last Change</th>
+		<th scope="col" class="text-center">InOctets</th>
+		<th scope="col" class="text-center">OutOctets</th>
+		<th scope="col" class="text-center">InErrors</th>
+		<th scope="col" class="text-center">OutErrors</th>
+		<th scope="col" class="text-center">MAC</th>
+		<th scope="col" class="text-center">Clear</th>
+	  </tr>
+	</thead>
+	<tbody>
+	{% for i in interfaces %}
+	  {% for k, v in i.items() %}
+		<tr style="height:1px">
+		  <th scope="row" class="text-center">
+			{{ k }}
+		  </th>
+		  <th scope="row" class="text-center">
+			{{ v['IP'] }}
+		  </th>
+		  <th scope="row" class="text-center">
+			{{ v['Admin'] }}/{{ v['Operational'] }}
+		  </th>
+		  <th scope="row" class="text-center">
+			{{ v['Speed'] }}
+		  </th>
+		  <th scope="row" class="text-center">
+			{{ v['Last Change'].split('.')[0] }}
+		  </th>
+		  <th scope="row" class="text-center">
+			{{ v['In Octets'] }}
+		  </th>
+		   <th scope="row" class="text-center">
+			{{ v['Out Octets'] }}
+		  </th>
+		  <th scope="row" class="text-center">
+			{{ v['In Errors'] }}
+		  </th>
+		   <th scope="row" class="text-center">
+			{{ v['Out Errors'] }}
+		  </th>
+		  <th scope="row" class="text-center">
+			<span><a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" style="margin-left: 15px"></a></span>
+		  </th>
+		  <th scope="row" class="text-center">
+			<input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
+		  </th>
+		</tr>
+	  {%endfor%}
+	{%endfor%}
+  </table>
 </div>
+
 
 <script>
 
