@@ -116,12 +116,8 @@ def get_ospf_status(netmiko_connection):
             neighbor_status['neighbor'].append(
                 {"NeighborID": 'No Established Neighbors', 'State': '', 'Address': '',
                  'Interface': ''})
-
-            return neighbor_status
         else:
-            return neighbor_status['neighbor'].append(
-                {"NeighborID": 'No Established Neighbors', 'State': '', 'Address': '',
-                 'Interface': ''})
+            neighbor_status = {}
 
     return neighbor_status
 
