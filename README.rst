@@ -18,10 +18,10 @@ IOS-XE-Ops
 ===========
 
     Docker Link:
-        - https://hub.docker.com/r/cober2019/ios_xe_ops: 
+        - https://hub.docker.com/r/cober2019/ios_xe_ops_v1.2 
     Docker Commands:
-        - docker pull cober2019/ios_xe_ops:ops_01
-        - docker run -p 5000:5000  -d cober2019/ios_xe_ops:ops_01
+        - docker pull cober2019/ios_xe_ops_v1.2
+        - docker run -p 5000:5000  -d cober2019/ios_xe_ops_v1.2:version1.2
 
 **Contributions**
 ------------------
