@@ -32,8 +32,6 @@ class Templates:
         if admin == 'down':
             xml.SubElement(self.interface_type, "shutdown")
         elif admin == 'up':
-            pass
-        else:
             xml.SubElement(self.interface_type, "shutdown operation=\"delete\"")
         if descr is not None:
             description = xml.SubElement(self.interface_type, "description")
