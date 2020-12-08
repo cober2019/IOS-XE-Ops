@@ -332,7 +332,7 @@ def submit_inteface():
         show_interfaces = GetInterfacesInfo.get_ip_interfaces(netconf_session)
         unassigned_ints = show_interfaces[2]
         interface_nums = show_interfaces[3]
-        return jsonify({'data': render_template('interface_table.html', interfaces=show_interfaces)})
+        return jsonify({'data': render_template('interface_table.html', interfaces=show_interfaces[0])})
     else:
         return jsonify({'data': render_template('config_failed.html', status=status)})
 
