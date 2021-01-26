@@ -57,45 +57,7 @@ Usage:
 
     - All configs whether pass or fail are stored in the local program directory, app/configs as XML files
 
-**View, Add, Modify interfaces:**
----------------------------------
 
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/Interfaceiosxeops.PNG
-
-**Modify Interface:**
-
-    When modifying the selected interface field will be preloaded. Leave no desired option in there current state.
-    
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/modifyInterface.PNG
-
-**Modifying Management Interface:**
------------------------------------
-
-    If you select the interface in which you are currently using for your connection you will be warned.
-    
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/InterfaceWarning.PNG
-
-**Clearing Interfaces:**
-------------------------
-
-    Clear interface statistics with with "Clear Counters" button. Once clicked you will see "Clearing." Once cleared the button will reset.
-    
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearingInterface.PNG
-
-**Add Interface:**
--------------------
-
-   You can add a new "logical" interfaces. .i.e tunnel, loopback, vlan etc.
-   
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/NewInterface.PNG
-
-**ARP Table:**
----------------
-    
-    View current ARP entries. You can also clear the table with the "Clear Arp" button. Once clicked, you will see clearing status:
-    
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ARP.PNG
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ClearArp.PNG
 
 **Routing Tables:**
 -------------------
@@ -107,23 +69,7 @@ Usage:
 ------------------
 
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/SelectRouintg.PNG
-    
-**BGP:**
----------------
-    
-    Refresh the BGP neighbor table or add/modify neighbors. 
-    
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPTable.PNG
 
-
-**OSPF:**
----------------
-    
-    Refresh OSPF neighbor table or add/modify neighbors. If you see a table with no neighbors, this indicates OSPF is enabled with no estblished neighbors.
-    When Adding neighbors/networks, OSPF Proccesses are preloaded in the form.
-    
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/OSPFTables.PNG
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/OSPFProcess.PNG
 
 **Routing Tables:**
 --------------------
