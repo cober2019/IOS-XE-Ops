@@ -14,7 +14,7 @@
 .. image:: https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg
     :target: https://developer.cisco.com/codeexchange/github/repo/cober2019/IOS-XE-Ops
 
-IOS-XE-Ops - Currently Updating Repo!!!
+IOS-XE-Ops
 ===========
 
     Docker Link:
