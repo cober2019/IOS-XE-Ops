@@ -22,6 +22,7 @@ IOS-XE-Ops
         - Apply service policies
         - Clear ARP table
         - Refresh Tables
+        - Ping utility. Source ping from selected interfaces
     
     
 **Known Issues:**
