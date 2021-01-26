@@ -33,6 +33,8 @@ import os
 device = None
 username = None
 password = None
+netconf_port = None
+ssh_port = None
 netconf_session = None
 netmiko_session = None
 get_interfaces = None
@@ -56,7 +58,7 @@ def route_default():
 
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    global device, username, password, netconf_session, netmiko_session, model
+    global device, username, password, netconf_session, netmiko_session, model, netconf_port, ssh_port
 
     login_form = LoginForm(request.form)
     if 'login' in request.form:
@@ -64,14 +66,22 @@ def login():
         device = request.form['device']
         username = request.form['username']
         password = request.form['password']
+        netconf_port = request.form['netconf']
+        ssh_port = request.form['ssh']
+
+        if not netconf_port:
+            netconf_port = 830
+        if not ssh_port:
+            ssh_port = 22
 
         if device and username and password:
 
             # Attempt to create connection objects. Must have both to get to homepage
             netconf_session = ConnectWith.create_netconf_connection(request.form['username'], request.form['password'],
-                                                                    request.form['device'])
+                                                                    request.form['device'], netconf_port)
             netmiko_session = ConnectWith.creat_netmiko_connection(request.form['username'], request.form['password'],
-                                                                   request.form['device'])
+                                                                   request.form['device'], ssh_port)
+
             model = GetInfo.get_device_model(netmiko_session)
 
             # Using netmiko and ncclient for connections, verify that both pass. If one fails, return to login
@@ -113,7 +123,6 @@ def get_routing():
 
     global get_interfaces, local_as, netconf_session, management_int, unassigned_ints, interface_nums
 
-    netconf_session = ConnectWith.create_netconf_connection(username, password, device)
     get_interfaces = GetInterfacesInfo.get_ip_interfaces(netconf_session, device)
     management_int = get_interfaces[1]
     unassigned_ints = get_interfaces[2]
@@ -149,13 +158,40 @@ def table_refresh():
     elif action == 'routes':
 
         # ReAuth and get IOS-XE routing table
-        routing_session = ConnectWith.creat_netmiko_connection(username, password, device)
+        routing_session = ConnectWith.creat_netmiko_connection(username, password, device, ssh_port)
         mydb = sqlite3.connect("app/Modules/ProjectRouting/Database/Routing")
         cursor = mydb.cursor()
         db_obj = DB.RoutingDatabase(mydb, cursor)
         IOSXE.RoutingIos(routing_session, db_obj, mydb, cursor)
 
         return jsonify({'data': render_template('get_routing.html', route_table=Db_queries.view_routes_ios(cursor))})
+
+@blueprint.route('/int_details', methods=['POST'])
+def interface_details():
+    """Used for table refreshes"""
+
+    int_details = GetInfo.more_int_details(netmiko_session, request.form.get('details'))
+
+    return render_template('more_int_detials.html', details=int_details)
+
+@blueprint.route('/qos_details', methods=['POST'])
+def qos_interface_details():
+    """Used for table refreshes"""
+
+    print(request.form.get('details'))
+    qos_details = GetInfo.more_qos_details(netmiko_session, request.form.get('details'))
+
+    return render_template('more_qos_detials.html', details=qos_details)
+
+@blueprint.route('/route_details', methods=['POST'])
+def route_details():
+    """Used for table refreshes"""
+
+    details = request.form.get('details').split('-')
+    route_details = GetInfo.get_route_detials(netmiko_session, details[0].split('/')[0], details[1])
+
+
+    return render_template('route_detials.html', route=route_details[0], route_detials=route_details[1])
 
 
 @blueprint.route('/qos')
@@ -164,7 +200,7 @@ def get_qos():
 
     global service_policies, qos, netconf_session
 
-    netconf_session = ConnectWith.create_netconf_connection(username, password, device)
+    netconf_session = ConnectWith.create_netconf_connection(username, password, device, netconf_port)
     qos = GetQos.get_interfaces(netconf_session)
     service_policies = GetPolicies.fetch_service_policy(netconf_session)
 
@@ -204,6 +240,7 @@ def add_bgp_neighbors():
     prefix_lists = GetPolicies.fetch_prefix_list(netconf_session)
     route_maps = GetPolicies.fetch_route_maps(netconf_session)
 
+
     if local_as is None:
         return render_template('add_bgp_neighbor.html', local_as="No_AS", prefixes=prefix_lists, route_map=route_maps)
     else:
@@ -225,14 +262,15 @@ def modify_bgp_neighbors(neighbor):
 def post_neighbor():
     """Submit BGP for configuration"""
 
+    check_for_addr_fam = GetInfo.check_for_addr_family(netmiko_session)
     build_neighbors = Build_bgp_config.Templates(request.form.get("localAs"))
-    bgp_config = build_neighbors.build_neighbor(request.form.get("neighborId"),
+    bgp_config = build_neighbors.build_neighbor(check_for_addr_fam, request.form.get("neighborId"),
                                                 request.form.get("remoteAs"),
                                                 model,
-                                                policy=[request.form.get("softReconfig"),
-                                                        request.form.get("direction"),
-                                                        request.form.get("policy"),
-                                                        request.form.get("nextHop")])
+                                                request.form.get("softReconfig"),
+                                                request.form.get("nextHop"),
+                                                policy=[request.form.get("direction"),
+                                                        request.form.get("policy")])
     status = SendConfig.send_configuration(netconf_session, bgp_config)
 
     if status == 'Success':
@@ -318,6 +356,7 @@ def submit_inteface():
         mask = request.form.get('mask')
     if request.form.get('status'):
         status = request.form.get('status')
+        print(status)
     if request.form.get('description'):
         descr = request.form.get('description')
     if request.form.get('vrf'):
@@ -384,6 +423,28 @@ def submit_new_inteface():
     else:
         return jsonify({'data': render_template('config_failed.html', status=status)})
 
+
+@blueprint.route('/ping/<source>')
+def ping(source):
+    """Render OSPF configuration/Form"""
+
+    reformat_interface = source.replace('%2f', '/')
+    vrfs = GetInfo.get_vrfs(netmiko_session)
+
+    return render_template('ping.html', source=reformat_interface, vrfs=vrfs)
+
+
+@blueprint.route('/ping_status', methods=['POST'])
+def submit_ping():
+    """Render OSPF configuration/Form"""
+
+    if request.form.get('vrf') == 'none':
+        ping = GetInfo.send_ping(netmiko_session, request.form.get('dest'), request.form.get('source'), request.form.get('count'))
+    else:
+        ping = GetInfo.send_ping(netmiko_session, request.form.get('dest'), request.form.get('source'), request.form.get('count'),
+                                 vrf=request.form.get('vrf'))
+
+    return jsonify({'data': render_template('ping_status.html', results=ping)})
 
 @blueprint.route('/about')
 def about():
