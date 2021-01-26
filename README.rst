@@ -55,15 +55,10 @@ Usage:
 
     - All configs whether pass or fail are stored in the local program directory, app/configs as XML files
 
-**Add, Modify interfaces:**
+**View, Add, Modify interfaces:**
 ---------------------------------
 
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/Interfaceiosxeops.PNG
-
-**View Interfaces Details (Popup):**
--------------------------------------
-
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/xeopsinterfacesdetails.PNG
 
 **Modify Interface:**
 
@@ -133,8 +128,7 @@ Usage:
 
     View the device's current routing table by clicking the "Get Routes". Once the routes are fetched, you can search with the search box and refresh routes.
     
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/GetRoutes.PNG
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/ViewRouting.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/iosxeroutetable.PNG
 
 
 **QOS**
