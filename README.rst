@@ -23,7 +23,7 @@ IOS-XE-Ops
         - Clear ARP table
         - Refresh Tables
     
-    **Popups are required for some features so please ensure your browser isn't blocking them
+    **Popups are required for some features so please ensure your browser isn't blocking them**
     
 **Known Issues:**
 -----------------
