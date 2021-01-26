@@ -5,12 +5,6 @@
     :target: -
 .. image:: https://img.shields.io/badge/IOS--XE-required-blue
     :target: -
-.. image:: https://img.shields.io/badge/Hardware-ISR--4331X%7CView&Configure-green
-    :target: - 
-.. image:: https://img.shields.io/badge/Hardware-ASR--1001X%7CViewConfig-green
-    :target: - 
-.. image:: https://img.shields.io/badge/Hardware-CAT--3850%7CViewConfig-green
-    :target: -
 .. image:: https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg
     :target: https://developer.cisco.com/codeexchange/github/repo/cober2019/IOS-XE-Ops
 
