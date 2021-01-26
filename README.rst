@@ -58,7 +58,7 @@ Usage:
 **View, Add, Modify interfaces:**
 ---------------------------------
 
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/interfaces.PNG
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/Interfaceiosxeops.PNG
 
 **Modify Interface:**
 
