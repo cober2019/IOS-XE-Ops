@@ -32,7 +32,7 @@ IOS-XE-Ops
 Usage:
 =========
 
-**Popups are required for some features so please ensure your browser isn't blocking them**
+**!Popups are required for some features so please ensure your browser isn't blocking them!**
 
 **Logging In:**
 ----------------
