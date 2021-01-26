@@ -109,11 +109,9 @@ Usage:
 **BGP:**
 ---------------
     
-    Refresh the BGP neighbor table or add/modify neighbors. If you select modify neighbor the form will be loaded with the current AS and select neighbor. Adding a neighbor is       the same except the neighbor field will be blank.
+    Refresh the BGP neighbor table or add/modify neighbors. 
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPTable.PNG
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/BGPNeighborModify.PNG
-.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/AddBGPNeighbor.PNG
 
 
 **OSPF:**
