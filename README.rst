@@ -24,13 +24,6 @@ IOS-XE-Ops
         - docker run -p 5000:5000  -d cober2019/ios_xe_ops:version1.3
     Devnet Sandox:
         - Custom ports have been added to login for Cisco Devnet Sandbox usage
-
-**Contributions**
-------------------
-
-    - If you do use this program PLEASE report any issues to the issues section of my repo.
-    - If you want to see any features PLEASE request
-    - If you want to contribute and have access to IOS-XE device PLEASE reach out to me via LinkedIn or Email, https://www.linkedin.com/in/chris-oberdalhoff-43292b56/,         cober91130@gmail.com
         
 **Known Issues:**
 -----------------
