@@ -23,7 +23,7 @@ IOS-XE-Ops - Currently Updating Repo!!!
         - docker pull docker pull cober2019/ios_xe_ops:version1.3
         - docker run -p 5000:5000  -d cober2019/ios_xe_ops:version1.3
     Devnet Sandox:
-        - Custom Port have been added to login for Cisco Devnet Sandbox usage
+        - Custom ports have been added to login for Cisco Devnet Sandbox usage
 
 **Contributions**
 ------------------
