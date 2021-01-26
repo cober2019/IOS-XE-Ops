@@ -20,6 +20,8 @@ IOS-XE-Ops
         - Routing neighbors (BGP & OSPF)
         - Configure/Modify interfaces
         - Apply service policies
+        - Clear ARP table
+        - Refresh Tables
     
         
 **Known Issues:**
