@@ -55,10 +55,15 @@ Usage:
 
     - All configs whether pass or fail are stored in the local program directory, app/configs as XML files
 
-**View, Add, Modify interfaces:**
+**Add, Modify interfaces:**
 ---------------------------------
 
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/Interfaceiosxeops.PNG
+
+**View Interfaces Details (Popup):**
+-------------------------------------
+
+.. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/xeopsinterfacesdetails.PNG
 
 **Modify Interface:**
 
