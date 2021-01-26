@@ -11,13 +11,16 @@
 IOS-XE-Ops
 ===========
 
-    Docker Link:
-        - https://hub.docker.com/r/cober2019/ios_xe_ops
-    Docker Commands:
-        - docker pull docker pull cober2019/ios_xe_ops:version1.3
-        - docker run -p 5000:5000  -d cober2019/ios_xe_ops:version1.3
-    Devnet Sandox:
-        - Custom ports have been added to login for Cisco Devnet Sandbox usage
+    **IOS-XE-Ops is designed to give you a summary view of your device. These features include:**
+    
+        - Interfaces details both from a cli view and a custom flask view
+        - Full routing tables plus a cli view from the table and database perspective
+        - Interfaces qos plus a cli view of you current queueing stats
+        - Arp table
+        - Routing neighbors (BGP & OSPF)
+        - Configure/Modify interfaces
+        - Apply service policies
+    
         
 **Known Issues:**
 -----------------
