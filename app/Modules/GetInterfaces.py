@@ -77,13 +77,13 @@ def get_stats(netconf_session, interface):
         converted_config = int_status["interfaces-state"]["interface"]
 
     except manager.operations.errors.TimeoutExpiredError as error:
-        converted_config = [error, 'Connection Timeout', 'error']
+        converted_config = ['error', 'Connection Timeout',error]
     except AttributeError as error:
-        converted_config = [error, 'Session Expired', 'error']
+        converted_config = ['error', 'Session Expired', error]
     except manager.transport.TransportError as error:
-        converted_config = [error, 'Transport Error', 'error']
+        converted_config = ['error', 'Transport Error', error]
     except manager.operations.rpc.RPCError as error:
-        converted_config = [error, 'Configuration Failed', 'error']
+        converted_config = ['error', 'Configuration Failed', error]
 
     return converted_config
 

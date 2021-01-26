@@ -21,16 +21,17 @@ class Templates:
         self.bgp_as = xml.SubElement(self.bgp_elem, 'id')
         self.bgp_as.text = local_as
 
-    def build_neighbor(self, remote_neighbor, neighbor_as, model, policy=None):
+    def build_neighbor(self, addr_fam, remote_neighbor, neighbor_as, model, soft_reconf=None, next_hop=None, policy=None):
         """Build BGP neighbor policy"""
 
+        print(addr_fam)
         neighbor = xml.SubElement(self.bgp_elem, "neighbor")
         neighbor_id = xml.SubElement(neighbor, "id")
         neighbor_id.text = remote_neighbor
         remote_as = xml.SubElement(neighbor, "remote-as")
         remote_as.text = neighbor_as
 
-        if policy and policy is not None:
+        if policy is not None:
 
             address_family_elem = xml.SubElement(self.bgp_elem, "address-family")
             vrf_elem = xml.SubElement(address_family_elem, "no-vrf")
@@ -41,7 +42,7 @@ class Templates:
             if model == 'ASR':
                 v4_unicast_elem = xml.SubElement(v4_unicast, "ipv4-unicast")
                 uni_neighbor = xml.SubElement(v4_unicast_elem, "neighbor")
-            elif model == 'ISR':
+            elif model == 'ISR' or model == 'CSR':
                 uni_neighbor = xml.SubElement(ipv4_elem, "neighbor")
             else:
                 uni_neighbor = xml.SubElement(ipv4_elem, "neighbor")
@@ -49,7 +50,7 @@ class Templates:
             neighbor_id = xml.SubElement(uni_neighbor, "id")
             neighbor_id.text = remote_neighbor
 
-            if policy[2] != 'None':
+            if policy[1] != 'None':
 
                 try:
                     if policy[2].split()[1] == 'route-map':
@@ -71,10 +72,10 @@ class Templates:
                 except IndexError:
                     pass
 
-            if policy[0] == 'yes':
-                soft_recon_elem = xml.SubElement(uni_neighbor, "soft-reconfiguration")
-                soft_recon_elem.text = 'inbound'
-            if policy[3] == 'yes':
-                xml.SubElement(uni_neighbor, "next-hop-self")
+        if soft_reconf is not None:
+            soft_recon_elem = xml.SubElement(uni_neighbor, "soft-reconfiguration")
+            soft_recon_elem.text = 'inbound'
+        if policy is not None:
+            xml.SubElement(uni_neighbor, "next-hop-self")
 
         return self.root

@@ -4,7 +4,7 @@ from netmiko import ConnectHandler, ssh_exception
 from ncclient import manager
 
 
-def creat_netmiko_connection(username, password, host) -> object:
+def creat_netmiko_connection(username, password, host, port) -> object:
     """Logs into device and returns a connection object to the caller. """
 
     credentials = {
@@ -12,6 +12,7 @@ def creat_netmiko_connection(username, password, host) -> object:
         'host': host,
         'username': username,
         'password': password,
+        'port': port,
         'session_log': 'my_file.out'}
 
     try:
@@ -49,12 +50,12 @@ def netmiko_w_enable(host: str = None, username: str = None, password: str = Non
         pass
 
 
-def create_netconf_connection(username, password, host) -> manager:
+def create_netconf_connection(username, password, host, port) -> manager:
     """Creates NETCONF Session"""
 
     try:
 
-        netconf_session = manager.connect(host=host, port=830, username=username,
+        netconf_session = manager.connect(host=host, port=port, username=username,
                                           password=password,
                                           device_params={'name': 'csr'})
     except manager.operations.errors.TimeoutExpiredError as error:

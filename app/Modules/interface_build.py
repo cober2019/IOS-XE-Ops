@@ -20,6 +20,7 @@ class Templates:
         self.interface_name.text = name
 
     def build_interface(self, host, subnet, admin, descr, vrf, negotiation):
+        print(admin)
 
         if host is not None:
             ip_elem = xml.SubElement(self.interface_type, "ip")
@@ -29,17 +30,23 @@ class Templates:
             address.text = host
             mask = xml.SubElement(primary_ele, "mask")
             mask.text = subnet
+
         if admin == 'down':
             xml.SubElement(self.interface_type, "shutdown")
-        elif admin == 'up':
+        elif admin == 'no shutdown':
             xml.SubElement(self.interface_type, "shutdown operation=\"delete\"")
+        elif admin == 'up':
+            pass
+
         if descr is not None:
             description = xml.SubElement(self.interface_type, "description")
             description.text = descr
+
         if vrf != 'No-vrf':
             vrf_ele = xml.SubElement(self.interface_type, "vrf")
             forward = xml.SubElement(vrf_ele, "forwarding")
             forward.text = vrf
+
         if negotiation is not None:
             negotiation_elem = xml.SubElement(self.interface_type, "negotiation")
             negotiation_elem.set("xmlns", "http://cisco.com/ns/yang/Cisco-IOS-XE-ethernet")
