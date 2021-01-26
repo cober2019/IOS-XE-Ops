@@ -74,12 +74,12 @@
                   {% if k in interface_qos %}
                     <th scope="row" class="text-center">
                       <span><a href="{{ url_for('base_blueprint.configure_qos', interface=k.replace('/', '%2f')) }}">
-                      <input value="Change Qos" name="{{ k }}" class="btn btn-primary btn-round-xs" role="status" type="button"></a></span>
+                      <input value="Change Qos" name="{{ k }}" class="btn btn-link" role="status" type="button" style="font-size:11px"></a></span>
                     </th>
                   {% else %}
                     <th scope="row" class="text-center">
                       <span><a href="{{ url_for('base_blueprint.configure_qos', interface=k.replace('/', '%2f')) }}">
-                      <input value="Add Qos" name="{{ k }}" class="btn btn-primary btn-round-xs" role="status" type="button"></a></span>
+                      <input value="Add Qos" name="{{ k }}" class="btn btn-link" role="status" type="button" style="font-size:11px"></a></span>
                     </th>
                   {% endif %}
                 </tr>
@@ -106,16 +106,17 @@
             <table class="table align-items-center table-flush table-borderless">
               <thead class="thead-light">
                 <tr>
-                  <th scope="col">Queue</th>
-                  <th scope="col">Queued Rate</th>
-                  <th scope="col">In Bytes</th>
-                  <th scope="col">In Packets</th>
-                  <th scope="col">Out Bytes</th>
-                  <th scope="col">Out Packets</th>
-                  <th scope="col">Drop Packets</th>
-                  <th scope="col">Drop Bytes</th>
-                  <th scope="col">WRED Packets
-                  <th scope="col">WRED Bytes</th>
+                  <th scope="col" class="text-center">Queue</th>
+                  <th scope="col" class="text-center">Queued Rate</th>
+                  <th scope="col" class="text-center">In Bytes</th>
+                  <th scope="col" class="text-center">In Packets</th>
+                  <th scope="col" class="text-center">Out Bytes</th>
+                  <th scope="col" class="text-center">Out Packets</th>
+                  <th scope="col" class="text-center">Drop Packets</th>
+                  <th scope="col" class="text-center">Drop Bytes</th>
+                  <th scope="col" class="text-center">WRED Packets
+                  <th scope="col" class="text-center">WRED Bytes</th>
+                  <th scope="col" class="text-center">Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,24 +125,24 @@
                   <th scope="row">
                     {{ stat['queue_name'] }}
                   </th>
-                  <th scope="row">
+                  <th scope="row" class="text-center">
                     {{ stat['rate'] }}
                   </th>
-                  <th scope="row">
+                  <th scope="row" class="text-center">
                     {{ stat['bytes'] }}
                   </th>
-                  <th scope="row">
+                  <th scope="row" class="text-center">
                     {{ stat['packets'] }}
                   </th>
-                   <th scope="row">
+                   <th scope="row" class="text-center">
                     {{ stat['out_bytes'] }}
                   </th>
-                  <th scope="row">
+                  <th scope="row" class="text-center">
                     {{ stat['out_packets'] }}
                   </th>
 
                   {% if stat['drop_packets'] != '0' %}
-                    <th style="color:red" scope="row">
+                    <th style="color:red" scope="row" class="text-center">
                       {{ stat['drop_packets'] }}
                     </th>
                   {%else%}
@@ -151,32 +152,36 @@
                   {%endif%}
 
                   {% if stat['drop_bytes'] != '0' %}
-                    <th style="color:red" scope="row">
+                    <th style="color:red" scope="row" class="text-center">
                       {{ stat['drop_bytes'] }}
                   {%else%}
-                   <th scope="row">
+                   <th scope="row" class="text-center">
                       {{ stat['drop_bytes'] }}
                     </th>
                   {%endif%}
 
                   {% if stat['wred_drops_pkts'] != '0' %}
-                    <th style="color:red" scope="row">
+                    <th style="color:red" scope="row" class="text-center">
                       {{ stat['wred_drops_pkts'] }}
                   {%else%}
-                   <th scope="row">
+                   <th scope="row" class="text-center">
                       {{ stat['wred_drops_pkts'] }}
                     </th>
                   {%endif%}
 
                   {% if stat['wred_drop_bytes'] != '0' %}
-                    <th style="color:red" scope="row">
+                    <th style="color:red" scope="row" class="text-center">
                       {{ stat['wred_drop_bytes'] }}
                   {%else%}
-                   <th scope="row">
+                   <th scope="row" class="text-center">
                       {{ stat['wred_drop_bytes'] }}
                     </th>
                   {%endif%}
+                   <th scope="row" class="text-center">
+                    <input value="More Details" name="{{ k }}" class="btn btn-link" role="status" type="button" onclick="moreQosDetails(this.name)" id="{{ k }}" style="font-size:11px">
+                  </th>
                 </tr>
+
               {% endfor %}
             </table>
           </div>
@@ -213,6 +218,21 @@
   });
 
 </script>
+<script>
+
+  function moreQosDetails(val){
+     $.ajax({
+      url: '/qos_details',
+      type: 'POST',
+      data: {'details': val},
+      success: function(response) {
+          var wind_three = window.open("", "popupWindow", "width=700,height=800,scrollbars=yes");
+            wind_three.document.write(response);
+      },
+     });
+    }
+
+ </script>
 
 
  {% endblock content %}

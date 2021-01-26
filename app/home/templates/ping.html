@@ -18,43 +18,28 @@
       <div class="card-header border-0">
         <div class="row align-items-center">
           <div class="col ">
-            <h3 class="mb-0 mb-0 text-center">New Interface Configuration</h3>
+            <h3 class="mb-0 mb-0 text-center">Ping Utility</h3>
             <br/>
           </div>
         </div>
-        <form id="interfaceForm" method="post">
-          <div class="form-group">
-            <label class="font-weight-bold ">Interface:
-                <span class="badge badge-pill badge-info">Logical</span></label>
-             <input class="form-control" placeholder="interface" name="interface">
-          </div>
+        <form id="pingForm" method="post">
            <div class="form-group">
-            <label class="font-weight-bold">Description</label>
-            <input class="form-control" placeholder="Description" name="description" >
+            <label class="font-weight-bold">Source</label>
+            <input value="{{ source }}" class="form-control" name="source" >
           </div>
           <div class="form-group">
-            <label class="font-weight-bold">IP Address</label>
-             <input type="text" class="form-control" placeholder="IP" name="ip">
-          </div>
-           <div class="form-group">
-            <label class="font-weight-bold">Mask</label>
-             <input type="text" class="form-control" placeholder="Mask" name="mask">
+            <label class="font-weight-bold">Destination</label>
+             <input type="text" class="form-control" placeholder="Destination" name="dest">
           </div>
           <div class="form-group">
-            <label class="font-weight-bold">Admin Status</label>
-            <div class="input-group mb-3">
-              <select class="custom-select" id="status" name="status">
-                <option value="up">Up</option>
-                <option value="down">Down</option>
-                <option value="no shutdown">No Shutdown</option>
-              </select>
-            </div>
+            <label class="font-weight-bold">Count</label>
+             <input type="text" class="form-control" placeholder="Count" name="count">
           </div>
-           <div class="form-group">
+          <div class="input-group mb-3">
             <label class="font-weight-bold">VRF</label>
             <div class="input-group mb-3">
               <select class="custom-select" id="vrf" name="vrf">
-                  <option selected>No-vrf</option>
+                <option value="none">None</option>
                 {% for i in vrfs %}
                   <option value="{{ i }}">{{ i }}</option>
                 {% endfor %}
@@ -62,10 +47,12 @@
             </div>
           </div>
           <br/>
-          <input value="Submit" type="submit" class="btn btn-primary" id="modifyInt">
+          <input value="Submit" type="submit" class="btn btn-dark">
           <br/>
           <br/>
         </form>
+        <br/>
+        <br/>
         <div id='response'></div>
       </div>
     </div>
@@ -75,14 +62,12 @@
 <script>
 
   $(document).ready(function(){
-    $('#interfaceForm').submit(function(){
-    document.getElementById('modifyInt').value  = 'Submitting...';
+    $('#pingForm').submit(function(){
      $.ajax({
-      url: '/new_int_form',
+      url: '/ping_status',
       type: 'POST',
       data: $('form').serialize(),
       success: function(response){
-      document.getElementById('modifyInt').value  = 'Submit';
        $('#response').html(response.data);
       },
      });

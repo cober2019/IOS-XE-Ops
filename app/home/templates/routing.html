@@ -19,14 +19,14 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0">Interfaces
-              <span><a href="{{ url_for('base_blueprint.new_interface') }}"><input value="Add Interface" name="addInterface" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+              <span><a href="{{ url_for('base_blueprint.new_interface') }}"><input value="Add Interface" name="addInterface" class="btn btn-dark btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
               </h3>
           </div>
         </div>
       </div>
         <div class="table-responsive">
           <span class="counter pull-right"></span>
-          <table class="table align-items-center table-flush results" id="intTable">
+          <table class="table align-items-center table-striped" id="intTable">
             <thead class="thead-light">
               <tr>
                 <th scope="col" class="text-center">Interface</th>
@@ -36,10 +36,7 @@
                 <th scope="col" class="text-center">Last Change</th>
                 <th scope="col" class="text-center">InOctets</th>
                 <th scope="col" class="text-center">OutOctets</th>
-                <th scope="col" class="text-center">InErrors</th>
-                <th scope="col" class="text-center">OutErrors</th>
-                <th scope="col" class="text-center">MAC</th>
-                <th scope="col" class="text-center">Clear</th>
+                <th scope="col" class="text-left">Available Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -67,17 +64,14 @@
                    <th scope="row" class="text-center">
                     {{ v['Out Octets'] }}
                   </th>
-                  <th scope="row" class="text-center">
-                    {{ v['In Errors'] }}
-                  </th>
-                   <th scope="row" class="text-center">
-                    {{ v['Out Errors'] }}
-                  </th>
-                  <th scope="row" class="text-center">
-                    <span><a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" style="margin-left: 15px"></a></span>
-                  </th>
-                  <th scope="row" class="text-center">
-                    <input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
+                  <th scope="row" class="text-left">
+                    <a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" style="font-size:11px" class="btn btn-link" role="status" type="button" ></a>
+                    <br>
+                    <input style="font-size:11px"  value="Clear Counters" name="{{ k }}" class="btn btn-link" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
+                    <br>
+                    <input style="font-size:11px" value="Interface Details" name="{{ k }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ k }}">
+                    <br>
+                    <a href="{{ url_for('base_blueprint.ping', source=k.replace('/', '%2f')) }}"><input value="Source Ping" name=" {{ k }}" style="font-size:11px" class="btn btn-link" role="status" type="button" ></a>
                   </th>
                 </tr>
               {%endfor%}
@@ -94,13 +88,13 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0"><span>ARP Table</span>
-               <span ><input value="Clear ARP" name="arp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="clearArp(this.name)" id="clearArp"></span>
+               <span ><input value="Clear ARP" name="arp" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="clearArp(this.name)" id="clearArp"></span>
             </h3>
           </div>
         </div>
       </div>
       <div class="table-responsive">
-        <table  class="table align-items-center table-flush results" id="arpTable">
+        <table  class="table align-items-center table-striped" id="arpTable">
           <thead class="thead-light">
             <tr>
               <th scope="col" class="text-center">Protocol</th>
@@ -147,22 +141,20 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0"><span>BGP Neighbor Status</span>
-              <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
-              <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgp(this.name)" id="bgpRefresh"></span>
+              <span><input value="Refresh" name="bgp" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshBgp(this.name)" id="bgpRefresh"></span>
             </h3>
           </div>
         </div>
       </div>
       <div class="table-responsive">
         <span class="counter pull-right"></span>
-        <table class="table align-items-center table-flush results" id="bgpNeighbors">
+        <table class="table align-items-center table-striped" id="bgpNeighbors">
           <thead class="thead-light">
             <tr>
               <th scope="col" class="text-center">Neighbor</th>
               <th scope="col" class="text-center">AS</th>
               <th scope="col" class="text-center">Uptime</th>
               <th scope="col" class="text-center">Prefixes</th>
-              <th scope="col" class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -181,9 +173,6 @@
                   <th scope="row" class="text-center">
                     {{ i['Prefixes'] }}
                   </th>
-                  <th scope="row" class="text-center">
-                    <a href="{{ url_for('base_blueprint.modify_bgp_neighbors', neighbor= i['Neighbor'] ) }}"><input value="Modify Neighbor" name="bgp"  role="status" type="button" class="btn btn-link font-weight-bold"></a>
-                  </th>
                 </tr>
             {%endfor%}
           {%endfor%}
@@ -197,15 +186,15 @@
           <div class="row align-items-center">
             <div class="col ">
               <h3 class="mb-0"><span>OSPF Neighbor Status</span>
-              <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
-              <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspf(this.name)" id="ospfRefresh"></span>
+              <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-dark btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+              <span><input value="Refresh" name="ospf" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshOspf(this.name)" id="ospfRefresh"></span>
               </h3>
             </div>
           </div>
         </div>
         <div class="table-responsive">
           <span class="counter pull-right"></span>
-          <table class="table align-items-center table-flush results" id="ospfTable">
+          <table class="table align-items-center table-striped" id="ospfTable">
             <thead class="thead-light">
               <tr>
                 <th scope="col" class="text-center">Neighbor ID</th>
@@ -246,22 +235,20 @@
         <div class="row align-items-center">
           <div class="col">
              <h4 class="mb-0"><span>BGP Neighbor Status</span>
-               <span><a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Add/Modify Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
-               <span><input value="Refresh" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)" id="bgpRefreshOnly"></span>
+               <span><input value="Refresh" name="bgp" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshBgpOnly(this.name)" id="bgpRefreshOnly"></span>
              </h4>
           </div>
         </div>
       </div>
       <div class="table-responsive">
         <span class="counter pull-right"></span>
-        <table class="table align-items-center table-flush results" id="bgpNeighborsOnly">
+        <table class="table align-items-center table-striped" id="bgpNeighborsOnly">
           <thead class="thead-light">
             <tr>
               <th scope="col" class="text-center">Neighbor</th>
               <th scope="col" class="text-center">AS</th>
               <th scope="col" class="text-center">Uptime</th>
               <th scope="col" class="text-center">Prefixes</th>
-              <th scope="col" class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -280,9 +267,6 @@
                   <th scope="row" class="text-center">
                     {{ i['Prefixes'] }}
                   </th>
-                 <th scope="row" class="text-center">
-                    <a href="{{ url_for('base_blueprint.add_bgp_neighbors') }}"><input value="Modify Neighbor" name="bgp"  role="status" type="button" class="btn btn-link font-weight-bold"></a>
-                  </th>
                 </tr>
             {%endfor%}
           {%endfor%}
@@ -299,7 +283,7 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0"><span>OSPF Neighbor Status</span>
-              <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-primary btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
+              <span><a href="{{ url_for('base_blueprint.add_ospf_neighbors') }}"><input value="Add Neighbor" name="bgp" class="btn btn-dark btn-round-xs float-right" role="status" type="button" style="margin-left: 15px"></a></span>
               <span><input value="Refresh" name="ospf" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="refreshOspfOnly(this.name)" id="ospfRefreshOnly"></span>
             </h3>
           </div>
@@ -307,7 +291,7 @@
       </div>
       <div class="table-responsive">
         <span class="counter pull-right"></span>
-        <table class="table align-items-center table-flush results" id="ospfTableOnly">
+        <table class="table align-items-center table-striped" id="ospfTableOnly">
           <thead class="thead-light">
             <tr>
               <th scope="col" class="text-center">Neighbor ID</th>
@@ -348,7 +332,7 @@
         <div class="row align-items-center">
           <div class="col ">
             <h3 class="mb-0"><span>Routing Table</span>
-              <span><input value="Get Routes" name="routingTable" class="btn btn-primary btn-round-xs float-right" role="status" type="button" onclick="getRouting(this.name)" id="getRoutes"></span>
+              <span><input value="Get Routes" name="routingTable" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="getRouting(this.name)" id="getRoutes"></span>
             </h3>
           </div>
         </div>
@@ -489,7 +473,7 @@
       type: 'POST',
       data: {'action': 'routes'},
       success: function(response) {
-      document.getElementById('getRoutes').value  = 'Refresh Routes...';
+      document.getElementById('getRoutes').value  = 'Refresh Routes';
           $('#response').html(response.data);
       },
      });
@@ -502,6 +486,39 @@
   function addNeighbor(){
      $.ajax({
       url: '/add_bgp_neighbor',
+     });
+    }
+
+ </script>
+
+<script>
+
+  function moreIntDetails(val){
+  document.getElementById('getRoutes').value  = 'Getting Details...';
+     $.ajax({
+      url: '/int_details',
+      type: 'POST',
+      data: {'details': val},
+      success: function(response) {
+          var wind_one = window.open("", "popupWindow", "width=700,height=800,scrollbars=yes");
+            wind_one.document.write(response);
+      },
+     });
+    }
+
+ </script>
+
+<script>
+
+  function sourcePing(val){
+     $.ajax({
+      url: '/ping',
+      type: 'POST',
+      data: {'source': val},
+      success: function(response) {
+          var wind = window.open("", "popupWindow", "width=700,height=800,scrollbars=yes");
+            wind.document.write(response);
+      },
      });
     }
 

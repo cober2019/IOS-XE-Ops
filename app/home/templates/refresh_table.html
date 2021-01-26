@@ -11,10 +11,7 @@
 		<th scope="col" class="text-center">Last Change</th>
 		<th scope="col" class="text-center">InOctets</th>
 		<th scope="col" class="text-center">OutOctets</th>
-		<th scope="col" class="text-center">InErrors</th>
-		<th scope="col" class="text-center">OutErrors</th>
-		<th scope="col" class="text-center">MAC</th>
-		<th scope="col" class="text-center">Clear</th>
+		<th scope="col" class="text-left">Available Actions</th>
 	  </tr>
 	</thead>
 	<tbody>
@@ -42,18 +39,15 @@
 		   <th scope="row" class="text-center">
 			{{ v['Out Octets'] }}
 		  </th>
-		  <th scope="row" class="text-center">
-			{{ v['In Errors'] }}
-		  </th>
-		   <th scope="row" class="text-center">
-			{{ v['Out Errors'] }}
-		  </th>
-		  <th scope="row" class="text-center">
-			<span><a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" style="margin-left: 15px"></a></span>
-		  </th>
-		  <th scope="row" class="text-center">
-			<input value="Clear Counters" name="{{ k }}" class="btn btn-link font-weight-bold" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
-		  </th>
+			<th scope="row" class="text-left">
+				<a href="{{ url_for('base_blueprint.modify_inteface', interface=k.replace('/', '%2f')) }}"><input value="Modify" name=" {{ k }}" style="font-size:11px" class="btn btn-link" role="status" type="button" ></a>
+				<br>
+				<input style="font-size:11px"  value="Clear Counters" name="{{ k }}" class="btn btn-link" role="status" type="button" onclick="clearCounters(this.name)" id="{{ k }}">
+				<br>
+				<input style="font-size:11px" value="Interface Details" name="{{ k }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ k }}">
+				<br>
+				<a href="{{ url_for('base_blueprint.ping', source=k.replace('/', '%2f')) }}"><input value="Source Ping" name=" {{ k }}" style="font-size:11px" class="btn btn-link" role="status" type="button" ></a>
+			</th>
 		</tr>
 	  {%endfor%}
 	{%endfor%}
