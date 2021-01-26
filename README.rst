@@ -13,9 +13,9 @@ IOS-XE-Ops
 
     **IOS-XE-Ops is designed to give you a summary view of your device. These features include:**
     
-        - Interfaces details both from a cli view and a custom flask view
-        - Full routing tables plus a cli view from the table and database perspective
-        - Interfaces qos plus a cli view of you current queueing stats
+        - Interfaces details both from a cli view and a custom flask view (Popup window)
+        - Full routing tables plus a cli view from the table and database perspective (Popup window)
+        - Interfaces qos plus a cli view of you current queueing stats (Popup window)
         - Arp table
         - Routing neighbors (BGP & OSPF)
         - Configure/Modify interfaces
