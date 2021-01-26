@@ -19,11 +19,11 @@ def send_command(netmiko_connection, command, expect_string=None):
         retries = 0
         while retries != 3:
             try:
-                get_response = netmiko_connection.send_command(command_string=command)
+                get_response = netmiko_connection.send_command(command)
                 break
             except (OSError, TypeError, AttributeError, ssh_exception.NetmikoTimeoutException):
                 netmiko_connection = ConnectWith.creat_netmiko_connection(Credentials.username, Credentials.password,
-                                                                          Credentials.device)
+                                                                          Credentials.device, Credentials.ssh_port)
                 Credentials.netmiko_session = netmiko_connection
                 retries += 1
 
@@ -32,11 +32,11 @@ def send_command(netmiko_connection, command, expect_string=None):
         retries = 0
         while retries != 3:
             try:
-                get_response = netmiko_connection.send_command(command_string=command, expect_string=expect_string)
+                get_response = netmiko_connection.send_command(command, expect_string=expect_string)
                 break
             except (OSError, TypeError, AttributeError, ssh_exception.NetmikoTimeoutException):
                 netmiko_connection = ConnectWith.creat_netmiko_connection(Credentials.username, Credentials.password,
-                                                                          Credentials.device)
+                                                                          Credentials.device, Credentials.ssh_port)
                 retries += 1
 
     if retries == 3:
@@ -73,6 +73,11 @@ def get_vrfs(netmiko_connection):
 
     return vrfs
 
+def check_for_addr_family(netmiko_connection):
+
+    addr_family = send_command(netmiko_connection, 'show ip bgp ipv4 unicast')
+
+    return addr_family
 
 def get_bgp_status(netmiko_connection):
     """Gets BGF neighbor statuses"""
@@ -158,6 +163,32 @@ def get_arp(netmiko_connection):
 
     return arps
 
+def more_int_details(netmiko_connection, interface):
+
+    get_more_details = send_command(netmiko_connection, f'show interface {interface}')
+
+    return get_more_details
+
+def more_qos_details(netmiko_connection, interface):
+
+    get_more_details = send_command(netmiko_connection, f'show policy-map interface {interface}')
+
+    return get_more_details
+
+def get_route_detials(netmiko_connection, prefix, protocol):
+
+    get_detials = []
+
+    get_route = send_command(netmiko_connection, f'show ip route {prefix}')
+
+    if protocol == 'O E1':
+        get_detials = send_command(netmiko_connection, f'show ip ospf database external {prefix}')
+    elif protocol == 'O E2':
+        get_detials = send_command(netmiko_connection, f'show ip ospf database external {prefix}')
+    elif protocol == 'B':
+        get_detials = send_command(netmiko_connection, f'show bgp {prefix}')
+
+    return get_route, get_detials
 
 def clear_counters(netmiko_connection, interface, netconf_session):
     """Clears interface counters"""
@@ -177,3 +208,13 @@ def clear_arp(netmiko_connection):
     refreshed_arp = get_arp(netmiko_connection)
 
     return refreshed_arp
+
+def send_ping(netmiko_connection, destination, source, count, vrf=None):
+    """Clears ARP table"""
+
+    if vrf is None:
+        pings = send_command(netmiko_connection, f'ping {destination} source {source} repeat {count}')
+    else:
+        pings = send_command(netmiko_connection, f'ping vrf {vrf} {destination} source {source} repeat {count}')
+
+    return pings
