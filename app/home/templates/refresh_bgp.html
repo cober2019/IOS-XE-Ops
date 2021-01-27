@@ -24,9 +24,6 @@
           <th scope="row" class="text-center">
             {{ i['Prefixes'] }}
           </th>
-          <th scope="row" class="text-center">
-            <a href="{{ url_for('base_blueprint.modify_bgp_neighbors', neighbor= i['Neighbor'] ) }}"><input value="Modify Neighbor" name="bgp"  role="status" type="button" class="btn btn-link font-weight-bold"></a>
-          </th>
         </tr>
     {%endfor%}
   {%endfor%}
