@@ -1,13 +1,15 @@
 # -*- encoding: utf-8 -*-
 
-from flask import jsonify, render_template, redirect, request, url_for, flash
+from flask import jsonify, render_template, redirect, url_for, flash, request
+from werkzeug.utils import secure_filename
 from flask_login import (
     current_user,
     login_required,
     login_user,
     logout_user
 )
-from app import db, login_manager
+
+from app import db, login_manager, configs
 from app.base import blueprint
 from app.base.forms import LoginForm
 import string
@@ -26,10 +28,12 @@ import app.Modules.netconfsend as SendConfig
 import app.Modules.AsrListlist as GetPolicies
 import app.Modules.build_service_policy as BuildService
 import app.Modules.interface_build as BuildInterface
+import app.Modules.file_operations as FileOps
 import sqlite3
 import logging
 import os
 
+app_config = None
 device = None
 username = None
 password = None
@@ -46,6 +50,7 @@ ospf_processes = None
 management_int = None
 unassigned_ints = None
 interface_nums = None
+access_ports = None
 
 log_dir = os.path.dirname(os.path.realpath(__file__)).replace('base', 'logs\\')
 logging.basicConfig(filename=f'{log_dir}sessionlog.log', level=logging.INFO)
@@ -155,24 +160,57 @@ def table_refresh():
     elif action == 'clearInt':
         clear = GetInfo.clear_counters(netmiko_session, request.form.get('interface'), netconf_session)
         return jsonify({'data': render_template('refresh_table.html', interfaces=clear)})
-    elif action == 'routes':
+    elif action == 'mac':
+        mac_to_arp = GetInfo.get_mac_arp_table(netmiko_session)
+        return jsonify({'data': render_template('refresh_mac.html', mac_arp=mac_to_arp)})
+    elif action == 'cdp':
+        cdp =GetInfo.get_cdp_neighbors(netmiko_session)
+        return jsonify({'data': render_template('refresh_cdp.html', neighbors=cdp)})
+    elif action == 'access':
+        access_ports = GetInterfacesInfo.get_access_ports(netconf_session)
+        return jsonify({'data': render_template('refresh_access.html', access_ports=access_ports)})
+    elif action == 'span':
+        spanning_tree = GetInfo.get_span_root(netmiko_session)
+        return jsonify({'data': render_template('refresh_span.html', roots=spanning_tree)})
 
-        # ReAuth and get IOS-XE routing table
-        routing_session = ConnectWith.creat_netmiko_connection(username, password, device, ssh_port)
-        mydb = sqlite3.connect("app/Modules/ProjectRouting/Database/Routing")
-        cursor = mydb.cursor()
-        db_obj = DB.RoutingDatabase(mydb, cursor)
-        IOSXE.RoutingIos(routing_session, db_obj, mydb, cursor)
 
-        return jsonify({'data': render_template('get_routing.html', route_table=Db_queries.view_routes_ios(cursor))})
+@blueprint.route('/routing_table')
+def routing_table():
+    """Used for table refreshes"""
+
+    routing_session = ConnectWith.creat_netmiko_connection(username, password, device, ssh_port)
+    mydb = sqlite3.connect("app/Modules/ProjectRouting/Database/Routing")
+    cursor = mydb.cursor()
+    db_obj = DB.RoutingDatabase(mydb, cursor)
+    IOSXE.RoutingIos(routing_session, db_obj, mydb, cursor)
+
+    return render_template('get_routing.html', route_table=Db_queries.view_routes_ios(cursor))
 
 @blueprint.route('/int_details', methods=['POST'])
 def interface_details():
-    """Used for table refreshes"""
+    """Get interface detail"""
 
     int_details = GetInfo.more_int_details(netmiko_session, request.form.get('details'))
 
     return render_template('more_int_detials.html', details=int_details)
+
+@blueprint.route('/cdp_details', methods=['POST'])
+def cdp_interface_details():
+    """Get cdp neighbor detail"""
+
+    int_details = GetInfo.get_cdp_neighbors_detail(netmiko_session, request.form.get('details'))
+
+    return render_template('more_int_detials.html', details=int_details)
+
+
+@blueprint.route('/span_details', methods=['POST'])
+def span_details():
+    """Get spanning tree vlan details"""
+
+    int_details = GetInfo.get_span_detail(netmiko_session, request.form.get('details'))
+
+    return render_template('more_int_detials.html', details=int_details)
+
 
 @blueprint.route('/qos_details', methods=['POST'])
 def qos_interface_details():
@@ -189,7 +227,6 @@ def route_details():
 
     details = request.form.get('details').split('-')
     route_details = GetInfo.get_route_detials(netmiko_session, details[0].split('/')[0], details[1])
-
 
     return render_template('route_detials.html', route=route_details[0], route_detials=route_details[1])
 
@@ -331,8 +368,10 @@ def modify_inteface(interface):
 
     reformat_interface = interface.replace('%2f', '/')
     vrfs = GetInfo.get_vrfs(netmiko_session)
+    mac = GetInterfacesInfo.get_single_interfaces(netconf_session, reformat_interface)
 
-    return render_template('modify_interface.html', interface=reformat_interface, vrfs=vrfs, mgmt_int=management_int)
+
+    return render_template('modify_interface.html', interface=reformat_interface, vrfs=vrfs, mgmt_int=management_int, mac=mac[0].get(reformat_interface).get('MAC'))
 
 
 @blueprint.route('/modify_inteface', methods=['POST'])
@@ -356,12 +395,13 @@ def submit_inteface():
         mask = request.form.get('mask')
     if request.form.get('status'):
         status = request.form.get('status')
-        print(status)
     if request.form.get('description'):
         descr = request.form.get('description')
     if request.form.get('vrf'):
         vrf = request.form.get('vrf')
     if request.form.get('negotiation'):
+        negotiation = request.form.get('negotiation')
+    if request.form.get('vlan'):
         negotiation = request.form.get('negotiation')
 
     config = interface.build_interface(ip, mask, status, descr, vrf, negotiation)
@@ -446,8 +486,25 @@ def submit_ping():
 
     return jsonify({'data': render_template('ping_status.html', results=ping)})
 
+
+@blueprint.route('/layer2')
+def layer_2():
+    """Gets layer two information from the device"""
+
+    cdp =GetInfo.get_cdp_neighbors(netmiko_session)
+    vlans = GetInfo.get_netmiko_vlans(netmiko_session)
+    spanning_tree = GetInfo.get_span_root(netmiko_session)
+    mac_to_arp = GetInfo.get_mac_arp_table(netmiko_session)
+    trunks = GetInterfacesInfo.get_trunk_ports(netconf_session)
+    access_ports = GetInterfacesInfo.get_access_ports(netconf_session)
+    port_channels = GetInterfacesInfo.get_port_channels(netconf_session)
+
+    return render_template('get_layer_two.html', neighbors=cdp, vlans=vlans, trunks=trunks, access_ports=access_ports,
+                           port_chan=port_channels, roots=spanning_tree, mac_arp=mac_to_arp)
+
 @blueprint.route('/about')
 def about():
     """Program info"""
 
     return render_template('about.html')
+
