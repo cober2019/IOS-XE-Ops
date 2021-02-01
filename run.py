@@ -3,6 +3,7 @@
 from flask_migrate import Migrate
 from sys import exit
 from decouple import config
+import app.base.routes as routes
 
 from config import config_dict
 from app import create_app, db
@@ -22,7 +23,9 @@ except KeyError:
     exit('Error: Invalid <config_mode>. Expected values [Debug, Production] ')
 
 app = create_app(app_config)
+routes.app_config = app.config
 Migrate(app, db)
 
 if __name__ == "__main__":
+    
     app.run(host='0.0.0.0')
