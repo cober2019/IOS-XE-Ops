@@ -51,6 +51,10 @@ Usage:
 ---------------
 
     - All configs whether pass or fail are stored in the local program directory, app/configs as XML files
+ 
+ 
+**Layer 2**
+---------------
     
 .. image:: https://github.com/cober2019/IOS-XE-Ops/blob/main/images/LayerTwo.png
 
