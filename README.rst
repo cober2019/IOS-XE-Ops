@@ -8,7 +8,7 @@
 .. image:: https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg
     :target: https://developer.cisco.com/codeexchange/github/repo/cober2019/IOS-XE-Ops
 
-IOS-XE-Ops
+IOS-XE-Ops (CURRENTLY UPDATING REPO!)
 ===========
 
     **IOS-XE-Ops is designed to give you a summary view of your device. Features include:**
