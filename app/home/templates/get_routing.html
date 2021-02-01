@@ -67,7 +67,7 @@
                 {{ i[8] }}
               </th>
               <th scope="row" class="text-center">
-                <input value="Route Details" name=" {{ i[1] }}-{{ i[2] }}" class="btn btn-link" role="status" type="button" onclick="getRouting(this.name)" id="{{ k }}" style="font-size:11px">
+                <input value="Route Details" name=" {{ i[1] }}-{{ i[2] }}" class="btn btn-link" role="status" type="button" onclick="getRouteDetail(this.name)" id="{{ k }}" style="font-size:11px">
               </th>
             </tr>
           {%endfor%}
@@ -79,7 +79,7 @@
 
 <script>
 
-  function getRouting(val){
+  function getRouteDetail(val){
   document.getElementById('getRoutes').value  = 'Getting Routes...';
      $.ajax({
       url: '/route_details',
@@ -95,24 +95,6 @@
 
 </script>
 
-<script>
-
-  function getRouting(){
-  document.getElementById('getRoutes').value  = 'Getting Routes...';
-     $.ajax({
-      url: '/routing',
-      type: 'POST',
-      data: {'action': 'routes'},
-      success: function(response) {
-      document.getElementById('getRoutes').value  = 'Refresh Routes';
-          $("#routeTable").DataTable().destroy()
-          $('#routeTable').html(response.data);
-          $('#routeTable').DataTable({"pagingType": "full_numbers"});
-      },
-     });
-    }
-
-</script>
 
  {% endblock content %}
 
