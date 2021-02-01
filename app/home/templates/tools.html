@@ -1,0 +1,62 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0">Community Tools</h3>
+            <br/>
+          </div>
+        </div>
+        <form id="toolForm" method="post" action="{{ url_for('base_blueprint.upload_csv') }}">
+          <div class="form-group">
+            <label class="font-weight-bold">Tools</label>
+            <div class="input-group mb-3">
+              <select class="custom-select" id="interface" name="tool">
+                <option value="staticMacLearning">Sticky MAC</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-dark">Go</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(document).ready(function(){
+    $('#toolForm').submit(function(){
+     $.ajax({
+      url: '/macs',
+      type: 'POST',
+      data: $('form').serialize()
+     });
+    });
+  });
+
+</script>
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

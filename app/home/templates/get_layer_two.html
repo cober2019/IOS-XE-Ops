@@ -1,0 +1,417 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Layer Two {% endblock title %}
+
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">ARP
+                  <span><input value="Refresh" name="mac" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshArp(this.name)" id="arpRefresh"></span>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="arpMac" class="table align-items-center table-striped">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Vlan</th>
+                  <th scope="col" style="text-align:center">MAC Address</th>
+                  <th scope="col" style="text-align:center">IP Address</th>
+                  <th scope="col" style="text-align:center">Type</th>
+                  <th scope="col" style="text-align:center">Interface</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in mac_arp %}
+                  <tr>
+                    <td scope="row" style="text-align:center">{{ i["vlan"] }}</td>
+                    <td scope="row" style="text-align:center">{{ i["address"] }}</td>
+                    <td scope="row" style="text-align:center">{{ i["ip"] }}</td>
+                    <td scope="row" style="text-align:center">{{ i["type"] }}</td>
+                    <td scope="row" style="text-align:center">{{ i["interface"] }}</td>
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xl-6">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">CDP Neighbors
+                  <span><input value="Refresh" name="cdp" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshCdp(this.name)" id="cdpRefresh"></span>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="cdpTable" class="table align-items-center table-striped" >
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Neighbor</th>
+                  <th scope="col" style="text-align:center">Local Port</th>
+                  <th scope="col" style="text-align:center">Remote Port</th>
+                  <th scope="col" style="text-align:center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="cdpTable">
+                {% for i in neighbors %}
+                  <tr>
+                    <td scope="row" style="text-align:center">{{ i["name"] }}</td>
+                    <td scope="row" style="text-align:center">{{ i["local-port"] }}</td>
+                    <td scope="row" style="text-align:center">{{ i["remote-port"] }}</td>
+                    <th scope="row" class="text-center">
+                      <input style="font-size:11px" value="CDP Details" name="{{ i['local-port'] }}" class="btn btn-link" role="status" type="button" onclick="cdpDetails(this.name)" id="{{ i['local-port'] }}">
+                    </th>
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">Access Ports
+                  <span><input value="Refresh" name="access" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshAccess(this.name)" id="accessRefresh"></span>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="accessTable" class="table align-items-center table-striped">
+              <thead class="thead-light">
+                <tr>
+                    <th scope="col" style="text-align:center">Interface</th>
+                    <th scope="col" style="text-align:center">Vlan</th>
+                    <th scope="col" style="text-align:center">Admin</th>
+                    <th scope="col" style="text-align:center">Operational</th>
+                    <th scope="col" style="text-align:center">Available Actions</th>
+                  </tr>
+              </thead>
+              <tbody id="accessTable">
+              {% for i in access_ports %}
+                <tr>
+                  <td scope="row" style="text-align:center">{{ i["port"] }}</td>
+                  <td scope="row" style="text-align:center">{{ i["vlan"] }}</td>
+                  {% if i['admin'] == 'down' %}
+                    <td scope="row" style="text-align:center">
+                      <i class="fas fa-circle text-red mr-3"></i>
+                    </td>
+                  {% else %}
+                    <td scope="row" style="text-align:center">
+                      <i class="fas fa-circle text-green mr-3"></i>
+                    </td>
+                  {% endif %}
+                  {% if i['oper'] == 'down' %}
+                    <td scope="row" style="text-align:center">
+                      <i class="fas fa-circle text-red mr-3"></i>
+                    </td>
+                  {% else %}
+                    <td scope="row" style="text-align:center">
+                      <i class="fas fa-circle text-green mr-3"></i>
+                    </td>
+                  {% endif %}
+                  <th scope="row" class="text-center">
+                    <input style="font-size:11px" value="Interface Details" name="{{ i['port'] }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i['port'] }}">
+                  </th>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">Trunks</h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-striped">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Interface</th>
+                  <th scope="col" style="text-align:center">Trunked Vlans</th>
+                  <th scope="col" style="text-align:center">Admin</th>
+                  <th scope="col" style="text-align:center">Operational</th>
+                </tr>
+              </thead>
+              <tbody id="trunkTable">
+                {% for i in trunks %}
+                  <tr>
+                     <td scope="row" style="text-align:center">{{ i["interface"] }}</td>
+                     <td scope="row" style="text-align:center">{{ i["vlans"] }}</td>
+                     {% if i['admin'] == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                     {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                     {% endif %}
+
+                     {% if i['oper'] == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                     {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                     {% endif %}
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">Port-Channels</h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-striped" >
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Interface</th>
+                  <th scope="col" style="text-align:center">Admin</th>
+                  <th scope="col" style="text-align:center">Operational</th>
+                  <th scope="col" style="text-align:center">Channel-Group</th>
+                  <th scope="col" style="text-align:center">Mode</th>
+                </tr>
+              </thead>
+              <tbody id="portchTable">
+                {% for i in port_chan %}
+                  <tr>
+                    <td scope="row" style="text-align:center">{{ i["interface"] }}</td>
+                    {% if i['admin'] == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                    {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                    {% endif %}
+
+                    {% if i['oper'] == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                    {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                    {% endif %}
+                    <td scope="row" style="text-align:center">{{ i["group"] }}</td>
+                    <td scope="row" style="text-align:center">{{ i["mode"] }}</td>
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col">
+              <h3 class="mb-0" style="text-align:left">Spanning Tree View
+                <span><input value="Refresh" name="span" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshSpan(this.name)" id="rootRefresh"></span>
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table id="spanTable" class="table align-items-center table-striped">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col" style="text-align:center">Vlan</th>
+                <th scope="col" style="text-align:center">Root Prioirty</th>
+                <th scope="col" style="text-align:center">Root ID</th>
+                <th scope="col" style="text-align:center">Root Cost</th>
+                <th scope="col" style="text-align:center">Root Port</th>
+                <th scope="col" style="text-align:center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="rootTable">
+            {% for i in roots %}
+              <tr>
+                <td scope="row" style="text-align:center">{{ i["vlan"] }}</td>
+                <td scope="row" style="text-align:center">{{ i["root-prio"] }}</td>
+                <td scope="row" style="text-align:center">{{ i["root-id"] }}</td>
+                <td scope="row" style="text-align:center">{{ i["root-cost"] }}</td>
+                <td scope="row" style="text-align:center">{{ i["root-port"] }}</td>
+                <th scope="row" class="text-center">
+                  <input style="font-size:11px" value="STP Details" name="{{ i['vlan'] }}" class="btn btn-link" role="status" type="button" onclick="spanDetails(this.name)" id="{{ i['vlan'] }}">
+                </th>
+              </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  function moreIntDetails(val){
+     $.ajax({
+      url: '/int_details',
+      type: 'POST',
+      data: {'details': val},
+      success: function(response) {
+          var wind_one = window.open("", "popupWindow", "width=700,height=800,scrollbars=yes");
+            wind_one.document.write(response);
+      },
+     });
+    }
+
+</script>
+
+<script>
+
+  function cdpDetails(val){
+     $.ajax({
+      url: '/cdp_details',
+      type: 'POST',
+      data: {'details': val},
+      success: function(response) {
+          var wind_one = window.open("", "popupWindow", "width=700,height=800,scrollbars=yes");
+            wind_one.document.write(response);
+      },
+     });
+    }
+
+</script>
+
+<script>
+
+  function spanDetails(val){
+     $.ajax({
+      url: '/span_details',
+      type: 'POST',
+      data: {'details': val},
+      success: function(response) {
+          var wind_one = window.open("", "popupWindow", "width=700,height=800,scrollbars=yes");
+            wind_one.document.write(response);
+      },
+     });
+    }
+
+</script>
+
+<script>
+
+  function refreshArp(val){
+    document.getElementById('arpRefresh').value  = 'Refreshing...';
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+      document.getElementById('arpRefresh').value  = 'Refresh';
+          $("#arpMac").DataTable().destroy()
+          $('#arpMac').html(response.data);
+          $('#arpMac').DataTable({"pagingType": "full_numbers"});
+      },
+     });
+    }
+
+</script>
+<script>
+
+  function refreshCdp(val){
+    document.getElementById('cdpRefresh').value  = 'Refreshing...';
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+      document.getElementById('cdpRefresh').value  = 'Refresh';
+          $("#cdpTable").DataTable().destroy()
+          $('#cdpTable').html(response.data);
+          $('#cdpTable').DataTable({"pagingType": "full_numbers"});
+      },
+     });
+    }
+
+</script>
+<script>
+
+  function refreshAccess(val){
+    document.getElementById('accessRefresh').value  = 'Refreshing...';
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+      document.getElementById('accessRefresh').value  = 'Refresh';
+          $("#accessTable").DataTable().destroy()
+          $('#accessTable').html(response.data);
+          $('#accessTable').DataTable({"pagingType": "full_numbers"});
+      },
+     });
+    }
+
+</script>
+<script>
+
+  function refreshSpan(val){
+    document.getElementById('rootRefresh').value  = 'Refreshing...';
+     $.ajax({
+      url: '/routing',
+      type: 'POST',
+      data: {'action': val},
+      success: function(response) {
+      document.getElementById('rootRefresh').value  = 'Refresh';
+          $("#spanTable").DataTable().destroy()
+          $('#spanTable').html(response.data);
+          $('#spanTable').DataTable({"pagingType": "full_numbers"});
+      },
+     });
+    }
+
+</script>
+
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}
+

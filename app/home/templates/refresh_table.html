@@ -6,7 +6,8 @@
 	  <tr>
 		<th scope="col" class="text-center">Interface</th>
 		<th scope="col" class="text-center">IP</th>
-		<th scope="col" class="text-center">Admin/Operational</th>
+		  <th scope="col" class="text-center">Admin</th>
+		  <th scope="col" class="text-center">Operational</th>
 		<th scope="col" class="text-center">Speed</th>
 		<th scope="col" class="text-center">Last Change</th>
 		<th scope="col" class="text-center">InOctets</th>
@@ -24,9 +25,25 @@
 		  <th scope="row" class="text-center">
 			{{ v['IP'] }}
 		  </th>
-		  <th scope="row" class="text-center">
-			{{ v['Admin'] }}/{{ v['Operational'] }}
-		  </th>
+		   {% if v['Admin'] == 'down' %}
+			<td scope="row" style="text-align:center">
+			  <i class="fas fa-circle text-red mr-3"></i>
+			</td>
+		  {% else %}
+			<td scope="row" style="text-align:center">
+			  <i class="fas fa-circle text-green mr-3"></i>
+			</td>
+		  {% endif %}
+
+		  {% if v['Operational'] == 'down' %}
+			<td scope="row" style="text-align:center">
+			  <i class="fas fa-circle text-red mr-3"></i>
+			</td>
+		  {% else %}
+			<td scope="row" style="text-align:center">
+			  <i class="fas fa-circle text-green mr-3"></i>
+			</td>
+		  {% endif %}
 		  <th scope="row" class="text-center">
 			{{ v['Speed'] }}
 		  </th>
@@ -54,20 +71,3 @@
   </table>
 </div>
 
-
-<script>
-
-  function clearCounters(val){
-    document.getElementById(val).value  = 'Clearing...';
-     $.ajax({
-      url: '/routing',
-      type: 'POST',
-      data: {'action': 'clearInt', 'interface': val},
-      success: function(response) {
-      document.getElementById(val).value  = 'Clear Counters';
-          $('#intTable').html(response.data);
-      },
-     });
-    }
-
- </script>

@@ -1,0 +1,25 @@
+<div class="table-responsive">
+    <table id="arpMac" class="table align-items-center table-striped">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" style="text-align:center">Vlan</th>
+          <th scope="col" style="text-align:center">MAC Address</th>
+          <th scope="col" style="text-align:center">IP Address</th>
+          <th scope="col" style="text-align:center">Type</th>
+          <th scope="col" style="text-align:center">Interface</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in mac_arp %}
+          <tr>
+            <td scope="row" style="text-align:center">{{ i["vlan"] }}</td>
+            <td scope="row" style="text-align:center">{{ i["address"] }}</td>
+            <td scope="row" style="text-align:center">{{ i["ip"] }}</td>
+            <td scope="row" style="text-align:center">{{ i["type"] }}</td>
+            <td scope="row" style="text-align:center">{{ i["interface"] }}</td>
+          </tr>
+        {% endfor %}
+    </table>
+</div>
+
+

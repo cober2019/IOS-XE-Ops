@@ -1,0 +1,38 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0">Community Tools</h3>
+            <br/>
+          </div>
+        </div>
+        <form id="toolForm" method="post" enctype="multipart/form-data" action="{{ url_for('base_blueprint.mac_learning') }}">
+            <div class="form-group">
+              <input type="file" class="form-control-file" name="file">
+            </div>
+          <button type="submit" class="btn btn-dark">Go</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

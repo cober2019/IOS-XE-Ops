@@ -1,0 +1,23 @@
+<div class="table-responsive">
+  <table class="table align-items-center table-striped">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col" style="text-align:center">Vlan</th>
+        <th scope="col" style="text-align:center">Root Prioirty</th>
+        <th scope="col" style="text-align:center">Root ID</th>
+        <th scope="col" style="text-align:center">Root Cost</th>
+        <th scope="col" style="text-align:center">Root Port</th>
+      </tr>
+    </thead>
+    <tbody id="rootTable">
+    {% for i in roots %}
+      <tr>
+        <td scope="row" style="text-align:center">{{ i["vlan"] }}</td>
+        <td scope="row" style="text-align:center">{{ i["root-prio"] }}</td>
+        <td scope="row" style="text-align:center">{{ i["root-id"] }}</td>
+        <td scope="row" style="text-align:center">{{ i["root-cost"] }}</td>
+        <td scope="row" style="text-align:center">{{ i["root-port"] }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>

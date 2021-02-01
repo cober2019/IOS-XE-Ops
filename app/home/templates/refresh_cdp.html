@@ -1,0 +1,19 @@
+<div class="table-responsive">
+    <table class="table align-items-center table-striped" >
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" style="text-align:center">Neighbor</th>
+          <th scope="col" style="text-align:center">Local Port</th>
+          <th scope="col" style="text-align:center">Remote Port</th>
+        </tr>
+      </thead>
+      <tbody id="cdpTable">
+        {% for i in neighbors %}
+          <tr>
+            <td scope="row" style="text-align:center">{{ i["name"] }}</td>
+            <td scope="row" style="text-align:center">{{ i["local-port"] }}</td>
+            <td scope="row" style="text-align:center">{{ i["remote-port"] }}</td>
+          </tr>
+        {% endfor %}
+    </table>
+</div>
