@@ -58,6 +58,7 @@ def create_netconf_connection(username, password, host, port) -> manager:
         netconf_session = manager.connect(host=host, port=port, username=username,
                                           password=password,
                                           device_params={'name': 'csr'})
+        
     except manager.operations.errors.TimeoutExpiredError as error:
         netconf_session = [error, 'Connection Timeout', 'error']
     except AttributeError as error:

@@ -4,6 +4,7 @@ from ncclient import manager
 import xmltodict
 import ipaddress
 
+converted_config = None
 interface_types = ("GigabitEthernet", "Loopback", "Tunnel", "Vlan", "Port-channel", "TenGigabitEthernet",
                    "Port-channel-subinterface")
 
@@ -61,18 +62,28 @@ def get_config(netconf_session):
     return converted_config
 
 
-def get_stats(netconf_session, interface):
+def get_stats(netconf_session, interface=None):
+
+    global converted_config
 
     try:
         int_stats = f"""<filter>
-                       <interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
-                        <interface>
-                          <name>{interface}</name>
-                        </interface>
-                      </interfaces-state>
-                   </filter>"""
+                        <interfaces-state xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+                        <interface>"""
 
-        get_state = netconf_session.get(int_stats)
+        if interface is not None:
+
+            filter = int_stats + f"""<name>{interface}</name>
+                            </interface>
+                            </interfaces-state>
+                            </filter>"""
+        else:
+
+            filter = int_stats + """ </interface>
+                            </interfaces-state>
+                            </filter>"""
+
+        get_state = netconf_session.get(filter)
         int_status = xmltodict.parse(get_state.xml)["rpc-reply"]["data"]
         converted_config = int_status["interfaces-state"]["interface"]
 
@@ -190,7 +201,127 @@ def get_single_interfaces(session, interface):
                             interface_info.append(parsed_info)
                         except TypeError:
                             pass
-            except AttributeError:
+            except (AttributeError, TypeError):
                 continue
 
     return interface_info
+
+
+def get_trunk_ports(session, interface=None) -> list:
+    """Compile access ports"""
+
+    trunks = []
+
+    config = get_config(session)
+    interface_state = get_stats(session)
+
+    for ints in interface_types:
+        current_interfaces = config[0]["native"]["interface"].get(ints)
+        make_list = is_in_list(current_interfaces)
+        for interface in make_list:
+            if interface is None:
+                pass
+            # Gets trunk vlans
+            elif interface.get("switchport", {}).get("trunk", {}).get("allowed", {}).get("vlan", {}).get("vlans",
+                                                                                                         {}):
+                trunks.append({'interface': ints + interface.get('name'),
+                               'vlans': interface.get('switchport', {}).get('trunk', {}).get('allowed', {}).get(
+                                   'vlan',
+                                   {}).get(
+                                   'vlans', {}),
+                               'cdp': interface.get('name')})
+            # Gets trunk vlans with add key
+            elif interface.get("switchport", {}).get("trunk", {}).get("allowed", {}).get("vlan", {}).get("add", {}):
+                trunks.append({'interface': ints + interface.get('name'),
+                               'vlans': interface.get('switchport', {}).get('trunk', {}).get('allowed', {}).get(
+                                   'vlan',
+                                   {}).get(
+                                   'add', {}),
+                               'cdp': interface.get('name')})
+
+    for int in trunks:
+        for port in converted_config:
+            if int.get('interface') == port.get('name'):
+                int['admin'] = port.get('admin-status')
+                int['oper'] = port.get('oper-status')
+
+    return trunks
+
+
+def get_port_channels(session) -> list:
+    
+    port_channels = []
+
+    config = get_config(session)
+    for ints in interface_types:
+        current_interfaces = config[0]["native"]["interface"].get(ints)
+        make_list = is_in_list(current_interfaces)
+        for interface in make_list:
+            if interface is None:
+                pass
+            elif interface.get("channel-group", {}).get("number", {}):
+                port_channels.append({'interface': ints + interface.get("name"),
+                                      'group': interface.get('channel-group').get('number'),
+                                      'mode': interface.get('channel-group').get('mode')})
+
+    for int in port_channels:
+        for port in converted_config:
+            if int.get('interface') == port.get('name'):
+                int['admin'] = port.get('admin-status')
+                int['oper'] = port.get('oper-status')
+
+    return port_channels
+
+
+def get_int_up_down(session) -> None:
+    """Get interface up/down"""
+
+    config = get_config(session)
+    for ints in interface_types:
+        current_interfaces = config[0]["native"]["interface"].get(ints)
+        make_list = is_in_list(current_interfaces)
+        for interface in make_list:
+            if interface is None:
+                pass
+            elif interface.get('shutdown', {}) is None:
+                print(f'{ints} {interface.get("name")} is down')
+            else:
+                print(f'{ints} {interface.get("name")} is up')
+
+
+def get_access_ports(session) -> list:
+    """Compile access ports"""
+
+    access_ports = []
+
+    config = get_config(session)
+    interface_state = get_stats(session)
+
+    for ints in interface_types:
+        current_interfaces = config[0]["native"]["interface"].get(ints)
+        make_list = is_in_list(current_interfaces)
+        for interface in make_list:
+            if interface is None:
+                pass
+            elif interface.get("switchport", {}).get("access", {}).get("vlan", {}).get("vlan", {}):
+                access_ports.append({'port': ints + interface.get('name'),
+                                     'vlan': interface.get('switchport', {}).get('access', {}).get('vlan', {}).get(
+                                         'vlan', {})})
+            elif interface.get("switchport", {}).get("mode", {}).get("access", {}) is None:
+                access_ports.append({'port': ints + interface.get('name'), 'vlan': 'Native'})
+
+    for int in access_ports:
+        print(int)
+        for port in interface_state:
+            print(port)
+            try:
+                if int.get('port') == port.get('name'):
+                    int['admin'] = port.get('admin-status')
+                    int['oper'] = port.get('oper-status')
+            except AttributeError:
+                pass
+
+    print(access_ports)
+    return access_ports
+
+

@@ -19,7 +19,7 @@ class Templates:
         self.interface_name = xml.SubElement(self.interface_type, 'name')
         self.interface_name.text = name
 
-    def build_interface(self, host, subnet, admin, descr, vrf, negotiation):
+    def build_interface(self, host, subnet, admin, descr, vrf, negotiation, mac):
         print(admin)
 
         if host is not None:
@@ -52,5 +52,6 @@ class Templates:
             negotiation_elem.set("xmlns", "http://cisco.com/ns/yang/Cisco-IOS-XE-ethernet")
             auto = xml.SubElement(negotiation_elem, "auto")
             auto.text = negotiation
+
 
         return self.root
