@@ -1,11 +1,11 @@
 """Helper class which collect and call to database for writing"""
 
 import collections
-import ipaddress
 import XEOpsDatabase.connection as ConnectWith
 import XEOpsDatabase.DbOperations as DbOps
 from netmiko import ssh_exception
 import time
+import ipaddress
 
 
 class PollWithNetmiko:
@@ -41,6 +41,8 @@ class PollWithNetmiko:
                 self.get_cdp_neighbors()
                 self.get_ospf_status()
                 self.get_bgp_status()
+                self.get_vrfs()
+                self.get_ospf_processes()
                 # Sleep before next poll
                 time.sleep(10)
 
@@ -110,22 +112,16 @@ class PollWithNetmiko:
         """Gets BGF neighbor statuses"""
 
         local_as = ['Null']
-        neighbor_status = []
         bgp_summary = self.send_command('show ip bgp summary')
 
         for i in bgp_summary.splitlines():
             if i.rfind('local AS number') != -1:
                 local_as = i.split()[-1:]
             try:
-                neighbor_status.append({"Neighbor": i.split()[0], 'AS': i.split()[2], 'Uptime': i.split()[8],
-                                        'Prefixes': i.split()[9], 'local_as': local_as[0]})
+                ipaddress.ip_address(i.split()[0])
+                DbOps.update_bgp_table(self.device, i.split()[0], i.split()[2], i.split()[8], i.split()[9], local_as)
             except (ValueError, IndexError):
                 pass
-
-        if neighbor_status:
-            for i in neighbor_status:
-                DbOps.update_bgp_table(self.device, i['Neighbor'], i['AS'], i['Uptime'], i['Prefixes'],
-                                       i['local_as'])
 
     def get_ospf_status(self):
         """Gets OSPF neighbor statuses"""
@@ -159,17 +155,13 @@ class PollWithNetmiko:
     def get_ospf_processes(self):
         """Get OSPF processes"""
 
-        processes = []
         ospf_process = self.send_command('show ip ospf | i Process')
-
         if ospf_process:
             for process in ospf_process.splitlines():
                 try:
-                    processes.append(process.split('"')[1].split()[1])
+                    DbOps.update_ospf_process_table(self.device, process.split('"')[1].split()[1])
                 except IndexError:
                     continue
-
-        return processes
 
     def get_arp(self):
         """Get ARP table"""
@@ -196,7 +188,6 @@ class PollWithNetmiko:
     def get_cdp_neighbors(self):
         """Gets mac and arp tables. Concatinates into one"""
 
-        neighbors = []
         get_cdp_neigh = 'show cdp neighbors'
         name = None
         local_port = None
@@ -230,13 +221,7 @@ class PollWithNetmiko:
                 continue
 
             if remote_port is not None:
-                neighbors.append({'name': name, 'local-port': local_port, 'remote-port': remote_port})
-                name = None
-                local_port = None
-                remote_port = None
-
-        for i in neighbors:
-            DbOps.update_cdp_table(self.device, i['name'], i['local-port'], i['remote-port'])
+                DbOps.update_cdp_table(self.device, name, local_port, remote_port)
 
     def get_span_root(self):
         """Gets mac and arp tables. Concatinates into one"""
@@ -307,6 +292,8 @@ class PollWithNetmiko:
                     continue
                 elif mac.split()[0] == 'Total':
                     continue
+                elif mac.split()[0] == '%':
+                    break
                 else:
                     mac_table.append({'vlan': mac.split()[0], 'address': mac.split()[1], 'type': mac.split()[2],
                                       'interface': mac.split()[3]})
@@ -321,6 +308,8 @@ class PollWithNetmiko:
                     continue
                 elif arp.split()[0] == 'Total':
                     continue
+                elif arp.split()[0] == '%':
+                    break
                 else:
                     arp_table.append(
                         {'protocol': arp.split()[0], 'ip': arp.split()[1], 'age': arp.split()[2], 'mac': arp.split()[3],
@@ -394,27 +383,3 @@ class PollWithNetmiko:
         if vlan_table:
             for i in vlan_table:
                 DbOps.update_vlan_table(self.device, i['id'], i['pro'], i['name'], i['status'], i['ports'])
-
-    def get_access_ports(self) -> list:
-        """Get trunks"""
-
-        interfaces = []
-        interface_command = 'show interfaces status'
-
-        get_interfaces = self.send_command(interface_command)
-
-        cli_line = get_interfaces.split("\n")
-        for line in cli_line:
-            if not list(enumerate(line.split(), 0)):
-                continue
-            if line.split()[0] == "Port":
-                continue
-            else:
-                try:
-                    interfaces.append({'interface': line.split()[0], 'vlan': line.split()[2], 'status': line.split()[1],
-                                       'duplex': line.split()[3],
-                                       'speed': line.split()[4], 'type': line.split()[5]})
-                except IndexError:
-                    interfaces.append({'interface': line.split()[0], 'vlan': line.split()[2], 'status': line.split()[1],
-                                       'duplex': line.split()[3],
-                                       'speed': line.split()[4], 'type': 'None'})

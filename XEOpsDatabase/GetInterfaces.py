@@ -6,6 +6,7 @@ import ipaddress
 import XEOpsDatabase.DbOperations as DbOps
 import XEOpsDatabase.connection as ConnectWith
 import time
+import collections
 
 
 def is_instance(list_or_dict):
@@ -62,6 +63,7 @@ class PollWitNetconf:
                 self.get_port_channels()
                 self.get_access_ports()
                 self.get_ip_interfaces()
+
                 # Sleep before next poll
                 time.sleep(10)
 
@@ -76,17 +78,17 @@ class PollWitNetconf:
 
             if interface is not None:
 
-                filter = int_stats + f"""<name>{interface}</name>
+                xml_filter = int_stats + f"""<name>{interface}</name>
                                 </interface>
                                 </interfaces-state>
                                 </filter>"""
             else:
 
-                filter = int_stats + """ </interface>
+                xml_filter = int_stats + """ </interface>
                                 </interfaces-state>
                                 </filter>"""
 
-            get_state = self.session.get(filter)
+            get_state = self.session.get(xml_filter)
             int_status = xmltodict.parse(get_state.xml)["rpc-reply"]["data"]
             config = int_status["interfaces-state"]["interface"]
 
@@ -160,45 +162,39 @@ class PollWitNetconf:
 
         return interface_stats
 
-    def get_ip_interfaces(self, management_ip=None):
+    def get_ip_interfaces(self):
         """Gets interface ips addresses"""
 
         interface_info = []
         unassigned_interfaces = ['Tunnel', 'Loopback', 'Vlan']
         interface_num = []
-        nuclear_int = None
 
         ip_config = self.get_config()
 
-        if ip_config == 'error':
-            pass
-        else:
-            for ints in self.interface_types:
-                current_interfaces = ip_config[0]["native"]["interface"].get(ints)
-                make_ip_list = is_in_list(current_interfaces)
-                for ip in make_ip_list:
-                    if ip is None:
-                        pass
-                    elif ip.get("ip", {}).get("address", {}):
-                        address = ipaddress.ip_interface(
-                            ip.get('ip', '').get('address').get('primary').get('address') + '/' + ip.get('ip', '').get(
-                                'address').get('primary').get('mask'))
-                        parsed_info = self.get_interface_stats(ints + ip.get('name'), ip=address)
+        for ints in self.interface_types:
+            current_interfaces = ip_config[0]["native"]["interface"].get(ints)
+            make_ip_list = is_in_list(current_interfaces)
+            for ip in make_ip_list:
+                if ip is None:
+                    pass
+                elif ip.get("ip", {}).get("address", {}):
+                    address = ipaddress.ip_interface(
+                        ip.get('ip', '').get('address').get('primary').get('address') + '/' + ip.get('ip', '').get(
+                            'address').get('primary').get('mask'))
+                    parsed_info = self.get_interface_stats(ints + ip.get('name'), ip=address)
+                    interface_info.append(parsed_info)
+                else:
+                    try:
+                        parsed_info = self.get_interface_stats(ints + ip.get('name'), ip='Not Assigned')
                         interface_info.append(parsed_info)
-                        if ip.get('ip', '').get('address').get('primary').get('address') == management_ip:
-                            nuclear_int = ints + ip.get('name')
-                    else:
-                        try:
-                            parsed_info = self.get_interface_stats(ints + ip.get('name'), ip='Not Assigned')
-                            interface_info.append(parsed_info)
-                        except TypeError:
-                            pass
+                    except TypeError:
+                        pass
 
-                        try:
-                            unassigned_interfaces.append(ints + ip.get('name'))
-                            interface_num.append(ip.get('name'))
-                        except TypeError:
-                            pass
+                    try:
+                        unassigned_interfaces.append(ints + ip.get('name'))
+                        interface_num.append(ip.get('name'))
+                    except TypeError:
+                        pass
 
         for i in interface_info:
             for k, v in i.items():
@@ -222,24 +218,23 @@ class PollWitNetconf:
             for interface in make_list:
                 if interface is None:
                     pass
-                elif interface.get("switchport", {}).get("trunk", {}).get("allowed", {}).get("vlan", {}).get("vlans", {}):
+                elif interface.get("switchport", {}).get("trunk", {}).get("allowed", {}).get("vlan", {}).get("vlans",
+                                                                                                             {}):
+                    trunks.append({'interface': ints + interface.get('name'), 'vlans': interface.get('switchport',
+                                                                                                     {}).get('trunk',
+                                                                                                             {}).get(
+                        'allowed', {}).get('vlan', {}).get('vlans', {}),
+                                   'cdp': interface.get('name')})
+
+                elif interface.get("switchport", {}).get("trunk", {}).get("allowed", {}).get("vlan", {}).get("add", {}):
                     trunks.append({'interface': ints + interface.get('name'),
                                    'vlans': interface.get('switchport', {}).get('trunk', {}).get('allowed', {}).get(
-                                       'vlan',
-                                       {}).get(
-                                       'vlans', {}),
-                                   'cdp': interface.get('name')})
-                elif interface.get("switchport", {}).get("trunk", {}).get("allowed", {}).get("vlan", {}).get("add", {}):
-                    trunks.append({'interface': ints + interface.get('name'), 'vlans': interface.get('switchport', {}).get('trunk', {}).get('allowed', {}).get(
                                        'vlan', {}).get('add', {}), 'cdp': interface.get('name')})
         for interface in trunks:
             for port in interface_state:
                 if interface.get('interface') == port.get('name'):
-                    interface['admin'] = port.get('admin-status')
-                    interface['oper'] = port.get('oper-status')
-
-        for i in trunks:
-            DbOps.update_trunks_table(self.device, i['interface'], i['vlans'], i['admin'], i['oper'])
+                    DbOps.update_trunks_table(self.device, interface['interface'], interface['vlans'],
+                                              port.get('admin-status'), port.get('oper-status'))
 
     def get_port_channels(self):
         """Get port-channels"""
@@ -248,29 +243,23 @@ class PollWitNetconf:
         config = self.get_config()
         interface_state = self.get_stats()
 
-        if config == 'error':
-            pass
-        else:
-            for ints in self.interface_types:
-                current_interfaces = config[0]["native"]["interface"].get(ints)
-                make_list = is_in_list(current_interfaces)
-                for interface in make_list:
-                    if interface is None:
-                        pass
-                    elif interface.get("channel-group", {}).get("number", {}):
-                        port_channels.append({'interface': ints + interface.get("name"),
-                                              'group': interface.get('channel-group').get('number'),
-                                              'mode': interface.get('channel-group').get('mode')})
+        for ints in self.interface_types:
+            current_interfaces = config[0]["native"]["interface"].get(ints)
+            make_list = is_in_list(current_interfaces)
+            for interface in make_list:
+                if interface is None:
+                    pass
+                elif interface.get("channel-group", {}).get("number", {}):
+                    port_channels.append({'interface': ints + interface.get("name"),
+                                          'group': interface.get('channel-group').get('number'),
+                                          'mode': interface.get('channel-group').get('mode')})
 
-            for interface in port_channels:
-                for port in interface_state:
-                    if interface.get('interface') == port.get('name'):
-                        interface['admin'] = port.get('admin-status')
-                        interface['oper'] = port.get('oper-status')
-
-        for i in port_channels:
-            DbOps.update_pochannel_table(self.device, i['interface'], i['group'], i['mode'], i['admin'],
-                                         i['oper'])
+        for interface in port_channels:
+            for port in interface_state:
+                if interface.get('interface') == port.get('name'):
+                    DbOps.update_pochannel_table(self.device, interface['interface'], interface['group'],
+                                                 interface['mode'],
+                                                 port.get('admin-status'), port.get('oper-status'))
 
     def get_access_ports(self):
         """Get access ports"""
@@ -280,35 +269,50 @@ class PollWitNetconf:
         config = self.get_config()
         interface_state = self.get_stats()
 
-        if config == 'error':
-            pass
-        else:
-            for ints in self.interface_types:
-                current_interfaces = config[0]["native"]["interface"].get(ints)
-                make_list = is_in_list(current_interfaces)
-                for interface in make_list:
-                    if interface is None:
-                        pass
-                    elif interface.get("switchport", {}).get("access", {}).get("vlan", {}).get("vlan", {}):
-                        access_ports.append({'port': ints + interface.get('name'),
-                                             'vlan': interface.get('switchport', {}).get('access', {}).get('vlan',
-                                                                                                           {}).get(
-                                                 'vlan', {})})
-                    elif interface.get("switchport", {}).get("mode", {}).get("access", {}) is None:
-                        access_ports.append({'port': ints + interface.get('name'), 'vlan': 'Native'})
+        for ints in self.interface_types:
+            current_interfaces = config[0]["native"]["interface"].get(ints)
+            make_list = is_in_list(current_interfaces)
+            for interface in make_list:
+                if interface is None:
+                    pass
+                elif interface.get("switchport", {}).get("access", {}).get("vlan", {}).get("vlan", {}):
+                    access_ports.append({'port': ints + interface.get('name'),
+                                         'vlan': interface.get('switchport', {}).get('access', {}).get('vlan',
+                                                                                                       {}).get(
+                                             'vlan', {})})
+                elif interface.get("switchport", {}).get("mode", {}).get("access", {}) is None:
+                    access_ports.append({'port': ints + interface.get('name'), 'vlan': 'Native'})
 
-            for interface in access_ports:
-                for port in interface_state:
-                    try:
-                        if interface.get('port') == port.get('name'):
-                            interface['admin'] = port.get('admin-status')
-                            interface['oper'] = port.get('oper-status')
-                    except AttributeError:
-                        pass
-
-        for i in access_ports:
-            DbOps.update_access_interfaces_table(self.device, i['port'], i['vlan'], i['admin'], i['oper'])
+        for interface in access_ports:
+            for port in interface_state:
+                try:
+                    if interface.get('port') == port.get('name'):
+                        DbOps.update_access_interfaces_table(self.device, interface['port'], interface['vlan'],
+                                                             port.get('admin-status'),
+                                                             port.get('oper-status'))
+                except AttributeError:
+                    pass
 
     def get_qos_interfaces(self):
         """Gets QOS configurations"""
-        pass
+
+        interface_state = self.get_stats()
+        make_ints_lists = is_instance(interface_state)
+
+        for i in make_ints_lists:
+            if i.get("diffserv-target-entry", {}).get("direction", {}):
+                for index, stat in enumerate(i.get("diffserv-target-entry", {}).get("diffserv-target-classifier-statistics", {})):
+                    DbOps.update_qos_table(self.device, i['name'], i.get('diffserv-target-entry', {}).get('policy-name', {}),
+                                           i.get('diffserv-target-entry', {}).get('direction', {}),
+                                           stat.get('classifier-entry-name', {}),
+                                           stat.get("classifier-entry-statistics", {}).get("classified-rate", {}),
+                                           stat.get('classifier-entry-statistics', {}).get('classified-bytes', {}),
+                                           stat.get('classifier-entry-statistics', {}).get('classified-pkts', {}),
+                                           stat.get('queuing-statistics', {}).get('output-bytes', {}),
+                                           stat.get('queuing-statistics', {}).get('output-pkts', {}),
+                                           stat.get('queuing-statistics', {}).get('drop-pkts', {}),
+                                           stat.get('queuing-statistics', {}).get('drop-bytes', {}),
+                                           stat.get('queuing-statistics', {}).get('wred-stats', {}).get(
+                                               'early-drop-pkts', {}),
+                                           stat.get('queuing-statistics', {}).get('wred-stats', {}).get(
+                                               'early-drop-bytes', {}))
