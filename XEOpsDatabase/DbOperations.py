@@ -1,4 +1,5 @@
-from sqlalchemy import *
+"""Collection of classes and funtion to write to SQL database"""
+
 from sqlalchemy import create_engine
 from sqlalchemy import Column, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -19,19 +20,17 @@ def update_ip_interface_table(host, interface, ip_mac, admin, operational, speed
                           operational=operational, speed=speed, last_change=last_change, in_octets=in_octets,
                           out_octets=out_octets)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Interfaces).filter_by(unique_id=f'{host}|{interface}').first()
-        query.id = host
-        query.interface = interface
-        query.ip_mac = ip_mac
-        query.admin = admin
-        query.operational = operational
-        query.speed = speed
-        query.last_change = last_change
-        query.in_octets = in_octets
-        query.out_octets = out_octets
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.Interfaces")
+        session.commit()
+
+        info = Interfaces(unique_id=f'{host}|{interface}', id=host, interface=interface, ip_mac=ip_mac, admin=admin,
+                          operational=operational, speed=speed, last_change=last_change, in_octets=in_octets,
+                          out_octets=out_octets)
+        session.add(info)
+        session.commit()
 
 
 def update_arp_table(host, protocol, address, age, mac, type, interfaces):
@@ -43,38 +42,39 @@ def update_arp_table(host, protocol, address, age, mac, type, interfaces):
         info = Arp(unique_id=f'{host}|{address}', id=host, protocol=protocol, address=address, age=age, mac=mac,
                    type=type, interfaces=interfaces)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Arp).filter_by(unique_id=f'{host}|{address}').first()
-        query.address = address
-        query.protocol = protocol
-        query.id = host
-        query.age = age
-        query.mac = mac
-        query.type = type
-        query.interfaces = interfaces
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.Arp")
+        session.commit()
+
+        info = Arp(unique_id=f'{host}|{address}', id=host, protocol=protocol, address=address, age=age, mac=mac,
+                   type=type, interfaces=interfaces)
+
+        session.add(info)
+        session.commit()
 
 
 def update_vlan_table(host, vlan_id, vlan_prio, name, status, ports):
     """Insert vlans row in to table"""
 
-    query = session.query(Vlans).filter(Vlans.unique_id.like(host)).count()
+    query = session.query(Vlans).filter(Vlans.unique_id.like(f'{host}|{vlan_id}')).count()
 
     if query == 0:
         info = Vlans(unique_id=f'{host}|{vlan_id}', id=host, vlan_id=vlan_id, vlan_prio=vlan_prio, name=name,
                      status=status, ports=ports)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Vlans).filter_by(unique_id=f'{host}|{vlan_id}').first()
-        query.id = host
-        query.vlan_id = vlan_id
-        query.vlan_prio = vlan_prio
-        query.name = name
-        query.status = status
-        query.ports = ports
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.Vlans")
+        session.commit()
+
+        info = Vlans(unique_id=f'{host}|{vlan_id}', id=host, vlan_id=vlan_id, vlan_prio=vlan_prio, name=name,
+                     status=status, ports=ports)
+
+        session.add(info)
+        session.commit()
 
 
 def update_mac_arp_table(host, vlan, address, type, interface, ip, ip_interface):
@@ -86,17 +86,16 @@ def update_mac_arp_table(host, vlan, address, type, interface, ip, ip_interface)
         info = ArpMac(unique_id=f'{host}|{address + vlan}', id=host, vlan=vlan, address=address + vlan, type=type,
                       interface=interface, ip=ip, ip_interface=ip_interface)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(ArpMac).filter_by(unique_id=f'{host}|{address + vlan}').first()
-        query.address = address
-        query.id = host
-        query.vlan = vlan
-        query.type = type
-        query.interface = interface
-        query.ip = ip
-        query.ip_interface = ip_interface
+        session.execute("TRUNCATE TABLE db_ddladmin.ArpMac")
+        session.commit()
 
-    session.commit()
+        info = ArpMac(unique_id=f'{host}|{address + vlan}', id=host, vlan=vlan, address=address + vlan, type=type,
+                      interface=interface, ip=ip, ip_interface=ip_interface)
+
+        session.add(info)
+        session.commit()
 
 
 def update_cdp_table(host, neighbor, local_port, remote_port):
@@ -108,14 +107,16 @@ def update_cdp_table(host, neighbor, local_port, remote_port):
         info = Cdp(unique_id=f'{host}|{local_port}', id=host, neighbor=neighbor, local_port=local_port,
                    remote_port=remote_port)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Cdp).filter_by(unique_id=f'{host}|{local_port}').first()
-        query.local_port = local_port
-        query.id = host
-        query.neighbor = neighbor
-        query.remote_port = remote_port
+        session.execute("TRUNCATE TABLE db_ddladmin.Cdp")
+        session.commit()
 
-    session.commit()
+        info = Cdp(unique_id=f'{host}|{local_port}', id=host, neighbor=neighbor, local_port=local_port,
+                   remote_port=remote_port)
+
+        session.add(info)
+        session.commit()
 
 
 def update_trunks_table(host, interface, vlans, admin, operational):
@@ -127,15 +128,16 @@ def update_trunks_table(host, interface, vlans, admin, operational):
         info = Trunks(unique_id=f'{host}|{interface}', id=host, interface=interface, vlans=vlans, admin=admin,
                       operational=operational)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Trunks).filter_by(unique_id=f'{host}|{interface}').first()
-        query.interface = interface
-        query.id = host
-        query.vlans = vlans
-        query.admin = admin
-        query.operational = operational
+        session.execute("TRUNCATE TABLE db_ddladmin.Trunks")
+        session.commit()
 
-    session.commit()
+        info = Trunks(unique_id=f'{host}|{interface}', id=host, interface=interface, vlans=vlans, admin=admin,
+                      operational=operational)
+
+        session.add(info)
+        session.commit()
 
 
 def update_pochannel_table(host, interface, group, mode, admin, operational):
@@ -147,16 +149,15 @@ def update_pochannel_table(host, interface, group, mode, admin, operational):
         info = PoChannels(unique_id=f'{host}|{interface}', id=host, interface=interface, group=group, mode=mode,
                           admin=admin, operational=operational)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(PoChannels).filter_by(unique_id=f'{host}|{interface}').first()
-        query.interface = interface
-        query.id = host
-        query.group = group
-        query.mode = mode
-        query.admin = admin
-        query.operational = operational
+        session.execute("TRUNCATE TABLE db_ddladmin.PoChannels")
+        session.commit()
 
-    session.commit()
+        info = PoChannels(unique_id=f'{host}|{interface}', id=host, interface=interface, group=group, mode=mode,
+                          admin=admin, operational=operational)
+        session.add(info)
+        session.commit()
 
 
 def update_bgp_table(host, neighbor, auto_sys, uptime, prefixes, local_as):
@@ -168,16 +169,16 @@ def update_bgp_table(host, neighbor, auto_sys, uptime, prefixes, local_as):
         info = Bgp(unique_id=f'{host}|{neighbor}', id=host, neighbor=neighbor, auto_sys=auto_sys, uptime=uptime,
                    prefixes=prefixes, local_as=local_as)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Bgp).filter_by(unique_id=f'{host}|{neighbor}').first()
-        query.neighbor = neighbor
-        query.id = host
-        query.auto_sys = auto_sys
-        query.uptime = uptime
-        query.prefixes = prefixes
-        query.local_as = local_as
+        session.execute("TRUNCATE TABLE db_ddladmin.Bgp")
+        session.commit()
 
-    session.commit()
+        info = Bgp(unique_id=f'{host}|{neighbor}', id=host, neighbor=neighbor, auto_sys=auto_sys, uptime=uptime,
+                   prefixes=prefixes, local_as=local_as)
+
+        session.add(info)
+        session.commit()
 
 
 def update_ospf_table(host, neighbor, state, address, interface):
@@ -189,35 +190,38 @@ def update_ospf_table(host, neighbor, state, address, interface):
         info = Ospf(unique_id=f'{host}|{neighbor}', id=host, neighbor=neighbor, state=state, address=address,
                     interface=interface)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Ospf).filter_by(unique_id=f'{host}|{neighbor}').first()
-        query.neighbor = neighbor
-        query.id = host
-        query.state = state
-        query.address = address
-        query.interface = interface
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.Ospf")
+        session.commit()
+
+        info = Ospf(unique_id=f'{host}|{neighbor}', id=host, neighbor=neighbor, state=state, address=address,
+                    interface=interface)
+
+        session.add(info)
+        session.commit()
 
 
-def update_access_interfaces_table(host, interface, vlan, admin, operational):
+def update_access_interfaces_table(host, interface, vlan, status, duplex, speed, type):
     """Insert access interface row into table"""
 
     query = session.query(AccessInterfaces).filter(AccessInterfaces.unique_id.like(f'{host}|{interface}')).count()
 
     if query == 0:
-        info = AccessInterfaces(unique_id=f'{host}|{interface}', id=host, interface=interface, vlan=vlan, admin=admin,
-                                operational=operational)
+        info = AccessInterfaces(unique_id=f'{host}|{interface}', id=host, interface=interface, vlan=vlan,
+                                status=status, duplex=duplex, speed=speed, type=type)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(AccessInterfaces).filter_by(unique_id=f'{host}|{interface}').first()
-        query.interface = interface
-        query.id = host
-        query.vlan = vlan
-        query.admin = admin
-        query.operational = operational
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.AccessInterfaces")
+        session.commit()
+
+        info = AccessInterfaces(unique_id=f'{host}|{interface}', id=host, interface=interface, vlan=vlan,
+                                status=status, duplex=duplex, speed=speed, type=type)
+        session.add(info)
+        session.commit()
 
 
 def update_spann_tree_table(host, vlan, root_prio, root_id, root_cost, root_port):
@@ -229,23 +233,24 @@ def update_spann_tree_table(host, vlan, root_prio, root_id, root_cost, root_port
         info = SpanningTree(unique_id=f'{host}|{vlan}', id=host, vlan=vlan, root_cost=root_cost, root_port=root_port,
                             root_id=root_id, root_prio=root_prio)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(SpanningTree).filter_by(unique_id=f'{host}|{vlan}').first()
-        query.vlan = vlan
-        query.id = host
-        query.root_prio = root_prio
-        query.root_id = root_id
-        query.root_cost = root_cost
-        query.root_port = root_port
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.SpanningTree")
+        session.commit()
+
+        info = SpanningTree(unique_id=f'{host}|{vlan}', id=host, vlan=vlan, root_cost=root_cost, root_port=root_port,
+                            root_id=root_id, root_prio=root_prio)
+        session.add(info)
+        session.commit()
 
 
 def update_qos_table(host, interface, policy_name, direction, queue_name, rate, bytes, packets, out_bytes, out_packets,
                      drop_packets, drop_bytes, wred_drops_pkts, wred_drop_bytes):
     """Insert qos row into table"""
 
-    query = session.query(InterfaceQos).filter(InterfaceQos.unique_id.like(f'{host}|{interface}|{rate}|{queue_name}')).count()
+    query = session.query(InterfaceQos).filter(
+        InterfaceQos.unique_id.like(f'{host}|{interface}|{rate}|{queue_name}')).count()
 
     if query == 0:
         info = InterfaceQos(unique_id=f'{host}|{interface}|{rate}|{queue_name}', id=host, interface=interface,
@@ -255,25 +260,20 @@ def update_qos_table(host, interface, policy_name, direction, queue_name, rate, 
                             drop_bytes=drop_bytes,
                             wred_drops_pkts=wred_drops_pkts, wred_drop_bytes=wred_drop_bytes)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(InterfaceQos).filter_by(unique_id=f'{host}|{interface}|{rate}|{queue_name}').first()
-        query.interface = interface
-        query.id = host
-        query.policy_name = policy_name
-        query.direction = direction
-        query.queue_name = queue_name
-        query.rate = rate
-        query.bytes = bytes
-        query.packets = packets
-        query.out_bytes = out_bytes
-        query.out_packets = out_packets
-        query.drop_packets = drop_packets
-        query.drop_bytes = drop_bytes
-        query.wred_drops_pkts = wred_drops_pkts
-        query.wred_drop_bytes = wred_drops_pkts
-        query.bytes = bytes
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.InterfaceQos")
+        session.commit()
+
+        info = InterfaceQos(unique_id=f'{host}|{interface}|{rate}|{queue_name}', id=host, interface=interface,
+                            policy_name=policy_name, direction=direction, queue_name=queue_name, rate=rate, bytes=bytes,
+                            packets=packets,
+                            out_bytes=out_bytes, out_packets=out_packets, drop_packets=drop_packets,
+                            drop_bytes=drop_bytes,
+                            wred_drops_pkts=wred_drops_pkts, wred_drop_bytes=wred_drop_bytes)
+        session.add(info)
+        session.commit()
 
 
 def update_device_facts(host, serial, model, uptime, software, username, password):
@@ -305,17 +305,20 @@ def update_device_facts(host, serial, model, uptime, software, username, passwor
 def update_unassigned_interfaces(host, interface):
     """Insert unassigned interface row into table"""
 
-    query = session.query(UnassignedInterfaces).filter(UnassignedInterfaces.unique_id.like(f'{host}|{interface}')).count()
+    query = session.query(UnassignedInterfaces).filter(
+        UnassignedInterfaces.unique_id.like(f'{host}|{interface}')).count()
 
     if query == 0:
         info = UnassignedInterfaces(unique_id=f'{host}|{interface}', id=host, interface=interface)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(UnassignedInterfaces).filter_by(unique_id=f'{host}|{interface}').first()
-        query.id = host
-        query.interface = interface
+        session.execute("TRUNCATE TABLE db_ddladmin.UnassignedInterfaces")
+        session.commit()
 
-    session.commit()
+        info = UnassignedInterfaces(unique_id=f'{host}|{interface}', id=host, interface=interface)
+        session.add(info)
+        session.commit()
 
 
 def update_vrfs_table(host, vrf):
@@ -326,12 +329,15 @@ def update_vrfs_table(host, vrf):
     if query == 0:
         info = Vrfs(unique_id=f'{host}|{vrf}', id=host, vrf=vrf)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(Vrfs).filter_by(unique_id=f'{host}|{vrf}').first()
-        query.id = host
-        query.vrf = vrf
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.Vrfs")
+        session.commit()
+
+        info = Vrfs(unique_id=f'{host}|{vrf}', id=host, vrf=vrf)
+        session.add(info)
+        session.commit()
 
 
 def update_ospf_process_table(host, process):
@@ -342,11 +348,15 @@ def update_ospf_process_table(host, process):
     if query == 0:
         info = OspfProcess(unique_id=f'{host}|{process}', id=host, process=process)
         session.add(info)
+        session.commit()
     else:
-        query = session.query(OspfProcess).filter_by(unique_id=f'{host}|{process}').first()
-        query.process = host
 
-    session.commit()
+        session.execute("TRUNCATE TABLE db_ddladmin.OspfProcess")
+        session.commit()
+
+        info = OspfProcess(unique_id=f'{host}|{process}', id=host, process=process)
+        session.add(info)
+        session.commit()
 
 
 Base = declarative_base()
@@ -493,8 +503,10 @@ class AccessInterfaces(Base):
     interface = Column(String)
     id = Column(String)
     vlan = Column(String)
-    admin = Column(String)
-    operational = Column(String)
+    status = Column(String)
+    duplex = Column(String)
+    speed = Column(String)
+    type = Column(String)
 
 
 class SpanningTree(Base):

@@ -61,7 +61,6 @@ class PollWitNetconf:
                 # Call methods which collects data from device
                 self.get_trunk_ports()
                 self.get_port_channels()
-                self.get_access_ports()
                 self.get_ip_interfaces()
 
                 # Sleep before next poll
@@ -260,38 +259,6 @@ class PollWitNetconf:
                     DbOps.update_pochannel_table(self.device, interface['interface'], interface['group'],
                                                  interface['mode'],
                                                  port.get('admin-status'), port.get('oper-status'))
-
-    def get_access_ports(self):
-        """Get access ports"""
-
-        access_ports = []
-
-        config = self.get_config()
-        interface_state = self.get_stats()
-
-        for ints in self.interface_types:
-            current_interfaces = config[0]["native"]["interface"].get(ints)
-            make_list = is_in_list(current_interfaces)
-            for interface in make_list:
-                if interface is None:
-                    pass
-                elif interface.get("switchport", {}).get("access", {}).get("vlan", {}).get("vlan", {}):
-                    access_ports.append({'port': ints + interface.get('name'),
-                                         'vlan': interface.get('switchport', {}).get('access', {}).get('vlan',
-                                                                                                       {}).get(
-                                             'vlan', {})})
-                elif interface.get("switchport", {}).get("mode", {}).get("access", {}) is None:
-                    access_ports.append({'port': ints + interface.get('name'), 'vlan': 'Native'})
-
-        for interface in access_ports:
-            for port in interface_state:
-                try:
-                    if interface.get('port') == port.get('name'):
-                        DbOps.update_access_interfaces_table(self.device, interface['port'], interface['vlan'],
-                                                             port.get('admin-status'),
-                                                             port.get('oper-status'))
-                except AttributeError:
-                    pass
 
     def get_qos_interfaces(self):
         """Gets QOS configurations"""

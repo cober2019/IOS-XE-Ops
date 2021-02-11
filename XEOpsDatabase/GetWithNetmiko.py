@@ -35,6 +35,7 @@ class PollWithNetmiko:
                 self.session = ConnectWith.creat_netmiko_connection(self.username, self.password, self.device,
                                                                     self.ssh_port)
                 # Call methods which collects data from device
+                self.get_vlans()
                 self.get_arp()
                 self.get_mac_arp_table()
                 self.get_span_root()
@@ -43,6 +44,8 @@ class PollWithNetmiko:
                 self.get_bgp_status()
                 self.get_vrfs()
                 self.get_ospf_processes()
+                self.get_access_ports()
+
                 # Sleep before next poll
                 time.sleep(10)
 
@@ -333,11 +336,31 @@ class PollWithNetmiko:
                 DbOps.update_mac_arp_table(self.device, i['vlan'], i['address'], i['type'], i['interface'],
                                            i['ip'], i['ip_int'])
 
-    def get_netmiko_vlans(self):
-        """Using Netmiko, this methis logs onto the self.device and gets the routing table. It then loops through each prefix
-        to find the routes and route types."""
+    def get_access_ports(self):
+        """Get trunks"""
 
-        vlan_table = []
+        interface_command = 'show interfaces status'
+
+        get_interfaces = self.send_command(interface_command)
+
+        cli_line = get_interfaces.split("\n")
+        for line in cli_line:
+            if not list(enumerate(line.split(), 0)):
+                continue
+            if line.split()[0] == "Port":
+                continue
+            else:
+                if len(line.split()) == 6:
+                    DbOps.update_access_interfaces_table(self.device, line.split()[0], line.split()[2], line.split()[1],
+                                                         line.split()[3], line.split()[4], line.split()[5])
+                elif len(line.split()) == 6:
+                    print(line.split())
+                    DbOps.update_access_interfaces_table(self.device, line.split()[0], line.split()[2], line.split()[1],
+                                                         line.split()[3], line.split()[4], 'None')
+
+    def get_vlans(self):
+        """Get vlans"""
+
         iter_vlan = "1"
         get_vlans = 'show vlan brief'
         get_vlan_pro = 'show spanning-tree bridge priority'
@@ -346,7 +369,6 @@ class PollWithNetmiko:
         vlans = self.send_command(get_vlans)
         get_prio = self.send_command(get_vlan_pro)
 
-        # Parse netmiko vlan reponse
         for vlan in vlans.splitlines():
             try:
                 if not vlan:
@@ -359,19 +381,18 @@ class PollWithNetmiko:
                     continue
                 elif vlan.split()[0].rfind("-") != -1:
                     continue
-
                 if iter_vlan != vlan.split()[0] or iter_vlan == "1":
                     if vlan.split()[0].rfind("/") != -1:
                         vlan_ports = ' '.join(vlan.split())
                     else:
                         vlan_ports = ' '.join(vlan.split()[3:])
 
-                for prio in get_prio:
+                for prio in get_prio.splitlines():
                     try:
                         if list(enumerate(prio.split(), 0))[0][1][-2:] == list(enumerate(vlan.split(), 0))[0][1]:
-                            vlan_table.append(
-                                {'id': prio.split()[0][-2:], 'prio': prio.split()[1], 'name': vlan.split()[1],
-                                 'status': vlan.split()[2], 'ports': vlan_ports})
+                            DbOps.update_vlan_table(self.device, prio.split()[0][-2:], prio.split()[1],
+                                                    vlan.split()[1], vlan.split()[2], vlan_ports)
+
                     except IndexError:
                         pass
 
@@ -379,7 +400,3 @@ class PollWithNetmiko:
 
             except IndexError:
                 pass
-
-        if vlan_table:
-            for i in vlan_table:
-                DbOps.update_vlan_table(self.device, i['id'], i['pro'], i['name'], i['status'], i['ports'])
