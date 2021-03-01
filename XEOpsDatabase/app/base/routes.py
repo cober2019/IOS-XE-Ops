@@ -15,13 +15,9 @@ from app.base.forms import LoginForm
 import string
 from app.base.models import User
 from app.base.util import verify_pass
-from app.Modules.ProjectRouting.Software import IOSXE
-import app.Modules.ProjectRouting.Database.DB_queries as Db_queries
-import app.Modules.ProjectRouting.Database.DatabaseOps as DB
 import app.Modules.connection as ConnectWith
 import app.Modules.GetWithNetmiko as GetNetmiko
 import app.Modules.GetWithNetconf as GetNeconf
-import app.Modules.file_operations as FileOps
 import app.Modules.GetFacts as GetFacts
 import app.Modules.ConfigValidation as ValidateConfig
 import app.Modules.ConfigBuild as BuildConfig
