@@ -55,33 +55,37 @@ def netmiko_w_enable(host, username, password, **enable) -> object:
 def create_netconf_connection(username, password, host, port) -> manager:
     """Creates NETCONF Session"""
 
-    try:
+    retries = 0
+    netconf_session = 'error'
 
-        netconf_session = manager.connect(host=host, port=port, username=username,
-                                          password=password,
-                                          device_params={'name': 'csr'})
-        
-    except manager.operations.errors.TimeoutExpiredError:
-        netconf_session = 'error'
-    except AttributeError as error:
-        netconf_session = 'error'
-    except manager.transport.TransportError:
-        netconf_session = 'error'
-    except manager.operations.rpc.RPCError:
-        netconf_session = 'error'
+    while retries != 3:
+        try:
+
+            netconf_session = manager.connect(host=host, port=port, username=username,
+                                              password=password,
+                                              device_params={'name': 'csr'})
+
+        except manager.operations.errors.TimeoutExpiredError:
+            retries += 1
+        except AttributeError:
+            retries += 1
+        except manager.transport.TransportError:
+            retries += 1
+        except manager.operations.rpc.RPCError:
+            retries += 1
+        except OSError:
+            retries += 1
 
     return netconf_session
 
 
 def re_auth_netconf(username, password, host, port):
-    
     netconf_session = create_netconf_connection(username, password, host, port)
-    
+
     return netconf_session
 
 
 def re_auth_netmiko(username, password, host, port):
-    
     netmiko_session = creat_netmiko_connection(username, password, host, port)
 
     return netmiko_session
