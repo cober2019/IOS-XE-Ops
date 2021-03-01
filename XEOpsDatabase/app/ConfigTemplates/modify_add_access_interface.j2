@@ -1,0 +1,20 @@
+
+!
+interface {{ interface }}
+{% if vlan is not none %}
+    switchport access vlan {{ vlan }}
+{% endif %}
+{% if status == 'up' %}
+    no shutdown
+{% elif status == 'down' %}
+    shutdown
+{% endif %}
+{% if descr is not none %}
+    description {{ descr }}
+{% endif %}
+{% if voice_vlan is not none %}
+    switchport voice vlan  {{ voice_vlan }}
+{% endif %}
+
+
+!

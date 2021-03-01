@@ -1,0 +1,24 @@
+interface {{ interface }}
+
+ ip address {{address}} {{mask}}
+ ip nhrp authentication {{ auth }}
+ ip nhrp map multicast {{ nbma }}
+ ip nhrp map {{ tunnel }} {{ nbma }}
+ ip nhrp map multicast {{ nbma }}
+ ip nhrp map {{ tunnel }} {{ nbma }}
+ ip nhrp network-id {{ network_id }}
+ ip nhrp holdtime {{ holdtime }}
+ ip nhrp nhs {{ nhs }}
+ ip nhrp nhs {{ nhs }}
+
+ {% if nhrp_redirect %}
+    ip nhrp redirect
+ {% if nhrp_shortcut %}
+    ip nhrp redirect
+
+ ip tcp adjust-mss {{ size_bytes }}
+ tunnel source {{ source }}
+ tunnel mode gre {{ mode }}
+ tunnel protection ipsec profile {{ profile }}
+
+end

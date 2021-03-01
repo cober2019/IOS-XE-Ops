@@ -1,0 +1,14 @@
+!
+router bgp {{ local_as }}
+    neighbor {{ neighbor }} remote-as {{ remote_as }}
+    {% if soft_reconfig %}
+    neighbor {{ neighbor }} soft-reconfiguration {{ soft_reconf }}
+    {% endif %}
+    {% if next_hop %}
+    neighbor {{ neighbor }} next-hop-self
+    {% endif %}
+    {% if policy %}
+    neighbor {{ neighbor }} {{ policy[1] }} {{ policy[0] }}
+    {% endif %}
+!
+

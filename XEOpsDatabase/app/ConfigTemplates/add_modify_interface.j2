@@ -1,0 +1,35 @@
+
+!
+interface {{ int }}
+{% if ip is not none %}
+    ip address {{ ip }} {{ mask }}
+{% endif %}
+{% if status == 'up' %}
+    no shutdown
+{% elif status == 'down' %}
+    shutdown
+{% endif %}
+{% if vrf != 'No-vrf' %}
+    vrf forwarding {{ vrf }}
+{% endif %}
+{% if descr is not none %}
+    description {{ descr }}
+{% endif %}
+{% if switchport is not none %}
+    {% if switchport == 'no switchport' %}
+        {{ switchport }}
+    {% elif switchport == 'switchport'%}
+        {{ switchport }}
+    {% elif switchport == 'switchport mode access'%}
+        switchport
+        {{ switchport }}
+        switchport host
+    {% elif switchport == 'switchport mode trunk'%}
+        switchport
+        {{ switchport }}
+        no spanning-tree portfast
+    {% endif %}
+{% endif %}
+
+!
+

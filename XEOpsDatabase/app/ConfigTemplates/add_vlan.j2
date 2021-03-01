@@ -1,0 +1,10 @@
+config t
+{% if action == 'add' %}
+    vlan {{ vlan_id }}
+    name {{ vlan_name }}
+{% elif action == 'delete' %}
+    no vlan {{ vlan_id }}
+{% endif %}
+end
+wr
+

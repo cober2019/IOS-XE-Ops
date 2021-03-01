@@ -1,0 +1,6 @@
+interface {{ interface }}
+    {% if action == 'add' %}
+    switchport trunk allowed vlan add {{ vlan }}
+    {% elif action == 'remove' %}
+    switchport trunk allowed vlan remove {{ vlan }}
+    {% endif %}

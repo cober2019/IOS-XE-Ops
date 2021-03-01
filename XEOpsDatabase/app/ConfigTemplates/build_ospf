@@ -1,0 +1,4 @@
+!
+router ospf {{ proccess }}
+    network {{ network }} {{ wildcard }} area {{ area }}
+!
