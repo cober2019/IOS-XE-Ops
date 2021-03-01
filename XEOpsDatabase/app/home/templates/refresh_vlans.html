@@ -1,0 +1,21 @@
+<table id="vlanTable" class="table align-items-center table-striped">
+  <thead class="thead-light">
+    <tr>
+        <th scope="col" style="text-align:center">Vlan ID</th>
+        <th scope="col" style="text-align:center">Vlan Name</th>
+        <th scope="col" style="text-align:center">Vlan Prio</th>
+        <th scope="col" style="text-align:center">Status</th>
+        <th scope="col" style="text-align:center">Ports</th>
+      </tr>
+  </thead>
+  <tbody id="vlanTable">
+  {% for i in vlans %}
+    <tr>
+      <td scope="row" style="text-align:center">{{ i.vlan_id }}</td>
+      <td scope="row" style="text-align:center">{{ i.name }}</td>
+      <td scope="row" style="text-align:center">{{ i.vlan_prio }}</td>
+      <td scope="row" style="text-align:center">{{ i.status }}</td>
+      <td scope="row" style="text-align:center">{{ i.ports }}</td>
+    </tr>
+  {% endfor %}
+</table>

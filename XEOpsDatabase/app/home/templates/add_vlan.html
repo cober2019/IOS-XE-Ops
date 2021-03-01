@@ -1,0 +1,148 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<ul class="nav">
+    <li class="nav-item">
+        <a href="#home" class="nav-link active text-light" data-toggle="tab">Interface Form</a>
+    </li>
+    <li class="nav-item">
+        <a href="#profile" class="nav-link text-light" data-toggle="tab">Custom Config</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col">
+        <div class="tab-content">
+            <div class="tab-pane show active" id="home">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                        <h3 class="mb-0 mb-0 text-center">New/Delete Vlan</h3>
+                                        <br/>
+                                    </div>
+                                </div>
+                                <form id="vlaneForm" method="post" action="{{ url_for('base_blueprint.add_vlan') }}">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold ">Vlan:</label>
+                                        <input class="form-control" placeholder="1-4095" name="vlanId">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Name</label>
+                                        <input class="form-control" placeholder="Name" name="vlanName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Action</label>
+                                        <div class="input-group mb-3">
+                                            <select class="custom-select" name="action">
+                                                <option value="delete">Delete</option>
+                                                <option value="add">Add</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <span>
+                                      {% if status == 'custom_success' %}
+                                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Success"
+                                                                                                        class="btn btn-success">
+                                      {% elif status == 'custom_fail' %}
+                                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Failed"
+                                                                                                        class="btn btn-danger">
+                                      {% else %}
+                                        <input value="Submit" type="submit" class="btn btn-dark">
+                                      {% endif %}
+                                  </span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="profile">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                        <h3 class="mb-0 mb-0 text-center">Custom Vlan Configuration</h3>
+                                        <br/>
+                                    </div>
+                                </div>
+                                <form id="vlanFormCustom" method="post" action="{{ url_for('base_blueprint.add_vlan') }}">
+                                    <div class="form-group">
+                                        <textarea name="vlanCustomForm" class="form-control rounded-0"
+                                                  id="exampleFormControlTextarea1" rows="7"></textarea>
+                                    </div>
+                                    <br/>
+                                    <span>
+                                      {% if status == 'custom_success' %}
+                                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Success"
+                                                                                                        class="btn btn-success">
+                                      {% elif status == 'custom_fail' %}
+                                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Failed"
+                                                                                                        class="btn btn-danger">
+                                      {% else %}
+                                        <input value="Submit" type="submit" class="btn btn-dark">
+                                      {% endif %}
+                                  </span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="col">
+            <div class="card">
+                <div class="card-header border-0">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <span><h3 class="mb-0" style="text-align:left">Vlans
+                              <input value="Poll" name="vlans" class="btn btn-dark btn-round-xs float-right" role="status"
+                                     type="button" onclick="refreshVlans(this.name)" id="vlanRefresh">
+                              <p class="float-center">Last Poll: {{vlans[0].query_time}}</p>
+                              </h3>
+                              </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table id="vlanTable" class="table align-items-center table-striped">
+                        <thead class="thead-light">
+                        <tr>
+                            <th scope="col" style="text-align:center">Vlan ID</th>
+                            <th scope="col" style="text-align:center">Vlan Name</th>
+                        </tr>
+                        </thead>
+                        <tbody id="vlanTable">
+                        {% for i in vlans %}
+                        <tr>
+                            <td scope="row" style="text-align:center">{{ i.vlan_id }}</td>
+                            <td scope="row" style="text-align:center">{{ i.name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

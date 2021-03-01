@@ -1,0 +1,45 @@
+<div class="table-responsive">
+  <table class="table align-items-center table-striped" id="trunks">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col" style="text-align:center">Interface</th>
+        <th scope="col" style="text-align:center">Trunked Vlans</th>
+        <th scope="col" style="text-align:center">Admin</th>
+        <th scope="col" style="text-align:center">Operational</th>
+        <th scope="col" style="text-align:center">Action</th>
+      </tr>
+    </thead>
+    <tbody id="trunkTable">
+      {% for i in trunks %}
+        <tr>
+           <td scope="row" style="text-align:center">{{ i.interface }}</td>
+           <td scope="row" style="text-align:center">{{ i.vlans }}</td>
+
+           {% if i.admin == 'down' %}
+            <td scope="row" style="text-align:center">
+              <i class="fas fa-circle text-red mr-3"></i>
+            </td>
+           {% else %}
+            <td scope="row" style="text-align:center">
+              <i class="fas fa-circle text-green mr-3"></i>
+            </td>
+           {% endif %}
+
+           {% if i.operational == 'down' or i.operational == 'lower-layer-down' %}
+            <td scope="row" style="text-align:center">
+              <i class="fas fa-circle text-red mr-3"></i>
+            </td>
+           {% else %}
+            <td scope="row" style="text-align:center">
+              <i class="fas fa-circle text-green mr-3"></i>
+            </td>
+           {% endif %}
+          <th scope="row" class="text-center">
+            <a href="{{ url_for('base_blueprint.modify_trunk_interface', interface=i.interface.replace('/', '%2f')) }}"><input value="Modify" name="modifyTrunkVlan" class="btn btn-link" role="status" type="button" style="font-size:11px"></a>
+            <br/>
+            <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+          </th>
+        </tr>
+      {% endfor %}
+  </table>
+</div>

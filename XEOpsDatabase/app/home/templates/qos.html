@@ -1,0 +1,208 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="mb-0">
+              <span>IP Interfaces</span>
+              <span class="float-right text-primary">* Assigned QoS</span>
+            </h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">Interface</th>
+              <th scope="col" class="text-center">IP</th>
+              <th scope="col" class="text-center">Admin/Operational</th>
+              <th scope="col" class="text-center">Speed</th>
+              <th scope="col" class="text-center">Last Change</th>
+              <th scope="col" class="text-center">InOctets</th>
+              <th scope="col" class="text-center">OutOctets</th>
+              <th scope="col" class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for i in interfaces %}
+                <tr style="height:1px">
+                  {% if i.interface in interface_qos %}
+                    <th scope="row" class="text-center text-primary">
+                      {{ '*' + i.interface + ' (Qos)'}}
+                    </th>
+                  {%else%}
+                     <th scope="row" class="text-center">
+                      {{ i.interface }}
+                    </th>
+                  {%endif%}
+                  <th scope="row" class="text-center">
+                    {{ i.ip_mac }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.admin }}/{{ i.operational }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.speed }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.last_change }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.in_octets }}
+                  </th>
+                   <th scope="row" class="text-center">
+                    {{ i.out_octets }}
+                  </th>
+                  {% if i.interface in interface_qos %}
+                    <th scope="row" class="text-center">
+                      <span><a href="{{ url_for('base_blueprint.configure_qos', interface=i.interface.replace('/', '%2f')) }}">
+                      <input value="Change Qos" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" style="font-size:11px"></a></span>
+                    </th>
+                  {% else %}
+                    <th scope="row" class="text-center">
+                      <span><a href="{{ url_for('base_blueprint.configure_qos', interface=i.interface.replace('/', '%2f')) }}">
+                      <input value="Add Qos" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" style="font-size:11px"></a></span>
+                    </th>
+                  {% endif %}
+                </tr>
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% if interface_qos%}
+<div class="row">
+    <div class="col-xl-12">
+      {% for i in interface_qos %}
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0">{{ i.interface }} | Policy: {{ i.policy_name }} | Direction: {{ i.direction }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush table-borderless">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" class="text-center">Queue</th>
+                  <th scope="col" class="text-center">Queued Rate</th>
+                  <th scope="col" class="text-center">In Bytes</th>
+                  <th scope="col" class="text-center">In Packets</th>
+                  <th scope="col" class="text-center">Out Bytes</th>
+                  <th scope="col" class="text-center">Out Packets</th>
+                  <th scope="col" class="text-center">Drop Packets</th>
+                  <th scope="col" class="text-center">Drop Bytes</th>
+                  <th scope="col" class="text-center">WRED Packets
+                  <th scope="col" class="text-center">WRED Bytes</th>
+                  <th scope="col" class="text-center">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for i in interface_qos %}
+                <tr style="height:1px">
+                  <th scope="row">
+                    {{ i.queue_name }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.rate }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.bytes }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.packets }}
+                  </th>
+                   <th scope="row" class="text-center">
+                    {{ i.out_bytes }}
+                  </th>
+                  <th scope="row" class="text-center">
+                    {{ i.out_packets }}
+                  </th>
+
+                  {% if i.drop_packets != '0' %}
+                    <th style="color:red" scope="row" class="text-center">
+                      {{ i.drop_packets }}
+                    </th>
+                  {%else%}
+                   <th scope="row">
+                      {{ i.drop_packets }}
+                    </th>
+                  {%endif%}
+
+                  {% if i.drop_bytes != '0' %}
+                    <th style="color:red" scope="row" class="text-center">
+                      {{ i.drop_bytes }}
+                  {%else%}
+                   <th scope="row" class="text-center">
+                      {{ i.drop_bytes }}
+                    </th>
+                  {%endif%}
+
+                  {% if i.wred_drops_pkts != '0' %}
+                    <th style="color:red" scope="row" class="text-center">
+                      {{ i.wred_drops_pkts }}
+                  {%else%}
+                   <th scope="row" class="text-center">
+                      {{ i.wred_drops_pkts }}
+                    </th>
+                  {%endif%}
+
+                  {% if i.wred_drop_bytes != '0' %}
+                    <th style="color:red" scope="row" class="text-center">
+                      {{ i.wred_drop_bytes }}
+                  {%else%}
+                   <th scope="row" class="text-center">
+                      {{ i.wred_drop_bytes }}
+                    </th>
+                  {%endif%}
+                   <th scope="row" class="text-center">
+                    <input value="More Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreQosDetails(this.name)" id="{{ i.interface }}" style="font-size:11px">
+                  </th>
+                </tr>
+
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      {%endfor%}
+    </div>
+</div>
+{%else%}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0 text-center">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="mb-0 text-danger">No Qos Detected</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endif%}
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

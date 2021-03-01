@@ -1,0 +1,86 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col ">
+                        <h3 class="mb-0 mb-0 text-center">Custom Interface Configuration</h3>
+                        <br/>
+                    </div>
+                </div>
+                <form id="" method="post" action="{{ url_for('base_blueprint.new_interface') }}">
+                    <div class="form-group">
+                        <textarea name="newIntCustomForm" class="form-control rounded-0" rows="20">
+    interface {{ interface }}
+        ip address {{address}} {{mask}}
+        ip nhrp authentication {{ auth }}
+        ip nhrp map multicast {{ nbma }}
+        ip nhrp map {{ tunnel }} {{ nbma }}
+        ip nhrp map multicast {{ nbma }}
+        ip nhrp map {{ tunnel }} {{ nbma }}
+        ip nhrp network-id {{ network_id }}
+        ip nhrp holdtime {{ holdtime }}
+        ip nhrp nhs {{ nhs }}
+        ip nhrp nhs {{ nhs }}
+        ip nhrp redirect
+        ip nhrp redirect
+        ip tcp adjust-mss {{ size_bytes }}
+        tunnel source {{ source }}
+        tunnel mode gre {{ mode }}
+        tunnel protection ipsec profile {{ profile }}
+
+                        </textarea>
+                    </div>
+                    <br/>
+                    <span>
+                      {% if status == 'custom_success' %}
+                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Success"
+                                                                                        class="btn btn-success">
+                      {% elif status == 'custom_fail' %}
+                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Failed"
+                                                                                        class="btn btn-danger">
+                      {% else %}
+                        <input value="Submit" type="submit" class="btn btn-dark">
+                      {% endif %}
+                  </span>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col ">
+                        <h3 class="mb-0 mb-0 text-center">Interface Configuration</h3>
+                        <br/>
+                    </div>
+                </div>
+                <pre>{{ current_config }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

@@ -1,0 +1,72 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0">QoS Configuration</h3>
+            <br/>
+          </div>
+        </div>
+          <form id="qosForm" method="post">
+            <div class="form-group">
+              <label>Interface</label>
+              <input value="{{ interface }}" class="form-control"  name="interface" readonly="readonly">
+            </div>
+            <div class="form-group">
+              <label>Policy</label>
+              <div class="input-group mb-3">
+                <select class="custom-select" name="servicePolicy">
+                  <option selected>Select</option>
+                  {% for i in policies %}
+                    <option value="{{ i }}">{{ i }}</option>>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Direction</label>
+              <div class="input-group mb-3">
+                <select class="custom-select" name="direction">
+                  <option selected>Select</option>
+                  <option selected>input</option>
+                  <option selected>output</option>
+                </select>
+              </div>
+            </div>
+            <br/>
+             <span>
+              {% if status == 'success' %}
+                <input value="Submit" type="submit" class="btn btn-dark" id="modifyInt"><input value="Success" class="btn btn-success">
+              {% elif status == 'fail' %}
+                <input value="Submit" type="submit" class="btn btn-dark" id="modifyInt"><input value="Failed" class="btn btn-danger">
+              {% else %}
+                <input value="Submit" type="submit" class="btn btn-dark" id="modifyInt">
+              {% endif %}
+          </span>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

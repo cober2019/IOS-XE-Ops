@@ -1,0 +1,461 @@
+{% extends 'layouts/base.html' %}
+{% block title %} Layer Two {% endblock title %}
+
+{% block stylesheets %}
+{% endblock stylesheets %}
+
+{% block content %}
+
+{% if model[:3][-2:] != 'SR'%}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <span><h3 class="mb-0" style="text-align:left">Vlans
+                  <input value="Poll" name="vlans" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshVlans(this.name)" id="vlanRefresh">
+                  <a href="{{ url_for('base_blueprint.add_vlan') }}"><input value="Add/Delete Vlan" name="addVlan" class="btn btn-dark btn-round-xs float-right" role="status" type="button" style="margin-right: 10px"></a>
+                  <p class="float-center">Last Poll: {{vlans[0].query_time}}</p>
+                  </h3>
+                  </span>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="vlanTable" class="table align-items-center table-striped">
+              <thead class="thead-light">
+                <tr>
+                    <th scope="col" style="text-align:center">Vlan ID</th>
+                    <th scope="col" style="text-align:center">Vlan Name</th>
+                    <th scope="col" style="text-align:center">Vlan Prio</th>
+                    <th scope="col" style="text-align:center">Status</th>
+                    <th scope="col" style="text-align:center">Ports</th>
+                  </tr>
+              </thead>
+              <tbody id="vlanTable">
+              {% for i in vlans %}
+                <tr>
+                  <td scope="row" style="text-align:center">{{ i.vlan_id }}</td>
+                  <td scope="row" style="text-align:center">{{ i.name }}</td>
+                  <td scope="row" style="text-align:center">{{ i.vlan_prio }}</td>
+                  <td scope="row" style="text-align:center">{{ i.status }}</td>
+                  <td scope="row" style="text-align:center">{{ i.ports }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xl-6">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <span><h3 class="mb-0" style="text-align:left">Interface Status
+                    <input value="Poll" name="access" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshAccess(this.name)" id="accessRefresh">
+                  <p class="float-center">Last Poll: {{access_ports[0].query_time}}</p>
+                </h3>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="accessTable" class="table align-items-center table-striped">
+              <thead class="thead-light">
+                <tr>
+                    <th scope="col" style="text-align:center">Interface</th>
+                    <th scope="col" style="text-align:center">Vlan</th>
+                    <th scope="col" style="text-align:center">Status</th>
+                    <th scope="col" style="text-align:center">Duplex</th>
+                    <th scope="col" style="text-align:center">Speed</th>
+                    <th scope="col" style="text-align:center">Description</th>
+                    <th scope="col" style="text-align:center">Available Actions</th>
+                  </tr>
+              </thead>
+              <tbody id="accessTable">
+              {% for i in access_ports %}
+                <tr>
+                  <td scope="row" style="text-align:center">{{ i.interface }}</td>
+                  <td scope="row" style="text-align:center">{{ i.vlan }}</td>
+                  {% if i.status == 'disabled' or i.status == 'notconnect' %}
+                    <td scope="row" style="text-align:center">
+                      <i class="fas fa-circle text-red mr-3"></i>
+                    </td>
+                  {% elif i.status == 'err-disabled' or i.status == 'suspended' %}
+                    <td scope="row" style="text-align:center">
+                      <i class="fas fa-circle text-yellow mr-3"></i>(err/susp)
+                    </td>
+                  {% else %}
+                    <td scope="row" style="text-align:center">
+                      <i class="fas fa-circle text-green mr-3"></i>
+                    </td>
+                  {% endif %}
+                  <td scope="row" style="text-align:center">{{ i.duplex }}</td>
+                  <td scope="row" style="text-align:center">{{ i.speed }}</td>
+                  <td scope="row" style="text-align:center">{{ i.description }}</td>
+                  <th scope="row" class="text-center">
+                    <a href="{{ url_for('base_blueprint.modify_access_interface', interface=i.interface.replace('/', '%2f')) }}"><input value="Modify" name="modifyPortVlan" class="btn btn-link" role="status" type="button" style="font-size:11px"></a>
+                    <br/>
+                    <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+                  </th>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">CDP Neighbors
+                  <span>
+                    <input value="Poll" name="cdp" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshCdp(this.name)" id="cdpRefresh"></span>
+                    <p class="float-center">Last Poll: {{neighbors[0].query_time}}</p>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="cdpTable" class="table align-items-center table-striped" >
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Neighbor</th>
+                  <th scope="col" style="text-align:center">Local Port</th>
+                  <th scope="col" style="text-align:center">Remote Port</th>
+                  <th scope="col" style="text-align:center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="cdpTable">
+                {% for i in neighbors %}
+                  <tr>
+                    <td scope="row" style="text-align:center">{{ i.neighbor }}</td>
+                    <td scope="row" style="text-align:center">{{ i.local_port }}</td>
+                    <td scope="row" style="text-align:center">{{ i.remote_port }}</td>
+                    <th scope="row" class="text-center">
+                      <input style="font-size:11px" value="CDP Details" name="{{ i.local_port }}" class="btn btn-link" role="status" type="button" onclick="cdpDetails(this.name)" id="{{ i.local_port }}">
+                    </th>
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">Spanning Tree View
+                  <span><input value="Poll" name="span" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshSpan(this.name)" id="rootRefresh"></span>
+                  <p class="float-center">Last Poll: {{roots[0].query_time}}</p>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="spanTable" class="table align-items-center table-striped">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Vlan</th>
+                  <th scope="col" style="text-align:center">Root Prioirty</th>
+                  <th scope="col" style="text-align:center">Root ID</th>
+                  <th scope="col" style="text-align:center">Root Cost</th>
+                  <th scope="col" style="text-align:center">Root Port</th>
+                  <th scope="col" style="text-align:center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="rootTable">
+              {% for i in roots %}
+                <tr>
+                  <td scope="row" style="text-align:center">{{ i.vlan }}</td>
+                  <td scope="row" style="text-align:center">{{ i.root_prio }}</td>
+                  <td scope="row" style="text-align:center">{{ i.root_id }}</td>
+                  <td scope="row" style="text-align:center">{{ i.root_cost }}</td>
+                  <td scope="row" style="text-align:center">{{ i.root_port }}</td>
+                  <th scope="row" class="text-center">
+                    <input style="font-size:11px" value="STP Details" name="{{ i['vlan'] }}" class="btn btn-link" role="status" type="button" onclick="spanDetails(this.name)" id="{{ i['vlan'] }}">
+                  </th>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">ARP-MAC
+                  <span><input value="Poll" name="mac" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshArp(this.name)" id="arpRefresh"></span>
+                  <p class="float-center">Last Poll: {{mac_arp[0].query_time}}</p>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table id="arpMac" class="table align-items-center table-striped">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Vlan</th>
+                  <th scope="col" style="text-align:center">MAC Address</th>
+                  <th scope="col" style="text-align:center">IP Address</th>
+                  <th scope="col" style="text-align:center">Type</th>
+                  <th scope="col" style="text-align:center">Interface</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in mac_arp %}
+                  <tr>
+                    <td scope="row" style="text-align:center">{{ i.vlan }}</td>
+                    <td scope="row" style="text-align:center">{{ i.address }}</td>
+                    <td scope="row" style="text-align:center">{{ i.ip }}</td>
+                    <td scope="row" style="text-align:center">{{ i.ep_type }}</td>
+                    <td scope="row" style="text-align:center">{{ i.interface }}</td>
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-header border-0">
+              <div class="row align-items-center">
+                <div class="col">
+                  <h3 class="mb-0" style="text-align:left">Trunks
+                  <span><input value="Poll" name="trunks" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshTrunks(this.name)" id="trunkRefresh"></span>
+                  <p class="float-center">Last Poll: {{trunks[0].query_time}}</p>
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table align-items-center table-striped" id="trunks">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col" style="text-align:center">Interface</th>
+                    <th scope="col" style="text-align:center">Trunked Vlans</th>
+                    <th scope="col" style="text-align:center">Admin</th>
+                    <th scope="col" style="text-align:center">Operational</th>
+                    <th scope="col" style="text-align:center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="trunkTable">
+                  {% for i in trunks %}
+                    <tr>
+                       <td scope="row" style="text-align:center">{{ i.interface }}</td>
+                       <td scope="row" style="text-align:center">{{ i.vlans }}</td>
+
+                       {% if i.admin == 'down' %}
+                        <td scope="row" style="text-align:center">
+                          <i class="fas fa-circle text-red mr-3"></i>
+                        </td>
+                       {% else %}
+                        <td scope="row" style="text-align:center">
+                          <i class="fas fa-circle text-green mr-3"></i>
+                        </td>
+                       {% endif %}
+
+                       {% if i.operational == 'down' or i.operational == 'lower-layer-down' %}
+                        <td scope="row" style="text-align:center">
+                          <i class="fas fa-circle text-red mr-3"></i>
+                        </td>
+                       {% else %}
+                        <td scope="row" style="text-align:center">
+                          <i class="fas fa-circle text-green mr-3"></i>
+                        </td>
+                       {% endif %}
+                      <th scope="row" class="text-center">
+                        <a href="{{ url_for('base_blueprint.modify_trunk_interface', interface=i.interface.replace('/', '%2f')) }}"><input value="Modify" name="modifyTrunkVlan" class="btn btn-link" role="status" type="button" style="font-size:11px"></a>
+                        <br/>
+                        <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+                      </th>
+                    </tr>
+                  {% endfor %}
+              </table>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <span><h3 class="mb-0" style="text-align:left">Port-Channels
+                    <input value="Poll" name="portChannel" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshPortChannels(this.name)" id="portChannelRefresh">
+                    <a href="{{ url_for('base_blueprint.add_poch') }}"><input value="Add Interface" name="addVlan" class="btn btn-dark btn-round-xs float-right" role="status" type="button" style="margin-right: 10px"></a>
+                    <p class="float-center">Last Poll: {{port_chan[0].query_time}}</p>
+                </h3>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-striped" id="portChannels" >
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Interface</th>
+                  <th scope="col" style="text-align:center">Admin</th>
+                  <th scope="col" style="text-align:center">Operational</th>
+                  <th scope="col" style="text-align:center">Channel-Group</th>
+                  <th scope="col" style="text-align:center">Mode</th>
+                  <th scope="col" style="text-align:center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="portchTable">
+                {% for i in port_chan %}
+                  <tr>
+                    <td scope="row" style="text-align:center">{{ i.interface }}</td>
+                    {% if i.admin == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                    {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                    {% endif %}
+
+                    {% if i.operational == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                    {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                    {% endif %}
+                    <td scope="row" style="text-align:center">{{ i.group }}</td>
+                    <td scope="row" style="text-align:center">{{ i.mode }}</td>
+                    <th scope="row" class="text-center">
+                        <a href="{{ url_for('base_blueprint.modify_inteface', interface=i.interface.replace('/', '%2f')) }}"><input value="Modify" name="modifyTrunkVlan" class="btn btn-link" role="status" type="button" style="font-size:11px"></a>
+                        <br/>
+                        <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+                      </th>
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% elif model[:3][-2:] == 'SR' and port_chan[0] %}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0" style="text-align:left">Port-Channels
+                  <span>
+                    <input value="Poll" name="portChannel" class="btn btn-dark btn-round-xs float-right" role="status" type="button" onclick="refreshPortChannels(this.name)" id="portChannelRefresh"></span>
+                  <p class="float-center">Last Poll: {{port_chan[0].query_time}}</p>
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-striped" id="portChannels" >
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="text-align:center">Interface</th>
+                  <th scope="col" style="text-align:center">Admin</th>
+                  <th scope="col" style="text-align:center">Operational</th>
+                  <th scope="col" style="text-align:center">Channel-Group</th>
+                  <th scope="col" style="text-align:center">Mode</th>
+                  <th scope="col" style="text-align:center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="portchTable">
+                {% for i in port_chan %}
+                  <tr>
+                    <td scope="row" style="text-align:center">{{ i.interface }}</td>
+                    {% if i.admin == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                    {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                    {% endif %}
+
+                    {% if i.operational == 'down' %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-red mr-3"></i>
+                      </td>
+                    {% else %}
+                      <td scope="row" style="text-align:center">
+                        <i class="fas fa-circle text-green mr-3"></i>
+                      </td>
+                    {% endif %}
+                    <td scope="row" style="text-align:center">{{ i.group }}</td>
+                    <td scope="row" style="text-align:center">{{ i.mode }}</td>
+                    <th scope="row" class="text-center">
+                        <a href="{{ url_for('base_blueprint.modify_trunk_interface', interface=i.interface.replace('/', '%2f')) }}"><input value="Modify" name="modifyTrunkVlan" class="btn btn-link" role="status" type="button" style="font-size:11px"></a>
+                        <br/>
+                        <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+                      </th>
+                  </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%else%}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col ">
+                      <h3 class="mb-0" style="text-align:center">Device Polling. Standby...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endif%}
+
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}
+

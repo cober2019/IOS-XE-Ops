@@ -1,0 +1,849 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+{% if interfaces[0] %}
+<ul class="nav">
+    <li class="nav-item">
+        <a href="#home" class="nav-link active text-light" data-toggle="tab">IP Interfaces</a>
+    </li>
+     {% if hsrp[0] %}
+        <li class="nav-item">
+            <a href="#hsrp" class="nav-link text-light" data-toggle="tab">HSRP Interfaces</a>
+        </li>
+    {% endif %}
+    <li class="nav-item">
+        <a href="#unassigned" class="nav-link active text-light" data-toggle="tab">Unassigned Interfaces</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col">
+        <div class="tab-content">
+            <div class="tab-pane show active" id="home">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                <span><h3 class="mb-0">IP Interfaces
+                                    <input value="Poll" name="interfaces" class="btn btn-dark btn-round-xs float-right"
+                                           role="status" type="button" onclick="refreshInterfaces(this.name)"
+                                           id="interfaceRefresh">
+                                    <a href="{{ url_for('base_blueprint.new_interface') }}"><input value="Add Interface"
+                                                                                                   name="addInterface"
+                                                                                                   class="btn btn-dark btn-round-xs float-right"
+                                                                                                   role="status"
+                                                                                                   type="button"
+                                                                                                   style="margin-right: 10px"></a>
+                                    <p class="float-center">Last Poll: {{interfaces[0].query_time}}</p>
+                                  </h3>
+                                  </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <span class="counter pull-right"></span>
+                                <table class="table align-items-center table-striped" id="interfaceTable">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Interface</th>
+                                        <th scope="col" class="text-center">IP/MAC</th>
+                                        <th scope="col" class="text-center">Admin</th>
+                                        <th scope="col" class="text-center">Operational</th>
+                                        <th scope="col" class="text-center">Speed</th>
+                                        <th scope="col" class="text-center">Last Change</th>
+                                        <th scope="col" class="text-center">InOctets</th>
+                                        <th scope="col" class="text-center">OutOctets</th>
+                                        <th scope="col" class="text-left"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for i in interfaces %}
+                                        {% if i.ip_mac.split()[0] != 'Not' %}
+                                            <tr style="height:1px">
+                                                <th scope="row" class="text-center">
+                                                    {{ i.interface }}
+                                                </th>
+                                                <th scope="row" class="text-center">
+                                                    {{ i.ip_mac }}
+                                                </th>
+                                                {% if i.admin == 'down' %}
+                                                <td scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-red mr-3"></i>
+                                                </td>
+                                                {% else %}
+                                                <th scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-green mr-3"></i>
+                                                </th>
+                                                {% endif %}
+
+                                                {% if i.operational == 'down' %}
+                                                <th scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-red mr-3"></i>
+                                                </th>
+                                                {% else %}
+                                                <th scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-green mr-3"></i>
+                                                </th>
+                                                {% endif %}
+
+                                                <th scope="row" class="text-center">
+                                                    {{ i.speed }}
+                                                </th>
+
+                                                <th scope="row" class="text-center">
+                                                    {{ i.last_change.split('.')[0] }}
+                                                </th>
+
+                                                <th scope="row" class="text-center">
+                                                    {{ i.in_octets }}
+                                                </th>
+                                                <th scope="row" class="text-center">
+                                                    {{ i.out_octets }}
+                                                </th>
+                                                <th scope="row" class="text-left" >
+                                                    <span>
+                                                    <a href="{{ url_for('base_blueprint.modify_inteface', interface=i.interface.replace('/', '%2f')) }}"><input
+                                                            value="Modify" name=" {{ i.interface }}" style="font-size:13px"
+                                                            class="btn btn-link" role="status" type="button"></a>
+                                                    <input style="font-size:13px" value="Interface Details"
+                                                           name="{{ i.interface }}" class="btn btn-link" role="status"
+                                                           type="button" onclick="moreIntDetails(this.name)"
+                                                           id="{{ i.interface }}">
+                                                    <a href="{{ url_for('base_blueprint.ping', source=i.interface.replace('/', '%2f')) }}"><input
+                                                            value="Source Ping" name=" {{ i.interface }}" style="font-size:13px"
+                                                            class="btn btn-link" role="status" type="button"></a>
+                                                    </span>
+                                                </th>
+                                            </tr>
+                                        {% endif %}
+                                    {%endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if hsrp[0] %}
+            <div class="tab-pane" id="hsrp">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <span><h3 class="mb-0">HSRP Interfaces
+                                          <input value="Poll" name="hsrp" class="btn btn-dark btn-round-xs float-right"
+                                                 role="status" type="button" onclick="refreshHsrp(this.name)" id="hsrpRefresh">
+                                          <a href="{{ url_for('base_blueprint.new_interface') }}"><input value="Add Interface"
+                                                                                                         name="addInterface"
+                                                                                                         class="btn btn-dark btn-round-xs float-right"
+                                                                                                         role="status"
+                                                                                                         type="button"
+                                                                                                         style="margin-right: 10px"></a>
+                                          <p class="float-center">Last Poll: {{hsrp[0].query_time}}</p>
+                                        </h3>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <span class="counter pull-right"></span>
+                                <table class="table align-items-center table-striped" id="hsrpTable">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Interface</th>
+                                        <th scope="col" class="text-center">Group</th>
+                                        <th scope="col" class="text-center">Priority</th>
+                                        <th scope="col" class="text-center">Preempt</th>
+                                        <th scope="col" class="text-center">State</th>
+                                        <th scope="col" class="text-center">Active</th>
+                                        <th scope="col" class="text-center">Standby</th>
+                                        <th scope="col" class="text-center">VIP</th>
+                                        <th scope="col" class="text-center"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for i in hsrp %}
+                                        <tr style="height:1px">
+                                            <td scope="row" class="text-center">
+                                                {{ i.interface }}
+                                            </td>
+                                            <td scope="row" class="text-center">
+                                                {{ i.group }}
+                                            </td>
+                                            <td scope="row" class="text-center">
+                                                {{ i.priority }}
+                                            </td>
+                                            <td scope="row" class="text-center">
+                                                {{ i.preempt }}
+                                            </td>
+                                            {% if i.state == 'Init' %}
+                                            <td scope="row" style="text-align:center">
+                                                <i class="fas fa-circle text-red mr-3"></i>
+                                            </td>
+                                            {% else %}
+                                            <td scope="row" style="text-align:center">
+                                                <i class="fas fa-circle text-green mr-3"></i>
+                                            </td>
+                                            {% endif %}
+                                            {% if i.active == 'unknown' %}
+                                            <td scope="row" style="text-align:center">
+                                                <i class="fas fa-circle text-red mr-3"></i>
+                                            </td>
+                                            {% else %}
+                                            <td scope="row" style="text-align:center">
+                                                <i class="fas fa-circle text-green mr-3"></i>
+                                            </td>
+                                            {% endif %}
+                                            {% if i.standby == 'unknown' %}
+                                            <td scope="row" style="text-align:center">
+                                                <i class="fas fa-circle text-red mr-3"></i>
+                                            </td>
+                                            {% else %}
+                                            <td scope="row" style="text-align:center">
+                                                <i class="fas fa-circle text-green mr-3"></i>
+                                            </td>
+                                            {% endif %}
+                                            <td scope="row" class="text-center">
+                                                {{ i.vip}}
+                                            </td>
+                                            <td scope="row" class="text-center">
+                                                <span>
+                                                <a href="{{ url_for('base_blueprint.modify_inteface', interface=interface) }}"><input
+                                                        value="Modify" name=" {{ i.interface }}" style="font-size:11px"
+                                                        class="btn btn-link" role="status" type="button"></a>
+                                                <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}"
+                                                       class="btn btn-link" role="status" type="button"
+                                                       onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+                                                <input style="font-size:11px" value="HSRP Details" name="HSRP{{ i.interface }}"
+                                                       class="btn btn-link" role="status" type="button"
+                                                       onclick="hsrpDetails(this.name)" id="HSRP{{ i.interface }}">
+                                                <a href="{{ url_for('base_blueprint.ping', source=i.interface) }}"><input
+                                                        value="Source Ping" name=" {{ i.interface }}" style="font-size:11px"
+                                                        class="btn btn-link" role="status" type="button"></a>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {%endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="tab-pane" id="unassigned">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                <span><h3 class="mb-0">Unassigned Interfaces
+                                    <input value="Poll" name="interfaces" class="btn btn-dark btn-round-xs float-right"
+                                           role="status" type="button" onclick="refreshInterfaces(this.name)"
+                                           id="interfaceRefresh">
+                                    <a href="{{ url_for('base_blueprint.new_interface') }}"><input value="Add Interface"
+                                                                                                   name="addInterface"
+                                                                                                   class="btn btn-dark btn-round-xs float-right"
+                                                                                                   role="status"
+                                                                                                   type="button"
+                                                                                                   style="margin-right: 10px"></a>
+                                    <p class="float-center">Last Poll: {{interfaces[0].query_time}}</p>
+                                  </h3>
+                                  </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <span class="counter pull-right"></span>
+                                <table class="table align-items-center table-striped" id="interfaceTable">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Interface</th>
+                                        <th scope="col" class="text-center">IP/MAC</th>
+                                        <th scope="col" class="text-center">Admin</th>
+                                        <th scope="col" class="text-center">Operational</th>
+                                        <th scope="col" class="text-center">Speed</th>
+                                        <th scope="col" class="text-center">Last Change</th>
+                                        <th scope="col" class="text-center">InOctets</th>
+                                        <th scope="col" class="text-center">OutOctets</th>
+                                        <th scope="col" class="text-left"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for i in interfaces %}
+                                        {% if i.ip_mac.split()[0] == 'Not' %}
+                                            <tr style="height:1px">
+                                                <td scope="row" class="text-center">
+                                                    {{ i.interface }}
+                                                </td>
+                                                <td scope="row" class="text-center">
+                                                    {{ i.ip_mac }}
+                                                </td>
+                                                {% if i.admin == 'down' %}
+                                                <td scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-red mr-3"></i>
+                                                </td>
+                                                {% else %}
+                                                <td scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-green mr-3"></i>
+                                                </td>
+                                                {% endif %}
+
+                                                {% if i.operational == 'down' %}
+                                                <td scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-red mr-3"></i>
+                                                </td>
+                                                {% else %}
+                                                <td scope="row" style="text-align:center">
+                                                    <i class="fas fa-circle text-green mr-3"></i>
+                                                </td>
+                                                {% endif %}
+
+                                                <td scope="row" class="text-center">
+                                                    {{ i.speed }}
+                                                </td>
+
+                                                <td scope="row" class="text-center">
+                                                    {{ i.last_change.split('.')[0] }}
+                                                </td>
+
+                                                <td scope="row" class="text-center">
+                                                    {{ i.in_octets }}
+                                                </td>
+                                                <td scope="row" class="text-center">
+                                                    {{ i.out_octets }}
+                                                </td>
+                                                <td scope="row" class="text-left">
+                                                    <span>
+                                                    <a href="{{ url_for('base_blueprint.modify_inteface', interface=i.interface.replace('/', '%2f')) }}"><input
+                                                            value="Modify" name=" {{ i.interface }}" style="font-size:11px"
+                                                            class="btn btn-link" role="status" type="button"></a>
+                                                    <input style="font-size:11px" value="Interface Details"
+                                                           name="{{ i.interface }}" class="btn btn-link" role="status"
+                                                           type="button" onclick="moreIntDetails(this.name)"
+                                                           id="{{ i.interface }}">
+                                                    <a href="{{ url_for('base_blueprint.ping', source=i.interface.replace('/', '%2f')) }}"><input
+                                                            value="Source Ping" name=" {{ i.interface }}" style="font-size:11px"
+                                                            class="btn btn-link" role="status" type="button"></a>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {%endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if bgp[0] and ospf[0] %}
+<ul class="nav">
+    <li class="nav-item">
+        <a href="#bgp" class="nav-link active text-light" data-toggle="tab">BGP Status</a>
+    </li>
+    <li class="nav-item">
+        <a href="#ospf" class="nav-link text-light" data-toggle="tab">OSPF Status</a>
+    </li>
+    <li class="nav-item">
+        <a href="#ospfrouters" class="nav-link text-light" data-toggle="tab">OSPF Border Routers</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col">
+        <div class="tab-content">
+            <div class="tab-pane show active" id="bgp">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                    <span><h3 class="mb-0">BGP Neighbor Status
+                                      <input value="Poll" name="bgp" class="btn btn-dark btn-round-xs float-right" role="status" type="button"
+                                             onclick="refreshBgp(this.name)" id="bgpRefresh">
+                                      <a href="{{ url_for('base_blueprint.add_bgp_neighbor') }}"><input value="Add Neighbor"
+                                                                                                        name="addBgpNeighbor"
+                                                                                                        class="btn btn-dark btn-round-xs float-right"
+                                                                                                        role="status" type="button"
+                                                                                                        style="margin-right: 10px"></a>
+                                      <p class="float-center">Last Poll: {{bgp[0].query_time}}</p>
+                                    </h3>
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <span class="counter pull-right"></span>
+                                <table class="table align-items-center table-striped" id="bgpNeighbors">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Neighbor</th>
+                                        <th scope="col" class="text-center">AS</th>
+                                        <th scope="col" class="text-center">Uptime</th>
+                                        <th scope="col" class="text-center">Prefixes</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for i in bgp %}
+                                    <tr style="height:1px">
+                                        <th scope="row" class="text-center">
+                                            {{ i.neighbor }}
+                                        </th>
+                                        <th scope="row" class="text-center">
+                                            {{ i.auto_sys }}
+                                        </th>
+                                        <th scope="row" class="text-center">
+                                            {{ i.uptime }}
+                                        </th>
+                                        <th scope="row" class="text-center">
+                                            {{ i.prefixes }}
+                                        </th>
+                                    </tr>
+                                    {%endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="ospf">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                      <span><h3 class="mb-0">OSPF Neighbor Status
+                                        <input value="Poll" name="ospf" class="btn btn-dark btn-round-xs float-right" role="status"
+                                               type="button" onclick="refreshOspf(this.name)" id="ospfRefresh">
+                                        <a href="{{ url_for('base_blueprint.add_ospf_neighbor') }}"><input value="Add Neighbor"
+                                                                                                           name="addOspfNeighbor"
+                                                                                                           class="btn btn-dark btn-round-xs float-right"
+                                                                                                           role="status" type="button"
+                                                                                                           style="margin-right: 10px"></a>
+                                        <p class="float-center">Last Poll: {{ospf[0].query_time}}</p>
+                                      </h3>
+                                      </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <span class="counter pull-right"></span>
+                                <table class="table align-items-center table-striped" id="ospfTable">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Neighbor ID</th>
+                                        <th scope="col" class="text-center">State</th>
+                                        <th scope="col" class="text-center">Address</th>
+                                        <th scope="col" class="text-center">Interface</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for i in ospf %}
+                                    <tr style="height:1px">
+                                        <th scope="row" class="text-center">
+                                            {{ i.neighbor }}
+                                        </th>
+                                        <th scope="row" class="text-center">
+                                            {{ i.state }}
+                                        </th>
+                                        <th scope="row" class="text-center">
+                                            {{ i.address }}
+                                        </th>
+                                        <th scope="row" class="text-center">
+                                            {{ i.interface }}
+                                        </th>
+                                    </tr>
+                                    {%endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="ospfrouters">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                      <span><h3 class="mb-0">OSPF Neighbor Status
+                                        <input value="Poll" name="ospf" class="btn btn-dark btn-round-xs float-right" role="status"
+                                               type="button" onclick="refreshOspf(this.name)" id="ospfRefresh">
+                                        <p class="float-center">Last Poll: {{ospf[0].query_time}}</p>
+                                      </h3>
+                                      </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <span class="counter pull-right"></span>
+                                <table class="table align-items-center table-striped" id="ospfTable">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Process</th>
+                                        <th scope="col" class="text-center">Router ID</th>
+                                        <th scope="col" class="text-center">Route Type</th>
+                                        <th scope="col" class="text-center">Metric</th>
+                                        <th scope="col" class="text-center">Next Hop</th>
+                                        <th scope="col" class="text-center">Interface</th>
+                                        <th scope="col" class="text-center">Router Type</th>
+                                        <th scope="col" class="text-center">Area</th>
+                                        <th scope="col" class="text-center">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for i in border_routers %}
+                                    <tr style="height:1px">
+                                        <th scope="row" class="text-center">
+                                            {{ i.process }}
+                                        </th>
+                                        <th scope="row" class="text-center">
+                                            {{ i.neigh_router_id }}
+                                        </th>
+                                        {% if i.route_type == 'i' %}
+                                            <th scope="row" class="text-center">
+                                                Intra Area
+                                            </th>
+                                        {% elif i.route_type == 'I' %}
+                                            <th scope="row" class="text-center">
+                                                Inter Area
+                                            </th>
+                                        {% endif %}
+                                        <th scope="row" class="text-center">
+                                            {{ i.cost }}
+                                        </th>
+                                         <th scope="row" class="text-center">
+                                            {{ i.nexthop }}
+                                        </th>
+                                         <th scope="row" class="text-center">
+                                            {{ i.interface }}
+                                        </th>
+                                         <th scope="row" class="text-center">
+                                            {{ i.router_type }}
+                                        </th>
+                                         <th scope="row" class="text-center">
+                                            {{ i.area }}
+                                        </th>
+                                        <th>
+                                        <input style="font-size:13px" value="Interface Details"
+                                                           name="{{ i.router_id }}" class="btn btn-link" role="status"
+                                                           type="button" onclick="advRouterDetail(this.name)"
+                                                           id="{{ i.router_id }}">
+                                        </th>
+                                    </tr>
+                                    {%endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if bgp[0] and not ospf[0] %}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <span><h3 class="mb-0">BGP Neighbor Status
+                          <input value="Poll" name="bgp" class="btn btn-dark btn-round-xs float-right" role="status" type="button"
+                                 onclick="refreshBgp(this.name)" id="bgpRefresh">
+                          <a href="{{ url_for('base_blueprint.add_bgp_neighbor') }}"><input value="Add Neighbor"
+                                                                                            name="addBgpNeighbor"
+                                                                                            class="btn btn-dark btn-round-xs float-right"
+                                                                                            role="status" type="button"
+                                                                                            style="margin-right: 10px"></a>
+                          <p class="float-center">Last Poll: {{bgp[0].query_time}}</p>
+                        </h3>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <span class="counter pull-right"></span>
+                <table class="table align-items-center table-striped" id="bgpNeighbors">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" class="text-center">Neighbor</th>
+                        <th scope="col" class="text-center">AS</th>
+                        <th scope="col" class="text-center">Uptime</th>
+                        <th scope="col" class="text-center">Prefixes</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in bgp %}
+                    <tr style="height:1px">
+                        <th scope="row" class="text-center">
+                            {{ i.neighbor }}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.auto_sys }}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.uptime }}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.prefixes }}
+                        </th>
+                    </tr>
+                    {%endfor%}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if ospf[0] and not bgp[0] %}
+<ul class="nav">
+    <li class="nav-item">
+        <a href="#ospf" class="nav-link active text-light" data-toggle="tab">OSPF Status</a>
+    </li>
+    <li class="nav-item">
+        <a href="#ospfrouters" class="nav-link text-light" data-toggle="tab">OSPF Border Routers</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col">
+        <div class="tab-content">
+            <div class="tab-pane show active" id="ospf">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="col-xl-12">
+                                <div class="card">
+                                    <div class="card-header border-0">
+                                        <div class="row align-items-center">
+                                            <div class="col ">
+                                      <span><h3 class="mb-0">OSPF Neighbor Status
+                                        <input value="Poll" name="ospf" class="btn btn-dark btn-round-xs float-right" role="status"
+                                               type="button" onclick="refreshOspf(this.name)" id="ospfRefresh">
+                                        <a href="{{ url_for('base_blueprint.add_ospf_neighbor') }}"><input value="Add Neighbor"
+                                                                                                           name="addOspfNeighbor"
+                                                                                                           class="btn btn-dark btn-round-xs float-right"
+                                                                                                           role="status" type="button"
+                                                                                                           style="margin-right: 10px"></a>
+                                        <p class="float-center">Last Poll: {{ospf[0].query_time}}</p>
+                                      </h3>
+                                      </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <span class="counter pull-right"></span>
+                                        <table class="table align-items-center table-striped" id="ospfTable">
+                                            <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" class="text-center">Neighbor ID</th>
+                                                <th scope="col" class="text-center">State</th>
+                                                <th scope="col" class="text-center">Address</th>
+                                                <th scope="col" class="text-center">Interface</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for i in ospf %}
+                                            <tr style="height:1px">
+                                                <th scope="row" class="text-center">
+                                                    {{ i.neighbor }}
+                                                </th>
+                                                <th scope="row" class="text-center">
+                                                    {{ i.state }}
+                                                </th>
+                                                <th scope="row" class="text-center">
+                                                    {{ i.address }}
+                                                </th>
+                                                <th scope="row" class="text-center">
+                                                    {{ i.interface }}
+                                                </th>
+                                            </tr>
+                                            {%endfor%}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="ospfrouters">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                      <span><h3 class="mb-0">OSPF Border Routers
+                                        <input value="Poll" name="borderRouters" class="btn btn-dark btn-round-xs float-right" role="status"
+                                               type="button" onclick="refreshBorderRouters(this.name)" id="borderRefresh">
+                                        <p class="float-center">Last Poll: {{ospf[0].query_time}}</p>
+                                      </h3>
+                                      </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <span class="counter pull-right"></span>
+                                <table class="table align-items-center table-striped" id="borderrouterRefresh">
+                                    <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Process</th>
+                                        <th scope="col" class="text-center">Router ID</th>
+                                        <th scope="col" class="text-center">Route Type</th>
+                                        <th scope="col" class="text-center">Metric</th>
+                                        <th scope="col" class="text-center">Next Hop</th>
+                                        <th scope="col" class="text-center">Interface</th>
+                                        <th scope="col" class="text-center">Router Type</th>
+                                        <th scope="col" class="text-center">Area</th>
+                                        <th scope="col" class="text-center"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="borderrouterRefresh">
+                                    {% for i in border_routers %}
+                                        <tr style="height:1px">
+                                            <th scope="row" class="text-center">
+                                                {{ i.process }}
+                                            </th>
+                                            <th scope="row" class="text-center">
+                                                {{ i.neigh_router_id }}
+                                            </th>
+                                            {% if i.route_type == 'i' %}
+                                                <th scope="row" class="text-center">
+                                                    Intra Area
+                                                </th>
+                                            {% elif i.route_type == 'I' %}
+                                                <th scope="row" class="text-center">
+                                                    Inter Area
+                                                </th>
+                                            {% endif %}
+                                            <th scope="row" class="text-center">
+                                                {{ i.cost }}
+                                            </th>
+                                             <th scope="row" class="text-center">
+                                                {{ i.nexthop }}
+                                            </th>
+                                             <th scope="row" class="text-center">
+                                                {{ i.interface }}
+                                            </th>
+                                             <th scope="row" class="text-center">
+                                                {{ i.router_type }}
+                                            </th>
+                                             <th scope="row" class="text-center">
+                                                {{ i.area }}
+                                            </th>
+                                            <th>
+                                            <input style="font-size:15px" value="Adv. Routes"
+                                                           name="{{ i.neigh_router_id }}" class="btn btn-link" role="status"
+                                                           type="button" onclick="advRouterDetail(this.name)"
+                                                           id="{{ i.router_id }}">
+                                            </th>
+                                        </tr>
+                                     {%endfor%}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col ">
+            <span><h3 class="mb-0"><span>ARP Table</span>
+               <input value="Clear ARP" name="clearArp" class="btn btn-dark btn-round-xs float-right" role="status"
+                      type="button" onclick="clearArp(this.name)" id="clearArp">
+               <input value="Refresh ARP" name="refreshArp" class="btn btn-dark btn-round-xs float-right" role="status"
+                      type="button" onclick="refreshArp(this.name)" id="refreshArp" style="margin-right: 10px">
+                <p class="float-center">Last Poll: {{arp[0].query_time}}</p>
+            </h3>
+            </span>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-items-center table-striped" id="arpTable">
+                    <thead class="thead-light">
+                    <tr>
+                        <th scope="col" class="text-center">Protocol</th>
+                        <th scope="col" class="text-center">Address</th>
+                        <th scope="col" class="text-center">Age</th>
+                        <th scope="col" class="text-center">MAC</th>
+                        <th scope="col" class="text-center">Type</th>
+                        <th scope="col" class="text-center">Interfaces</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for i in arp %}
+                    <tr style="height:1px">
+                        <th scope="row" class="text-center">
+                            {{ i.protocol}}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.address }}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.age }}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.mac }}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.ep_type }}
+                        </th>
+                        <th scope="row" class="text-center">
+                            {{ i.interfaces }}
+                        </th>
+                    </tr>
+                    {%endfor%}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{%else%}
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col ">
+                      <h3 class="mb-0" style="text-align:center">Device Polling. Standby...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endif%}
+
+
+
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

@@ -1,0 +1,137 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Nexus Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<ul class="nav">
+    <li class="nav-item">
+        <a href="#home" class="nav-link active text-light" data-toggle="tab">Interface Form</a>
+    </li>
+    <li class="nav-item">
+        <a href="#profile" class="nav-link text-light" data-toggle="tab">Custom Config</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="col">
+        <div class="tab-content">
+            <div class="tab-pane show active" id="home">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                        <h3 class="mb-0 mb-0 text-center">Add to Group</h3>
+                                        <br/>
+                                    </div>
+                                </div>
+                                <form id="vlaneForm" method="post" action="{{ url_for('base_blueprint.add_poch') }}">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Port-Channel</label>
+                                        <div class="input-group mb-3">
+                                            <select class="custom-select" name="pochannel">
+                                                {% for i in port_channels %}
+                                                <option value="{{ i }}">{{ i }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Interfaces (Status/Type)</label>
+                                        <div class="input-group mb-3">
+                                            <select class="custom-select" name="interface">
+                                                {% for i in interfaces %}
+                                                {% for j in int_status %}
+                                                {% if j.interface[2:] == i.interface[-5:] or j.interface[2:] ==
+                                                i.interface[-6:] %}
+                                                <option value="{{ i.interface }}">{{ i.interface }} --> {{ j.status }} |
+                                                    {{j.vlan}}
+                                                </option>
+                                                {% endif %}
+                                                {% endfor %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <span>
+                                  {% if status == 'success' %}
+                                    <input value="Submit" type="submit" class="btn btn-dark"><input value="Success"
+                                                                                                    class="btn btn-success">
+                                  {% elif status == 'fail' %}
+                                    <input value="Submit" type="submit" class="btn btn-dark"><input value="Failed"
+                                                                                                    class="btn btn-danger">
+                                  {% else %}
+                                    <input value="Submit" type="submit" class="btn btn-dark">
+                                  {% endif %}
+                              </span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="profile">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="row align-items-center">
+                                    <div class="col ">
+                                        <h3 class="mb-0 mb-0 text-center">Custom Po-Channel Configuration</h3>
+                                        <br/>
+                                    </div>
+                                </div>
+                                <form id="pochFormCustom" method="post"
+                                      action="{{ url_for('base_blueprint.add_poch') }}">
+                                    <div class="form-group">
+                                        <textarea name="pochCustomForm" class="form-control rounded-0"
+                                                  id="exampleFormControlTextarea1" rows="7"></textarea>
+                                    </div>
+                                    <br/>
+                                    <span>
+                                      {% if status == 'custom_success' %}
+                                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Success"
+                                                                                                        class="btn btn-success">
+                                      {% elif status == 'custom_fail' %}
+                                        <input value="Submit" type="submit" class="btn btn-dark"><input value="Failed"
+                                                                                                        class="btn btn-danger">
+                                      {% else %}
+                                        <input value="Submit" type="submit" class="btn btn-dark">
+                                      {% endif %}
+                                  </span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="row align-items-center">
+                    <div class="col ">
+                        <h3 class="mb-0 mb-0 text-center">Interface Configuration</h3>
+                        <br/>
+                    </div>
+                </div>
+                <pre>{{ current_config }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

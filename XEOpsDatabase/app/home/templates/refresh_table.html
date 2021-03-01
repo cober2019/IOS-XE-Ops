@@ -1,0 +1,75 @@
+
+<div class="table-responsive">
+  <span class="counter pull-right"></span>
+  <table class="table align-items-center table-flush results" id="intTable">
+	<thead class="thead-light">
+	  <tr>
+		<th scope="col" class="text-center">Interface</th>
+		<th scope="col" class="text-center">IP</th>
+		  <th scope="col" class="text-center">Admin</th>
+		  <th scope="col" class="text-center">Operational</th>
+		<th scope="col" class="text-center">Speed</th>
+		<th scope="col" class="text-center">Last Change</th>
+		<th scope="col" class="text-center">InOctets</th>
+		<th scope="col" class="text-center">OutOctets</th>
+		<th scope="col" class="text-left">Available Actions</th>
+	  </tr>
+	</thead>
+	<tbody>
+`		{% for i in interfaces %}
+			<tr style="height:1px">
+			  <th scope="row" class="text-center">
+				{{ i.interface }}
+			  </th>
+			  <th scope="row" class="text-center">
+				{{ i.ip_mac }}
+				<br>
+				{{ i.mac }}
+			  </th>
+			  {% if i.admin == 'down' %}
+				<td scope="row" style="text-align:center">
+				  <i class="fas fa-circle text-red mr-3"></i>
+				</td>
+			  {% else %}
+				<td scope="row" style="text-align:center">
+				  <i class="fas fa-circle text-green mr-3"></i>
+				</td>
+			  {% endif %}
+
+			  {% if i.operational == 'down' %}
+				<td scope="row" style="text-align:center">
+				  <i class="fas fa-circle text-red mr-3"></i>
+				</td>
+			  {% else %}
+				<td scope="row" style="text-align:center">
+				  <i class="fas fa-circle text-green mr-3"></i>
+				</td>
+			  {% endif %}
+
+			  <th scope="row" class="text-center">
+				{{ i.speed }}
+			  </th>
+
+			  <th scope="row" class="text-center">
+				{{ i.last_change.split('.')[0] }}
+			  </th>
+
+			  <th scope="row" class="text-center">
+				{{ i.in_octets }}
+			  </th>
+			   <th scope="row" class="text-center">
+				{{ i.out_octets }}
+			  </th>
+
+			  <th scope="row" class="text-left">
+				<a href="{{ url_for('base_blueprint.modify_inteface', interface=i.interface.replace('/', '%2f')) }}"><input value="Modify" name=" {{ i.interface }}" style="font-size:11px" class="btn btn-link" role="status" type="button" ></a>
+				<br>
+				<input style="font-size:11px" value="Interface Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+				<br>
+				<a href="{{ url_for('base_blueprint.ping', source=i.interface.replace('/', '%2f')) }}"><input value="Source Ping" name=" {{ i.interface }}" style="font-size:11px" class="btn btn-link" role="status" type="button" ></a>
+			  </th>
+		</tr>
+	{%endfor%}
+  </table>
+</div>
+

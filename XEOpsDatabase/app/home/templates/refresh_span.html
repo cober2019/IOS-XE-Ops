@@ -1,0 +1,25 @@
+<table id="spanTable" class="table align-items-center table-striped">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" style="text-align:center">Vlan</th>
+      <th scope="col" style="text-align:center">Root Prioirty</th>
+      <th scope="col" style="text-align:center">Root ID</th>
+      <th scope="col" style="text-align:center">Root Cost</th>
+      <th scope="col" style="text-align:center">Root Port</th>
+      <th scope="col" style="text-align:center">Action</th>
+    </tr>
+  </thead>
+  <tbody id="rootTable">
+  {% for i in roots %}
+    <tr>
+      <td scope="row" style="text-align:center">{{ i.vlan }}</td>
+      <td scope="row" style="text-align:center">{{ i.root_prio }}</td>
+      <td scope="row" style="text-align:center">{{ i.root_id }}</td>
+      <td scope="row" style="text-align:center">{{ i.root_cost }}</td>
+      <td scope="row" style="text-align:center">{{ i.root_port }}</td>
+      <th scope="row" class="text-center">
+        <input style="font-size:11px" value="STP Details" name="{{ i['vlan'] }}" class="btn btn-link" role="status" type="button" onclick="spanDetails(this.name)" id="{{ i['vlan'] }}">
+      </th>
+    </tr>
+  {% endfor %}
+</table>

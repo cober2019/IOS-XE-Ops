@@ -1,0 +1,27 @@
+<table class="table align-items-center table-flush results" id="ospfTable">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" class="text-center">Neighbor ID</th>
+      <th scope="col" class="text-center">State</th>
+      <th scope="col" class="text-center">Address</th>
+      <th scope="col" class="text-center">Interface</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in ospf %}
+        <tr style="height:1px">
+          <th scope="row" class="text-center">
+            {{ i.neighbor }}
+          </th>
+          <th scope="row" class="text-center">
+            {{ i.state }}
+          </th>
+          <th scope="row" class="text-center">
+            {{ i.address }}
+          </th>
+          <th scope="row" class="text-center">
+            {{ i.interface }}
+          </th>
+        </tr>
+  {%endfor%}
+</table>

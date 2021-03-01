@@ -1,0 +1,116 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<ul class="nav">
+    <li class="nav-item">
+        <a href="#home" class="nav-link active text-light" data-toggle="tab">Interface Form</a>
+    </li>
+    <li class="nav-item">
+        <a href="#profile" class="nav-link text-light" data-toggle="tab">Custom Config</a>
+    </li>
+</ul>
+<div class="tab-content">
+  <div class="tab-pane show active" id="home">
+    <div class="col-xl-6">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col ">
+                <h3 class="mb-0 text-center">OSPF Configuration</h3>
+                <br/>
+              </div>
+            </div>
+            <form id="ospfForm" method="post" action="{{ url_for('base_blueprint.post_routing_neighbor') }}">
+               <div class="form-group">
+                <label class="font-weight-bold">Process</label>
+                 {% if not ospf_proc %}
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Process" name="process">
+                  </div>
+                 {% else %}
+                    <div class="input-group mb-3">
+                      <select class="custom-select" id="process" name="process">
+                        <option value="Select Process">Select Process...</option>>
+                        {% for i in ospf_proc %}
+                          <option value="{{ i.process}}" >{{ i.process }}</option>>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                {% endif %}
+              <div class="form-group">
+                <label class="font-weight-bold">Network</label>
+                <input type="text" class="form-control" placeholder="Network" name="neighbor">
+              </div>
+              <div class="form-group">
+                <label class="font-weight-bold">Wildcard</label>
+                <input type="text" class="form-control" placeholder="Wildcard" name="wildcard">
+              </div>
+              <div class="form-group">
+                <label class="font-weight-bold">Area</label>
+                <input type="text" class="form-control" placeholder="Area" name="area">
+              </div>
+                <br/>
+              <span>
+                  {% if status == 'success' %}
+                    <input value="Submit" type="submit" class="btn btn-dark"><input value="Success" class="btn btn-success">
+                  {% elif status == 'fail' %}
+                    <input value="Submit" type="submit" class="btn btn-dark"><input value="Failed" class="btn btn-danger">
+                  {% else %}
+                    <input value="Submit" type="submit" class="btn btn-dark">
+                  {% endif %}
+              </span>
+            </form>
+          </div>
+        </div>
+    </div>
+  </div>
+    <div class="tab-pane" id="profile">
+      <div class="col-xl-6">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col ">
+                <h3 class="mb-0 mb-0 text-center">Custom OSPF Configuration</h3>
+                <br/>
+              </div>
+            </div>
+            <form id="ospfFormCustom" method="post" action="{{ url_for('base_blueprint.post_routing_neighbor') }}">
+              <div class="form-group">
+                <textarea name="ospfCustomForm" class="form-control rounded-0" rows="15"></textarea>
+              </div>
+              <br/>
+              <span>
+                  {% if status == 'custom_success' %}
+                    <input value="Submit" type="submit" class="btn btn-dark"><input value="Success" class="btn btn-success">
+                  {% elif status == 'custom_fail' %}
+                    <input value="Submit" type="submit" class="btn btn-dark"><input value="Failed" class="btn btn-danger">
+                  {% else %}
+                    <input value="Submit" type="submit" class="btn btn-dark">
+                  {% endif %}
+              </span>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

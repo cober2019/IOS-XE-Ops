@@ -1,0 +1,43 @@
+<div class="table-responsive">
+    <table id="accessTable" class="table align-items-center table-striped">
+      <thead class="thead-light">
+        <tr>
+            <th scope="col" style="text-align:center">Interface</th>
+            <th scope="col" style="text-align:center">Vlan</th>
+            <th scope="col" style="text-align:center">Status</th>
+            <th scope="col" style="text-align:center">Duplex</th>
+            <th scope="col" style="text-align:center">Speed</th>
+            <th scope="col" style="text-align:center">Description</th>
+            <th scope="col" style="text-align:center">Available Actions</th>
+          </tr>
+      </thead>
+      <tbody id="accessTable">
+      {% for i in access_ports %}
+        <tr>
+          <td scope="row" style="text-align:center">{{ i.interface }}</td>
+          <td scope="row" style="text-align:center">{{ i.vlan }}</td>
+          {% if i.status == 'disabled' or i.status == 'notconnect' %}
+            <td scope="row" style="text-align:center">
+              <i class="fas fa-circle text-red mr-3"></i>
+            </td>
+          {% elif i.status == 'err-disabled' or i.status == 'suspended' %}
+            <td scope="row" style="text-align:center">
+              <i class="fas fa-circle text-yellow mr-3"></i>(err/susp)
+            </td>
+          {% else %}
+            <td scope="row" style="text-align:center">
+              <i class="fas fa-circle text-green mr-3"></i>
+            </td>
+          {% endif %}
+          <td scope="row" style="text-align:center">{{ i.duplex }}</td>
+          <td scope="row" style="text-align:center">{{ i.speed }}</td>
+          <td scope="row" style="text-align:center">{{ i.description }}</td>
+          <th scope="row" class="text-center">
+              <a href="{{ url_for('base_blueprint.modify_access_interface', interface=i.interface.replace('/', '%2f')) }}"><input value="Modify" name="modifyPortVlan" class="btn btn-link" role="status" type="button" style="font-size:11px"></a>
+              <br/>
+              <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}" class="btn btn-link" role="status" type="button" onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+          </th>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>

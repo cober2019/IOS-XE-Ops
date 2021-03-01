@@ -1,0 +1,72 @@
+{% extends 'layouts/base_inventory.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <span><h3 class="mb-0">Devices
+               <a href="{{ url_for('base_blueprint.add_devices') }}"><input value="Add Device" class="btn btn-info btn-round-xs float-right" role="status" type="button" style="margin-left: 10px"></a>
+               <a href="{{ url_for('base_blueprint.add_bulk_devices') }}"><input value="Add Bulk" class="btn btn-info btn-round-xs float-right" role="status" type="button"></a>
+            </h3>
+            </span>
+          </div>
+        </div>
+      </div>
+        <div class="table-responsive">
+          <table class="table align-items-center table-striped" id="interfaceTable">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col" class="text-left">Device</th>
+                <th scope="col" class="text-left">Model</th>
+                <th scope="col" class="text-left">Uptime</th>
+                <th scope="col" class="text-left">Serial</th>
+                <th scope="col" class="text-left">Last Poll</th>
+                <th scope="col" class="text-right"></th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for i in inventory %}
+                <tr style="height:1px">
+                  <td scope="row" class="text-left">
+                    {{ i.unique_id }}
+                  </td>
+                  <td scope="row" class="text-left">
+                    {{ i.model }}
+                  </td>
+                  <td scope="row" class="text-left">
+                    {{ i.uptime }}
+                  </td>
+                  <td scope="row" class="text-left">
+                    {{ i.serial }}
+                  </td>
+                  <td scope="row" class="text-left">
+                    {{ i.query_time }}
+                  </td>
+                  <td scope="row" class="text-left">
+                    <a href="{{ url_for('base_blueprint.login', host=i.unique_id) }}"><input value="Connect" class="btn btn-info float-right" role="status" type="button" ></a>
+                  </td>
+                </tr>
+              {%endfor%}
+          </table>
+        </div>
+      </div>
+  </div>
+</div>
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

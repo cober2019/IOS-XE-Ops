@@ -1,0 +1,31 @@
+<div class="table-responsive">
+<table id="dmvpnPeers" class="table align-items-center table-striped">
+  <thead class="thead-light">
+    <tr>
+        <th scope="col" style="text-align:center">Peer NBMA</th>
+        <th scope="col" style="text-align:center">Peer Tunnel</th>
+        <th scope="col" style="text-align:center">State</th>
+        <th scope="col" style="text-align:center">Uptime/Downtime</th>
+        <th scope="col" style="text-align:center">Attrib</th>
+      </tr>
+  </thead>
+  <tbody id="dmvpnPeers">
+  {% for i in dmvpn_status %}
+    <tr>
+      <td scope="row" style="text-align:center">{{ i.peer_nbma }}</td>
+      <td scope="row" style="text-align:center">{{ i.peer_address }}</td>
+        {% if i.state == 'UP' %}
+        <td scope="row" style="text-align:center">
+            <i class="fas fa-circle text-green mr-3"></i>
+        </td>
+        {% else %}
+        <td scope="row" style="text-align:center">
+            <i class="fas fa-circle text-red mr-3"></i>
+        </td>
+        {%endif%}
+      <td scope="row" style="text-align:center">{{ i.updn_time }}</td>
+      <td scope="row" style="text-align:center">{{ i.attrib }}</td>
+    </tr>
+  {% endfor %}
+</table>
+</div>

@@ -1,0 +1,86 @@
+
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0">Routing Table</h3>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+          <span class="counter pull-right"></span>
+        <table class="table align-items-center table-striped" id="routeTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center">VRF</th>
+              <th scope="col" class="text-center">Prefix</th>
+              <th scope="col" class="text-center">Protocol</th>
+              <th scope="col" class="text-center">AD</th>
+              <th scope="col" class="text-center">Metric</th>
+              <th scope="col" class="text-center">Next-Hop</th>
+              <th scope="col" class="text-center">Interface</th>
+              <th scope="col" class="text-center">Tag</th>
+              <th scope="col" class="text-center">Age</th>
+              <th scope="col" class="text-center">Get Details</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for i in route_table %}
+            <tr style="height:1px">
+              <th scope="row" class="text-center">
+                {{ i.vrf }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.prefix }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.protocol }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.admin_distance}}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.metric }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.nex_hops}}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.interfaces }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.tag }}
+              </th>
+              <th scope="row" class="text-center">
+                {{ i.age }}
+              </th>
+              <th scope="row" class="text-center">
+                <input value="Route Details" name="{{ i[1] }}-{{ i[2] }}" class="btn btn-link" role="status" type="button" onclick="getRouteDetail(this.name)"  style="font-size:11px">
+              </th>
+            </tr>
+          {%endfor%}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

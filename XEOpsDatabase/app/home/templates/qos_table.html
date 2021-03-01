@@ -1,0 +1,98 @@
+{% if interface_qos is not string %}
+<div class="row">
+    <div class="col-xl-12">
+      {% for k, v in interface_qos.items() %}
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0">Interface QoS: {{ k }} | Policy: {{ v[0]['Policy_name'] }} | Direction: {{ v[0]['Direction'] }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush table-borderless">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Queue</th>
+                  <th scope="col">Queued Rate</th>
+                  <th scope="col">In Bytes</th>
+                  <th scope="col">In Packets</th>
+                  <th scope="col">Out Bytes</th>
+                  <th scope="col">Out Packets</th>
+                  <th scope="col">Drop Packets</th>
+                  <th scope="col">Drop Bytes</th>
+                  <th scope="col">WRED Packets
+                  <th scope="col">WRED Bytes</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for stat in v[1]['queues'] %}
+                <tr style="height:1px">
+                  <th scope="row">
+                    {{ stat['queue_name'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['rate'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['bytes'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['packets'] }}
+                  </th>
+                   <th scope="row">
+                    {{ stat['out_bytes'] }}
+                  </th>
+                  <th scope="row">
+                    {{ stat['out_packets'] }}
+                  </th>
+
+                  {% if stat['drop_packets'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['drop_packets'] }}
+                    </th>
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['drop_packets'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['drop_bytes'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['drop_bytes'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['drop_bytes'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['wred_drops_pkts'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['wred_drops_pkts'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['wred_drops_pkts'] }}
+                    </th>
+                  {%endif%}
+
+                  {% if stat['wred_drop_bytes'] != '0' %}
+                    <th style="color:red" scope="row">
+                      {{ stat['wred_drop_bytes'] }}
+                  {%else%}
+                   <th scope="row">
+                      {{ stat['wred_drop_bytes'] }}
+                    </th>
+                  {%endif%}
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      {%endfor%}
+    </div>
+</div>
+{%else%}
+<div><p class="text-danger">Configuration succeded but a post error did occur. Please verify configuration saved</p></div>
+{%endif%}
+

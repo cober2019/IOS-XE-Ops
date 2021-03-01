@@ -1,0 +1,57 @@
+{% extends 'layouts/base-fullscreen.html' %}
+
+{% block title %}{% endblock title %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<nav class="navbar navbar-expand-xl navbar-light bg-default fixed-top">
+  <div class="container-fluid">
+    <h1 class="navbar-brand mb-0 h1" ></h1>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    <div  id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link text-light" href="{{ url_for('base_blueprint.get_routing') }}">Home</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  </nav>
+  <br/>
+  <br/>
+  <br/>
+    <div class="container mt--8 pb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-7">
+          <div class="card bg-light border-0 mb-0">
+            <div class="card-body px-lg-5 py-lg-5 text-center">
+              <div class="table-responsive">
+                <table class="table align-items-center table-light table-flush" >
+                <tbody>
+                    <tr>
+                      <th>Email</th>
+                      <td scope="row" style="text-align:right">Cober91130@gmail.com</td>
+                    </tr>
+                    <tr>
+                      <th>LinkedIn</th>
+                      <td scope="row" style="text-align:right">https://www.linkedin.com/in/chris-oberdalhoff-43292b56/</td>
+                    </tr>
+                    <tr>
+                      <th>GITHUB</th>
+                      <td scope="row" style="text-align:right">https://github.com/cober2019/Network-Automation</td>
+                    </tr>
+                </table>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

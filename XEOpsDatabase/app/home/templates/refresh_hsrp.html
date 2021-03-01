@@ -1,0 +1,78 @@
+<div class="table-responsive">
+    <span class="counter pull-right"></span>
+    <table class="table align-items-center table-striped" id="hsrpTable">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col" class="text-center">Interface</th>
+            <th scope="col" class="text-center">Group</th>
+            <th scope="col" class="text-center">Priority</th>
+            <th scope="col" class="text-center">Preempt</th>
+            <th scope="col" class="text-center">State</th>
+            <th scope="col" class="text-center">Active</th>
+            <th scope="col" class="text-center">Standby</th>
+            <th scope="col" class="text-center">VIP</th>
+            <th scope="col" class="text-left">Available Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in hsrp %}
+        <tr style="height:1px">
+            <td scope="row" class="text-center">
+                {{ i.interface }}
+            </td>
+            <td scope="row" class="text-center">
+                {{ i.group }}
+            </td>
+            <td scope="row" class="text-center">
+                {{ i.priority }}
+            </td>
+            <td scope="row" class="text-center">
+                {{ i.preempt }}
+            </td>
+            {% if i.state == 'Init' %}
+            <td scope="row" style="text-align:center">
+                <i class="fas fa-circle text-warning mr-3"></i>
+            </td>
+            {% else %}
+            <td scope="row" style="text-align:center">
+                <i class="fas fa-circle text-green mr-3"></i>
+            </td>
+            {% endif %}
+            {% if i.active == 'unknown' %}
+            <td scope="row" style="text-align:center">
+                <i class="fas fa-circle text-red mr-3"></i>
+            </td>
+            {% else %}
+            <td scope="row" style="text-align:center">
+                <i class="fas fa-circle text-green mr-3"></i>
+            </td>
+            {% endif %}
+            {% if i.standby == 'unknown' %}
+            <td scope="row" style="text-align:center">
+                <i class="fas fa-circle text-red mr-3"></i>
+            </td>
+            {% else %}
+            <td scope="row" style="text-align:center">
+                <i class="fas fa-circle text-green mr-3"></i>
+            </td>
+            {% endif %}
+            <td scope="row" class="text-center">
+                {{ i.vip}}
+            </td>
+            <td scope="row" class="text-left">
+                <a href="{{ url_for('base_blueprint.modify_inteface', interface=interface) }}"><input
+                        value="Modify" name=" {{ i.interface }}" style="font-size:11px"
+                        class="btn btn-link" role="status" type="button"></a>
+                <br>
+                <input style="font-size:11px" value="Interface Details" name="{{ i.interface }}"
+                       class="btn btn-link" role="status" type="button"
+                       onclick="moreIntDetails(this.name)" id="{{ i.interface }}">
+                <br>
+                <a href="{{ url_for('base_blueprint.ping', source=i.interface) }}"><input
+                        value="Source Ping" name=" {{ i.interface }}" style="font-size:11px"
+                        class="btn btn-link" role="status" type="button"></a>
+            </td>
+        </tr>
+        {%endfor%}
+    </table>
+</div>

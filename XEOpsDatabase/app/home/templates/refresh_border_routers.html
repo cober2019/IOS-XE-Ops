@@ -1,0 +1,50 @@
+<table class="table align-items-center table-striped" id="borderrouterRefresh">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col" class="text-center">Process</th>
+            <th scope="col" class="text-center">Router ID</th>
+            <th scope="col" class="text-center">Route Type</th>
+            <th scope="col" class="text-center">Metric</th>
+            <th scope="col" class="text-center">Next Hop</th>
+            <th scope="col" class="text-center">Interface</th>
+            <th scope="col" class="text-center">Router Type</th>
+            <th scope="col" class="text-center">Area</th>
+        </tr>
+        </thead>
+        <tbody id="borderrouterRefresh">
+        {% for i in border_routers %}
+            <tr style="height:1px">
+                <th scope="row" class="text-center">
+                    {{ i.process }}
+                </th>
+                <th scope="row" class="text-center">
+                    {{ i.neigh_router_id }}
+                </th>
+                {% if i.route_type == 'i' %}
+                    <th scope="row" class="text-center">
+                        Intra Area
+                    </th>
+                {% elif i.route_type == 'I' %}
+                    <th scope="row" class="text-center">
+                        Inter Area
+                    </th>
+                {% endif %}
+                <th scope="row" class="text-center">
+                    {{ i.cost }}
+                </th>
+                 <th scope="row" class="text-center">
+                    {{ i.nexthop }}
+                </th>
+                 <th scope="row" class="text-center">
+                    {{ i.interface }}
+                </th>
+                 <th scope="row" class="text-center">
+                    {{ i.router_type }}
+                </th>
+                 <th scope="row" class="text-center">
+                    {{ i.area }}
+                </th>
+            </tr>
+         {%endfor%}
+    </table>
+</div>
