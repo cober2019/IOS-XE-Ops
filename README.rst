@@ -8,10 +8,12 @@
 .. image:: https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg
     :target: https://developer.cisco.com/codeexchange/github/repo/cober2019/IOS-XE-Ops
 
+
 IOS-XE-Ops
 ===========
-
-    **IOS-XE-Ops is designed to give you a summary view of your device. Features include:**
+    **Please visit https://github.com/cober2019/react-ios-xe-ops, for newer app version**
+    
+    IOS-XE-Ops is designed to give you a summary view of your device. Features include:
     
         - Interfaces details both from a cli view and a custom flask view
         - Full routing tables plus a cli view from the table and database perspective
